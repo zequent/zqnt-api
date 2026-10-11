@@ -1,0 +1,230 @@
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
+from google.protobuf import descriptor as _descriptor
+from typing import ClassVar as _ClassVar
+
+DESCRIPTOR: _descriptor.FileDescriptor
+
+class ExecutionModeProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_MODE_UNSPECIFIED: _ClassVar[ExecutionModeProto]
+    EXECUTION_MODE_SIMPLE: _ClassVar[ExecutionModeProto]
+    EXECUTION_MODE_APPLICATION: _ClassVar[ExecutionModeProto]
+
+class SkillExecutionStatusProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    SKILL_EXECUTION_STATUS_UNSPECIFIED: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_ACCEPTED: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_PLANNING: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_READY: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_RUNNING: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_PAUSED: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_SUCCEEDED: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_FAILED: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_CANCELLING: _ClassVar[SkillExecutionStatusProto]
+    SKILL_EXECUTION_STATUS_CANCELLED: _ClassVar[SkillExecutionStatusProto]
+
+class ExecutionNodeStatusProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_NODE_STATUS_UNSPECIFIED: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_PENDING: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_READY: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_RUNNING: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_PAUSED: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_BLOCKED: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_SUCCEEDED: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_FAILED: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_SKIPPED: _ClassVar[ExecutionNodeStatusProto]
+    EXECUTION_NODE_STATUS_CANCELLED: _ClassVar[ExecutionNodeStatusProto]
+
+class ExecutionFailureStrategyProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_FAILURE_STRATEGY_UNSPECIFIED: _ClassVar[ExecutionFailureStrategyProto]
+    EXECUTION_FAILURE_STRATEGY_STOP: _ClassVar[ExecutionFailureStrategyProto]
+    EXECUTION_FAILURE_STRATEGY_RETRY: _ClassVar[ExecutionFailureStrategyProto]
+    EXECUTION_FAILURE_STRATEGY_CONTINUE: _ClassVar[ExecutionFailureStrategyProto]
+    EXECUTION_FAILURE_STRATEGY_COMPENSATE: _ClassVar[ExecutionFailureStrategyProto]
+
+class ApplicationEnvironmentProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    APPLICATION_ENVIRONMENT_UNSPECIFIED: _ClassVar[ApplicationEnvironmentProto]
+    APPLICATION_ENVIRONMENT_STAGING: _ClassVar[ApplicationEnvironmentProto]
+    APPLICATION_ENVIRONMENT_PRODUCTION: _ClassVar[ApplicationEnvironmentProto]
+
+class ApplicationScopeTypeProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    APPLICATION_SCOPE_TYPE_UNSPECIFIED: _ClassVar[ApplicationScopeTypeProto]
+    APPLICATION_SCOPE_TYPE_GLOBAL: _ClassVar[ApplicationScopeTypeProto]
+    APPLICATION_SCOPE_TYPE_ORGANIZATION: _ClassVar[ApplicationScopeTypeProto]
+    APPLICATION_SCOPE_TYPE_ASSET: _ClassVar[ApplicationScopeTypeProto]
+    APPLICATION_SCOPE_TYPE_LOCATION: _ClassVar[ApplicationScopeTypeProto]
+    APPLICATION_SCOPE_TYPE_THEATRE: _ClassVar[ApplicationScopeTypeProto]
+
+class ExecutionConfigScopeTypeProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_CONFIG_SCOPE_TYPE_UNSPECIFIED: _ClassVar[ExecutionConfigScopeTypeProto]
+    EXECUTION_CONFIG_SCOPE_TYPE_GLOBAL: _ClassVar[ExecutionConfigScopeTypeProto]
+    EXECUTION_CONFIG_SCOPE_TYPE_SKILL: _ClassVar[ExecutionConfigScopeTypeProto]
+    EXECUTION_CONFIG_SCOPE_TYPE_ORGANIZATION: _ClassVar[ExecutionConfigScopeTypeProto]
+    EXECUTION_CONFIG_SCOPE_TYPE_THEATRE: _ClassVar[ExecutionConfigScopeTypeProto]
+    EXECUTION_CONFIG_SCOPE_TYPE_ASSET: _ClassVar[ExecutionConfigScopeTypeProto]
+
+class ExecutionNodeTypeProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_NODE_TYPE_UNSPECIFIED: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_COMMAND: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_SKILL: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_CONDITION: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_PARALLEL_GATEWAY: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_JOIN_GATEWAY: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_WAIT: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_EVENT_WAIT: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_HUMAN_APPROVAL: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_END: _ClassVar[ExecutionNodeTypeProto]
+    EXECUTION_NODE_TYPE_AI: _ClassVar[ExecutionNodeTypeProto]
+
+class ExecutionEdgeTypeProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_EDGE_TYPE_UNSPECIFIED: _ClassVar[ExecutionEdgeTypeProto]
+    EXECUTION_EDGE_TYPE_NORMAL: _ClassVar[ExecutionEdgeTypeProto]
+    EXECUTION_EDGE_TYPE_SUCCESS: _ClassVar[ExecutionEdgeTypeProto]
+    EXECUTION_EDGE_TYPE_FAILURE: _ClassVar[ExecutionEdgeTypeProto]
+    EXECUTION_EDGE_TYPE_TIMEOUT: _ClassVar[ExecutionEdgeTypeProto]
+    EXECUTION_EDGE_TYPE_COMPENSATION: _ClassVar[ExecutionEdgeTypeProto]
+
+class ExecutionConditionOperatorProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_CONDITION_OPERATOR_UNSPECIFIED: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_EQUALS: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_NOT_EQUALS: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_GREATER_THAN: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_GREATER_THAN_OR_EQUAL: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_LESS_THAN: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_LESS_THAN_OR_EQUAL: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_IN: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_CONTAINS: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_EXISTS: _ClassVar[ExecutionConditionOperatorProto]
+    EXECUTION_CONDITION_OPERATOR_MATCHES: _ClassVar[ExecutionConditionOperatorProto]
+
+class ExecutionConditionGroupOperatorProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_CONDITION_GROUP_OPERATOR_UNSPECIFIED: _ClassVar[ExecutionConditionGroupOperatorProto]
+    EXECUTION_CONDITION_GROUP_OPERATOR_AND: _ClassVar[ExecutionConditionGroupOperatorProto]
+    EXECUTION_CONDITION_GROUP_OPERATOR_OR: _ClassVar[ExecutionConditionGroupOperatorProto]
+
+class ExecutionJoinModeProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    EXECUTION_JOIN_MODE_UNSPECIFIED: _ClassVar[ExecutionJoinModeProto]
+    EXECUTION_JOIN_MODE_ALL: _ClassVar[ExecutionJoinModeProto]
+    EXECUTION_JOIN_MODE_ANY: _ClassVar[ExecutionJoinModeProto]
+
+class SkillExecutionEventTypeProto(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    SKILL_EXECUTION_EVENT_TYPE_UNSPECIFIED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_CREATED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_PLANNED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_STARTED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_NODE_STARTED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_NODE_PROGRESS: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_NODE_COMPLETED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_NODE_FAILED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_PAUSED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_RESUMED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_BLOCKED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_COMPLETED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_FAILED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_CANCELLED: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_WARNING: _ClassVar[SkillExecutionEventTypeProto]
+    SKILL_EXECUTION_EVENT_TYPE_SAFETY_ALERT: _ClassVar[SkillExecutionEventTypeProto]
+EXECUTION_MODE_UNSPECIFIED: ExecutionModeProto
+EXECUTION_MODE_SIMPLE: ExecutionModeProto
+EXECUTION_MODE_APPLICATION: ExecutionModeProto
+SKILL_EXECUTION_STATUS_UNSPECIFIED: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_ACCEPTED: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_PLANNING: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_READY: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_RUNNING: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_PAUSED: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_SUCCEEDED: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_FAILED: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_CANCELLING: SkillExecutionStatusProto
+SKILL_EXECUTION_STATUS_CANCELLED: SkillExecutionStatusProto
+EXECUTION_NODE_STATUS_UNSPECIFIED: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_PENDING: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_READY: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_RUNNING: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_PAUSED: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_BLOCKED: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_SUCCEEDED: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_FAILED: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_SKIPPED: ExecutionNodeStatusProto
+EXECUTION_NODE_STATUS_CANCELLED: ExecutionNodeStatusProto
+EXECUTION_FAILURE_STRATEGY_UNSPECIFIED: ExecutionFailureStrategyProto
+EXECUTION_FAILURE_STRATEGY_STOP: ExecutionFailureStrategyProto
+EXECUTION_FAILURE_STRATEGY_RETRY: ExecutionFailureStrategyProto
+EXECUTION_FAILURE_STRATEGY_CONTINUE: ExecutionFailureStrategyProto
+EXECUTION_FAILURE_STRATEGY_COMPENSATE: ExecutionFailureStrategyProto
+APPLICATION_ENVIRONMENT_UNSPECIFIED: ApplicationEnvironmentProto
+APPLICATION_ENVIRONMENT_STAGING: ApplicationEnvironmentProto
+APPLICATION_ENVIRONMENT_PRODUCTION: ApplicationEnvironmentProto
+APPLICATION_SCOPE_TYPE_UNSPECIFIED: ApplicationScopeTypeProto
+APPLICATION_SCOPE_TYPE_GLOBAL: ApplicationScopeTypeProto
+APPLICATION_SCOPE_TYPE_ORGANIZATION: ApplicationScopeTypeProto
+APPLICATION_SCOPE_TYPE_ASSET: ApplicationScopeTypeProto
+APPLICATION_SCOPE_TYPE_LOCATION: ApplicationScopeTypeProto
+APPLICATION_SCOPE_TYPE_THEATRE: ApplicationScopeTypeProto
+EXECUTION_CONFIG_SCOPE_TYPE_UNSPECIFIED: ExecutionConfigScopeTypeProto
+EXECUTION_CONFIG_SCOPE_TYPE_GLOBAL: ExecutionConfigScopeTypeProto
+EXECUTION_CONFIG_SCOPE_TYPE_SKILL: ExecutionConfigScopeTypeProto
+EXECUTION_CONFIG_SCOPE_TYPE_ORGANIZATION: ExecutionConfigScopeTypeProto
+EXECUTION_CONFIG_SCOPE_TYPE_THEATRE: ExecutionConfigScopeTypeProto
+EXECUTION_CONFIG_SCOPE_TYPE_ASSET: ExecutionConfigScopeTypeProto
+EXECUTION_NODE_TYPE_UNSPECIFIED: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_COMMAND: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_SKILL: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_CONDITION: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_PARALLEL_GATEWAY: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_JOIN_GATEWAY: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_WAIT: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_EVENT_WAIT: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_HUMAN_APPROVAL: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_END: ExecutionNodeTypeProto
+EXECUTION_NODE_TYPE_AI: ExecutionNodeTypeProto
+EXECUTION_EDGE_TYPE_UNSPECIFIED: ExecutionEdgeTypeProto
+EXECUTION_EDGE_TYPE_NORMAL: ExecutionEdgeTypeProto
+EXECUTION_EDGE_TYPE_SUCCESS: ExecutionEdgeTypeProto
+EXECUTION_EDGE_TYPE_FAILURE: ExecutionEdgeTypeProto
+EXECUTION_EDGE_TYPE_TIMEOUT: ExecutionEdgeTypeProto
+EXECUTION_EDGE_TYPE_COMPENSATION: ExecutionEdgeTypeProto
+EXECUTION_CONDITION_OPERATOR_UNSPECIFIED: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_EQUALS: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_NOT_EQUALS: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_GREATER_THAN: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_GREATER_THAN_OR_EQUAL: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_LESS_THAN: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_LESS_THAN_OR_EQUAL: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_IN: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_CONTAINS: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_EXISTS: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_OPERATOR_MATCHES: ExecutionConditionOperatorProto
+EXECUTION_CONDITION_GROUP_OPERATOR_UNSPECIFIED: ExecutionConditionGroupOperatorProto
+EXECUTION_CONDITION_GROUP_OPERATOR_AND: ExecutionConditionGroupOperatorProto
+EXECUTION_CONDITION_GROUP_OPERATOR_OR: ExecutionConditionGroupOperatorProto
+EXECUTION_JOIN_MODE_UNSPECIFIED: ExecutionJoinModeProto
+EXECUTION_JOIN_MODE_ALL: ExecutionJoinModeProto
+EXECUTION_JOIN_MODE_ANY: ExecutionJoinModeProto
+SKILL_EXECUTION_EVENT_TYPE_UNSPECIFIED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_CREATED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_PLANNED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_STARTED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_NODE_STARTED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_NODE_PROGRESS: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_NODE_COMPLETED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_NODE_FAILED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_PAUSED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_RESUMED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_BLOCKED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_COMPLETED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_FAILED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_CANCELLED: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_WARNING: SkillExecutionEventTypeProto
+SKILL_EXECUTION_EVENT_TYPE_SAFETY_ALERT: SkillExecutionEventTypeProto
