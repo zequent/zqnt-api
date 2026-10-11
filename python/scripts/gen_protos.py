@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 """
-Generate the Python protobuf / gRPC modules of zqnt_api from proto/.
-
-proto/ is a copy of the public contracts of zqnt-protos at the commit in proto/ZQNT_PROTOS_COMMIT
-(the contract repository is private, so this public repository carries the files themselves). It
-has two proto roots:
+Generate the Python protobuf / gRPC modules of zqnt_api from ../proto, the repository's public
+contracts. It has two proto roots:
   v2  frozen 2.x contracts -> zqnt_api/generated/zqnt/*_pb2.py
   v3  zqnt.<domain>.v3     -> zqnt_api/generated/zqnt/<domain>/v3/*_pb2.py
 
@@ -25,7 +22,7 @@ except ImportError:
     sys.exit("grpcio-tools is required: uv sync")
 
 ROOT = Path(__file__).resolve().parent.parent
-PROTO = ROOT / "proto"
+PROTO = ROOT.parent / "proto"
 GENERATED = ROOT / "zqnt_api" / "generated"
 V2_OUT = GENERATED / "zqnt"
 PACKAGE_PREFIX = "zqnt_api.generated."
@@ -123,9 +120,7 @@ def _fix_v3_imports(directory: Path) -> None:
 
 
 if __name__ == "__main__":
-    print(
-        f"Generating from zqnt-protos {(PROTO / 'ZQNT_PROTOS_COMMIT').read_text().strip()}..."
-    )
+    print(f"Generating from {PROTO}...")
     shutil.rmtree(GENERATED, ignore_errors=True)
     generate_v2(PROTO / "v2")
     generate_v3(PROTO / "v3")

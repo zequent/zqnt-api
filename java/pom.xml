@@ -10,7 +10,7 @@
 
     <name>Zequent API</name>
     <description>Public Java API of the Zequent platform: protobuf/gRPC types and the telemetry mapping the Java SDKs build on</description>
-    <url>https://github.com/Zequent/zqnt-api-java</url>
+    <url>https://github.com/Zequent/zqnt-api</url>
     <inceptionYear>2026</inceptionYear>
 
     <organization>
@@ -27,15 +27,15 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://github.com/Zequent/zqnt-api-java.git</connection>
-        <developerConnection>scm:git:https://github.com/Zequent/zqnt-api-java.git</developerConnection>
-        <url>https://github.com/Zequent/zqnt-api-java</url>
+        <connection>scm:git:https://github.com/Zequent/zqnt-api.git</connection>
+        <developerConnection>scm:git:https://github.com/Zequent/zqnt-api.git</developerConnection>
+        <url>https://github.com/Zequent/zqnt-api</url>
         <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/Zequent/zqnt-api-java/issues</url>
+        <url>https://github.com/Zequent/zqnt-api/issues</url>
     </issueManagement>
 
     <developers>
@@ -64,7 +64,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/Zequent/zqnt-api-java</url>
+            <url>https://maven.pkg.github.com/Zequent/zqnt-api</url>
         </repository>
     </distributionManagement>
 
@@ -136,14 +136,14 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/proto/v2</directory>
+                <directory>../proto/v2</directory>
                 <targetPath>META-INF/proto</targetPath>
                 <includes>
                     <include>*.proto</include>
                 </includes>
             </resource>
             <resource>
-                <directory>src/main/proto/v3</directory>
+                <directory>../proto/v3</directory>
                 <targetPath>META-INF/proto</targetPath>
                 <includes>
                     <include>**/*.proto</include>
@@ -176,7 +176,7 @@
                             <goal>compile-custom</goal>
                         </goals>
                         <configuration>
-                            <protoSourceRoot>${project.basedir}/src/main/proto/v2</protoSourceRoot>
+                            <protoSourceRoot>${project.basedir}/../proto/v2</protoSourceRoot>
                         </configuration>
                     </execution>
                     <execution>
@@ -186,7 +186,7 @@
                             <goal>compile-custom</goal>
                         </goals>
                         <configuration>
-                            <protoSourceRoot>${project.basedir}/src/main/proto/v3</protoSourceRoot>
+                            <protoSourceRoot>${project.basedir}/../proto/v3</protoSourceRoot>
                             <clearOutputDirectory>false</clearOutputDirectory>
                         </configuration>
                     </execution>

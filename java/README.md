@@ -1,4 +1,4 @@
-# zqnt-api-java
+# zqnt-api: Java
 
 The public Java API of the Zequent platform: the protobuf/gRPC types customers build against, the
 telemetry mapping between the 2.x and 3.x contracts, and the small DTO and helper classes the Java
@@ -30,14 +30,12 @@ this artifact only.
 
 The Java packages are the ones the SDKs have always used, so moving from `zqnt-utils-java` to this
 artifact changes no import. The `.proto` files are in the jar under `META-INF/proto/` and in
-[`src/main/proto`](src/main/proto): `v2` and `v3` are the two proto roots.
+[`../proto`](../proto): `v2` and `v3` are the two proto roots.
 
 ## Where it comes from
 
-`src/main/proto/` is a copy of the public contracts of the platform's contract repository at the
-commit in [`src/main/proto/ZQNT_PROTOS_COMMIT`](src/main/proto/ZQNT_PROTOS_COMMIT); the Java code is
-generated from it at build time (protoc 3.25.9, protoc-gen-grpc-java 1.76.0). It is updated by an
-automated PR after every contract change; do not edit it by hand.
+The Java code is generated from [`../proto`](../proto) at build time (protoc 3.25.9,
+protoc-gen-grpc-java 1.76.0).
 
 ## Building
 
@@ -49,8 +47,9 @@ mvn verify
 
 The artifact starts at version 3.0.0, matching platform 3.0 (`pom.xml`: `3.0.0-SNAPSHOT`).
 Releases are `vX.Y.Z` tags, cut by the maintainer; until then there are only previews. Every PR
-build is published to GitHub Packages as `3.0.0-PR<n>-<sha>-SNAPSHOT` (`<sha>` is the PR merge
-commit, shown in the build log and the PR comment); move to the release version once it exists.
+build is published to GitHub Packages (`https://maven.pkg.github.com/Zequent/zqnt-api`) as
+`3.0.0-PR<n>-<sha>-SNAPSHOT` (`<sha>` is the PR merge commit, shown in the job summary and the PR
+comment); move to the release version once it exists.
 
 The jar is not obfuscated: it is a public API whose sources and `.proto` files are published,
 protobuf and gRPC resolve the generated classes by name, and users need readable stack traces.

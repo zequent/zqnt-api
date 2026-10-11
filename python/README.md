@@ -1,4 +1,4 @@
-# zqnt-api-python
+# zqnt-api: Python
 
 The public Python API of the Zequent platform: the protobuf/gRPC modules customers build against,
 the telemetry mapping between the 2.x and 3.x contracts, and the small helpers the Python SDKs
@@ -7,7 +7,7 @@ and Client SDK ([`zqnt-client-sdk-python`](https://github.com/Zequent/zqnt-clien
 depend on this package only.
 
 ```bash
-uv add "zqnt-api @ git+https://github.com/Zequent/zqnt-api-python@<branch or commit>"
+uv add "zqnt-api @ git+https://github.com/zequent/zqnt-api@<tag or commit>#subdirectory=python"
 ```
 
 ## Modules
@@ -25,19 +25,18 @@ uv add "zqnt-api @ git+https://github.com/Zequent/zqnt-api-python@<branch or com
 
 ## Where it comes from
 
-`proto/` is a copy of the public contracts of the platform's contract repository at the commit in
-[`proto/ZQNT_PROTOS_COMMIT`](proto/ZQNT_PROTOS_COMMIT); `zqnt_api/generated/` is generated from it by
-`scripts/gen_protos.py` with the grpcio-tools and mypy-protobuf versions in `uv.lock`. Both are
-updated by an automated PR after every contract change; do not edit them by hand. CI regenerates
-the code on every PR and fails if it differs.
+`zqnt_api/generated/` is generated from [`../proto`](../proto) by `scripts/gen_protos.py` with the
+grpcio-tools and mypy-protobuf versions in `uv.lock`, and committed with the `.proto` change; do
+not edit it by hand. CI regenerates the code on every PR and fails if it differs.
 
 ## Versions
 
 The package starts at version 3.0.0, matching platform 3.0. Releases are `vX.Y.Z` tags, cut by
 the maintainer; until then there are only previews. Every PR build reports its preview version
 `3.0.0+pr<n>.<sha>` (the base version from `pyproject.toml`, the PR number and the commit);
-consumers pin a preview by git branch or commit in `[tool.uv.sources]` and move to the release
-tag once it exists.
+consumers pin a preview tag `pr-<n>-<sha>` or a commit in `[tool.uv.sources]`
+(`zqnt-api = { git = "https://github.com/zequent/zqnt-api", subdirectory = "python", rev = "<commit>" }`)
+and move to the release tag once it exists.
 
 ## Development
 

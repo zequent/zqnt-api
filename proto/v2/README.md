@@ -1,8 +1,8 @@
-# zqnt-protos — v2 (frozen)
+# v2 contracts (frozen)
 
 > **Frozen 2.x contracts.** These files are byte-identical to the `2.0.0` release (package `zqnt`,
 > imports relative to the v2 root). Only bug fixes, never new features; every change must pass the
-> wire + JSON breaking check against `2.0.0` in CI. New work goes into [`../v3`](../v3) —
+> wire + JSON breaking check against `2.0.0` in CI (`.github/buf/v2-2.0.0.binpb`). New work goes into [`../v3`](../v3) —
 > see the [root README](../../README.md). File references below are relative to `v2/`.
 
 Shared Protobuf definitions for the ZQNT framework. All services (Edge SDK, Edge Adapter, RemoteControl, LiveData, Connector, MissionAutonomy) use these proto files as the single source of truth for their API contracts.
@@ -221,30 +221,7 @@ Breaking changes (message renames, field type changes, field number changes) req
 
 ## Versioning
 
-This repo is the single source of truth for the wire contract every language SDK (Java `zqnt-utils`,
-`edge-go-sdk`/`client-go-sdk`, `edge-python-sdk`/`client-python-sdk`/`zqnt-utils-python`) generates
-from — but each of those consumers also has its own, independent package version number for its own
-non-proto changes. Those two numbers are **not** the same thing, and conflating them is exactly what
-prompted this section: `zqnt-utils` (Java) reached `v1.3.0` and `zqnt-utils-python` reached `v2.0.0`
-around the same time, encoding the same underlying contract, purely by each project's own unrelated
-semver history — not because the contract itself had two different states.
-
-**`PROTOCOL_VERSION`** (this directory) holds the current contract version as a single line — the one
-number every language's generated output should be checked against, independent of that language's
-own package version. Bump it whenever a message/RPC changes in a way downstream consumers need to
-know about (new field, renamed message, new RPC, changed field number/type); a purely additive,
-non-breaking addition can land without a bump if nothing downstream needs to react to it.
-
-**Git tags on this repo** pin the exact commit a given `PROTOCOL_VERSION` was cut at, so "what did the
-contract look like at version X" is one `git checkout <tag>` away instead of correlating submodule
-pointers and commit messages by hand:
-
-- `1.3.0` → `0e072f8` — the state `zqnt-utils` (Java) pointed to when *it* was tagged `v1.3.0`.
-- `2.0.0` → the commit actually in use as of 2026-09-03 — matches `zqnt-utils` HEAD and what
-  `zqnt-utils-python`'s `v2.0.0` was regenerated from. Named to match the already-established
-  `zqnt-utils-python` version rather than invent a fourth numbering scheme.
-
-When cutting a new contract version: bump `PROTOCOL_VERSION`, commit, tag the commit here with that
-same version, then have each downstream SDK's generation step record which tag it built against (a
-comment at the top of the generated output, or a small manifest) — see each SDK's own README for
-where that's recorded.
+`PROTOCOL_VERSION` holds the contract version of these files, 2.0.0. They are frozen at the
+2.0.0 contract; the descriptor image of that release is `.github/buf/v2-2.0.0.binpb`, and CI fails
+on any wire or JSON break against it. Package versions of the generated code follow the
+repository's version (see the [root README](../../README.md)).

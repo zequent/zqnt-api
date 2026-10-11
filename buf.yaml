@@ -1,0 +1,15 @@
+version: v2
+modules:
+  - path: proto/v2
+    lint:
+      use:
+        - MINIMAL
+      except:
+        - PACKAGE_DIRECTORY_MATCH
+  - path: proto/v3
+    lint:
+      use:
+        - STANDARD
+breaking:
+  use:
+    - WIRE_JSON

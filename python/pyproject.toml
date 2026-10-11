@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/Zequent/zqnt-api-python"
+Repository = "https://github.com/Zequent/zqnt-api"
 
 [dependency-groups]
 dev = [
@@ -30,7 +30,7 @@ build-backend = "hatchling.build"
 packages = ["zqnt_api"]
 
 [tool.hatch.build.targets.sdist]
-include = ["zqnt_api", "proto", "scripts", "tests", "README.md", "LICENSE", "NOTICE"]
+include = ["zqnt_api", "scripts", "tests", "README.md", "LICENSE", "NOTICE"]
 
 [tool.ruff]
 exclude = ["zqnt_api/generated/**"]
