@@ -29,7 +29,8 @@ import java.util.UUID;
 /**
  * v2 {@link Telemetry} and v3 {@link TelemetrySample}, both ways. The fields every asset shares are
  * typed on the sample; every other v2 field is a {@code details} entry under one of the keys below,
- * enum values as their v2 name without the enum's prefix. {@link #telemetryFields()} describes those
+ * enum values as their v2 name without the enum's prefix, numbers in the key's catalog unit
+ * ({@code dock.supply_voltage} is volts, its v2 field millivolts). {@link #telemetryFields()} describes those
  * keys for {@code CapabilitySet.telemetry_fields}.
  *
  * <p>Toward v2 a sample is a dock's ({@code asset}) or an aircraft's ({@code sub_asset}) by the
@@ -110,7 +111,8 @@ public final class TelemetrySampleMapper {
 
     private enum Source { NONE, ASSET, SUB_ASSET }
 
-    private record Detail(String key, List<FieldDescriptor> path, Source source, String unit, String description) {
+    private record Detail(String key, List<FieldDescriptor> path, Source source, String unit, String description,
+                          int v2PerUnit) {
     }
 
     private static final List<Detail> DETAILS = List.of(
@@ -125,7 +127,7 @@ public final class TelemetrySampleMapper {
             detail(DOCK_POSITION_VALID, "asset.position_valid", "", "Whether the dock's position is calibrated"),
             detail(DOCK_WORKING_VOLTAGE, "asset.working_voltage", "mV", "Working voltage"),
             detail(DOCK_WORKING_CURRENT, "asset.working_current", "mA", "Working current"),
-            detail(DOCK_SUPPLY_VOLTAGE, "asset.supply_voltage", "V", "Supply voltage"),
+            detail(DOCK_SUPPLY_VOLTAGE, "asset.supply_voltage", "V", "Supply voltage", 1000),
             detail(DOCK_AIR_CONDITIONER_STATE, "asset.air_conditioner.state", "", "Air conditioner state"),
             detail(DOCK_AIR_CONDITIONER_SWITCH_TIME, "asset.air_conditioner.switch_time", "s",
                     "Time until the air conditioner may switch mode again"),
@@ -233,7 +235,7 @@ public final class TelemetrySampleMapper {
         Struct.Builder details = Struct.newBuilder();
         for (Detail detail : DETAILS) {
             Value value = read(telemetry, detail.path());
-            if (value != null) details.putFields(detail.key(), value);
+            if (value != null) details.putFields(detail.key(), scale(value, detail.v2PerUnit(), 1));
         }
         if (details.getFieldsCount() > 0) sample.setDetails(details);
         return sample.build();
@@ -267,7 +269,7 @@ public final class TelemetrySampleMapper {
         for (Detail detail : DETAILS) {
             Value value = details.get(detail.key());
             if (value != null && (detail.source() == Source.NONE || detail.source() == source)) {
-                write(telemetry, detail.path(), value);
+                write(telemetry, detail.path(), scale(value, 1, detail.v2PerUnit()));
             }
         }
         if (source == Source.SUB_ASSET) {
@@ -296,6 +298,11 @@ public final class TelemetrySampleMapper {
 
     private static boolean carries(Map<String, Value> details, Source source) {
         return DETAILS.stream().anyMatch(detail -> detail.source() == source && details.containsKey(detail.key()));
+    }
+
+    private static Value scale(Value value, int divisor, int factor) {
+        if (divisor == factor || value.getKindCase() != Value.KindCase.NUMBER_VALUE) return value;
+        return Value.newBuilder().setNumberValue(value.getNumberValue() * factor / divisor).build();
     }
 
     private static Value read(Message message, List<FieldDescriptor> path) {
@@ -417,6 +424,10 @@ public final class TelemetrySampleMapper {
     }
 
     private static Detail detail(String key, String v2Path, String unit, String description) {
+        return detail(key, v2Path, unit, description, 1);
+    }
+
+    private static Detail detail(String key, String v2Path, String unit, String description, int v2PerUnit) {
         List<FieldDescriptor> path = new ArrayList<>();
         Descriptor type = Telemetry.getDescriptor();
         for (String name : v2Path.split("\\.")) {
@@ -432,6 +443,6 @@ public final class TelemetrySampleMapper {
             case "sub_asset" -> Source.SUB_ASSET;
             default -> Source.NONE;
         };
-        return new Detail(key, List.copyOf(path), source, unit, description);
+        return new Detail(key, List.copyOf(path), source, unit, description, v2PerUnit);
     }
 }
