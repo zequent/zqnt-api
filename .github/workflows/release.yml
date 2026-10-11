@@ -3,7 +3,7 @@ name: Release
 # A release is the tag vX.Y.Z, cut by the maintainer. It publishes all three languages at once:
 #   Go      the tag go/vX.Y.Z on the same commit (Go resolves modules in a subdirectory by
 #           <subdirectory>/<version> tags)
-#   Java    com.zqnt:zqnt-api-java:X.Y.Z to GitHub Packages
+#   Java    com.zqnt:zqnt-api:X.Y.Z to GitHub Packages
 #   Python  wheel and sdist attached to the GitHub Release; uv consumers pin the tag
 
 on:

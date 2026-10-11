@@ -9,7 +9,7 @@ this artifact only.
 ```xml
 <dependency>
     <groupId>com.zqnt</groupId>
-    <artifactId>zqnt-api-java</artifactId>
+    <artifactId>zqnt-api</artifactId>
     <version>${zqnt-api.version}</version>
 </dependency>
 ```

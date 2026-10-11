@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.zqnt</groupId>
-    <artifactId>zqnt-api-java</artifactId>
+    <artifactId>zqnt-api</artifactId>
     <version>3.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
