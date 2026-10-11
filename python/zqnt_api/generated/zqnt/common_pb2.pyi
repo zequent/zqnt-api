@@ -231,6 +231,7 @@ ASSET_VENDOR_BETAFLIGHT: _asset_pb2.AssetVendor
 ASSET_VENDOR_RNS: _asset_pb2.AssetVendor
 ASSET_VENDOR_ZQNT: _asset_pb2.AssetVendor
 ASSET_VENDOR_SIMULATOR: _asset_pb2.AssetVendor
+ASSET_VENDOR_AI: _asset_pb2.AssetVendor
 MQTT: _asset_pb2.AssetConnection
 TCP: _asset_pb2.AssetConnection
 SERIAL: _asset_pb2.AssetConnection
