@@ -47,8 +47,10 @@ mvn verify
 
 ## Versions
 
-Releases are `vX.Y.Z` tags. Every PR build is also published to GitHub Packages as
-`<version>-PR<n>-<sha>-SNAPSHOT` for review.
+The artifact starts at version 3.0.0, matching platform 3.0 (`pom.xml`: `3.0.0-SNAPSHOT`).
+Releases are `vX.Y.Z` tags, cut by the maintainer; until then there are only previews. Every PR
+build is published to GitHub Packages as `3.0.0-PR<n>-<sha>-SNAPSHOT` (`<sha>` is the PR merge
+commit, shown in the build log and the PR comment); move to the release version once it exists.
 
 The jar is not obfuscated: it is a public API whose sources and `.proto` files are published,
 protobuf and gRPC resolve the generated classes by name, and users need readable stack traces.
