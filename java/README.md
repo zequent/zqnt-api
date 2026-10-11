@@ -52,3 +52,7 @@ Releases are `vX.Y.Z` tags. Every PR build is also published to GitHub Packages 
 
 The jar is not obfuscated: it is a public API whose sources and `.proto` files are published,
 protobuf and gRPC resolve the generated classes by name, and users need readable stack traces.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE); see [NOTICE](NOTICE).
