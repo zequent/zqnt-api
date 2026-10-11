@@ -206,7 +206,7 @@ class Capability(_message.Message):
     def __init__(self, command_id: _Optional[str] = ..., display_name: _Optional[str] = ..., description: _Optional[str] = ..., state: _Optional[_Union[CapabilityState, str]] = ..., unavailable_reason: _Optional[str] = ..., target: _Optional[_Union[Target, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., schema_version: _Optional[str] = ..., safety: _Optional[_Union[CommandSafety, _Mapping]] = ..., errors: _Optional[_Iterable[_Union[CapabilityErrorSpec, _Mapping]]] = ..., events: _Optional[_Iterable[_Union[CapabilityEventSpec, _Mapping]]] = ..., requirements: _Optional[_Union[CapabilityRequirements, _Mapping]] = ..., skill_id: _Optional[str] = ..., source: _Optional[_Union[CapabilitySource, str]] = ..., provider: _Optional[str] = ..., constraints: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., metadata: _Optional[_Mapping[str, str]] = ..., deprecated_by: _Optional[str] = ..., completion: _Optional[_Union[CompletionMode, str]] = ..., completion_event: _Optional[str] = ...) -> None: ...
 
 class CapabilitySet(_message.Message):
-    __slots__ = ("asset_sn", "asset_type", "capabilities", "observed_at", "valid_until", "revision", "snapshot_state", "telemetry_fields")
+    __slots__ = ("asset_sn", "asset_type", "capabilities", "observed_at", "valid_until", "revision", "snapshot_state", "telemetry_fields", "payloads")
     ASSET_SN_FIELD_NUMBER: _ClassVar[int]
     ASSET_TYPE_FIELD_NUMBER: _ClassVar[int]
     CAPABILITIES_FIELD_NUMBER: _ClassVar[int]
@@ -215,6 +215,7 @@ class CapabilitySet(_message.Message):
     REVISION_FIELD_NUMBER: _ClassVar[int]
     SNAPSHOT_STATE_FIELD_NUMBER: _ClassVar[int]
     TELEMETRY_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    PAYLOADS_FIELD_NUMBER: _ClassVar[int]
     asset_sn: str
     asset_type: str
     capabilities: _containers.RepeatedCompositeFieldContainer[Capability]
@@ -223,7 +224,39 @@ class CapabilitySet(_message.Message):
     revision: str
     snapshot_state: SnapshotState
     telemetry_fields: _containers.RepeatedCompositeFieldContainer[TelemetryField]
-    def __init__(self, asset_sn: _Optional[str] = ..., asset_type: _Optional[str] = ..., capabilities: _Optional[_Iterable[_Union[Capability, _Mapping]]] = ..., observed_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., valid_until: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., revision: _Optional[str] = ..., snapshot_state: _Optional[_Union[SnapshotState, str]] = ..., telemetry_fields: _Optional[_Iterable[_Union[TelemetryField, _Mapping]]] = ...) -> None: ...
+    payloads: _containers.RepeatedCompositeFieldContainer[Payload]
+    def __init__(self, asset_sn: _Optional[str] = ..., asset_type: _Optional[str] = ..., capabilities: _Optional[_Iterable[_Union[Capability, _Mapping]]] = ..., observed_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., valid_until: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., revision: _Optional[str] = ..., snapshot_state: _Optional[_Union[SnapshotState, str]] = ..., telemetry_fields: _Optional[_Iterable[_Union[TelemetryField, _Mapping]]] = ..., payloads: _Optional[_Iterable[_Union[Payload, _Mapping]]] = ...) -> None: ...
+
+class Payload(_message.Message):
+    __slots__ = ("ref", "kind", "vendor", "model", "serial_number", "slot_index", "firmware_version", "external_id", "mounted_on", "metadata")
+    class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    REF_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    VENDOR_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    SERIAL_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    SLOT_INDEX_FIELD_NUMBER: _ClassVar[int]
+    FIRMWARE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    EXTERNAL_ID_FIELD_NUMBER: _ClassVar[int]
+    MOUNTED_ON_FIELD_NUMBER: _ClassVar[int]
+    METADATA_FIELD_NUMBER: _ClassVar[int]
+    ref: str
+    kind: str
+    vendor: str
+    model: str
+    serial_number: str
+    slot_index: int
+    firmware_version: str
+    external_id: str
+    mounted_on: Target
+    metadata: _containers.ScalarMap[str, str]
+    def __init__(self, ref: _Optional[str] = ..., kind: _Optional[str] = ..., vendor: _Optional[str] = ..., model: _Optional[str] = ..., serial_number: _Optional[str] = ..., slot_index: _Optional[int] = ..., firmware_version: _Optional[str] = ..., external_id: _Optional[str] = ..., mounted_on: _Optional[_Union[Target, _Mapping]] = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class TelemetryField(_message.Message):
     __slots__ = ("key", "type", "unit", "description", "allowed_values")
