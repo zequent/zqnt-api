@@ -18,7 +18,7 @@ this artifact only.
 
 | Package | Content |
 |---|---|
-| `com.zqnt.protos.capability.v3` | `zqnt.capability.v3`: Capability, CommandSafety, Command, CommandResult, CommandEvent |
+| `com.zqnt.protos.capability.v3` | `zqnt.capability.v3`: Capability, CapabilitySet (with the mounted Payloads and the TelemetryFields), CommandSafety, Command, CommandResult, CommandEvent |
 | `com.zqnt.protos.common.v3` | `zqnt.common.v3`: AssetRef, RequestContext, Error, paging, GeoPoint |
 | `com.zqnt.protos.control.v3` | `zqnt.control.v3`: `RemoteControlService` for clients |
 | `com.zqnt.protos.edge.v3` | `zqnt.edge.v3`: `EdgeAdapterService` (adapter side), `EdgeGatewayService` (platform side) |
