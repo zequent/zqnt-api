@@ -23,6 +23,8 @@ from zqnt_api.telemetry import (
     DOCK_HUMIDITY,
     DOCK_MODE,
     DOCK_RAINFALL,
+    DOCK_SUPPLY_VOLTAGE,
+    DOCK_WORKING_VOLTAGE,
     DRONE_MODE,
     LINK_SDR_QUALITY,
     NETWORK_QUALITY,
@@ -68,7 +70,7 @@ def dock() -> Telemetry:
             cover_state="COVER_STATE_CLOSED",
             working_voltage=24_000,
             working_current=1_250,
-            supply_voltage=230,
+            supply_voltage=230_400,
             position_valid=True,
             network_information=AssetTelemetryDetails.AssetNetworkInformation(
                 type="NETWORK_TYPE_4_G",
@@ -283,3 +285,16 @@ def test_a_frame_without_coordinates_or_serial_still_maps():
     assert not sample.HasField("position"), "omitted coordinates arrive as NaN"
     assert sample.asset.sn == "FROM-BASE"
     assert request_to_sample(ProduceTelemetryRequest()) is None
+
+
+def test_the_supply_voltage_is_volts_in_v3_and_millivolts_in_v2():
+    d = to_sample(dock()).details.fields
+    assert d[DOCK_SUPPLY_VOLTAGE].number_value == 230.4
+    assert d[DOCK_WORKING_VOLTAGE].number_value == 24_000
+    assert telemetry_field(DOCK_SUPPLY_VOLTAGE).unit == "V"
+    assert telemetry_field(DOCK_WORKING_VOLTAGE).unit == "mV"
+
+    details = Struct()
+    details.update({DOCK_SUPPLY_VOLTAGE: 16.204})
+    sample = TelemetrySample(asset=AssetRef(sn="DRONE-1"), details=details)
+    assert to_telemetry(sample).asset.supply_voltage == 16_204

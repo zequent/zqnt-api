@@ -2,7 +2,8 @@
 v2 ``Telemetry`` and v3 ``TelemetrySample``, both ways.
 
 The fields every asset shares are typed on the sample; every other v2 field is a ``details`` entry
-under one of the keys below, enum values as their v2 name without the enum's prefix.
+under one of the keys below, enum values as their v2 name without the enum's prefix, numbers in the
+key's catalog unit (``dock.supply_voltage`` is volts, its v2 field millivolts).
 :func:`telemetry_fields` describes those keys for ``CapabilitySet.telemetry_fields``.
 
 Toward v2 a sample is a dock's (``asset``) or an aircraft's (``sub_asset``) by the keys it carries;
@@ -120,6 +121,7 @@ class _Detail:
     source: _Source
     unit: str
     description: str
+    v2_per_unit: int
 
 
 def _is_repeated(field: FieldDescriptor) -> bool:
@@ -128,7 +130,9 @@ def _is_repeated(field: FieldDescriptor) -> bool:
     return field.label == FieldDescriptor.LABEL_REPEATED
 
 
-def _detail(key: str, v2_path: str, unit: str, description: str) -> _Detail:
+def _detail(
+    key: str, v2_path: str, unit: str, description: str, v2_per_unit: int = 1
+) -> _Detail:
     path = []
     message = Telemetry.DESCRIPTOR
     for name in v2_path.split("."):
@@ -140,7 +144,7 @@ def _detail(key: str, v2_path: str, unit: str, description: str) -> _Detail:
     source = {"asset": _Source.ASSET, "sub_asset": _Source.SUB_ASSET}.get(
         path[0].name, _Source.NONE
     )
-    return _Detail(key, tuple(path), source, unit, description)
+    return _Detail(key, tuple(path), source, unit, description, v2_per_unit)
 
 
 _DETAILS = (
@@ -175,7 +179,13 @@ _DETAILS = (
     ),
     _detail(DOCK_WORKING_VOLTAGE, "asset.working_voltage", "mV", "Working voltage"),
     _detail(DOCK_WORKING_CURRENT, "asset.working_current", "mA", "Working current"),
-    _detail(DOCK_SUPPLY_VOLTAGE, "asset.supply_voltage", "V", "Supply voltage"),
+    _detail(
+        DOCK_SUPPLY_VOLTAGE,
+        "asset.supply_voltage",
+        "V",
+        "Supply voltage",
+        1000,
+    ),
     _detail(
         DOCK_AIR_CONDITIONER_STATE,
         "asset.air_conditioner.state",
@@ -545,6 +555,7 @@ def to_sample(telemetry: Telemetry, fallback_sn: str = "") -> TelemetrySample:
     for detail in _DETAILS:
         value = _read(telemetry, detail.path)
         if value is not None:
+            value = _scale(value, detail.v2_per_unit, 1)
             details.fields[detail.key].CopyFrom(value)
     if details.fields:
         sample.details.CopyFrom(details)
@@ -580,7 +591,11 @@ def to_telemetry(sample: TelemetrySample) -> Telemetry:
     source = _source_of(sample, values)
     for detail in _DETAILS:
         if detail.key in values and detail.source in (_Source.NONE, source):
-            _write(telemetry, detail.path, values[detail.key])
+            _write(
+                telemetry,
+                detail.path,
+                _scale(values[detail.key], 1, detail.v2_per_unit),
+            )
     if source is _Source.SUB_ASSET:
         aircraft = telemetry.sub_asset
         aircraft.SetInParent()
@@ -612,6 +627,12 @@ def _source_of(sample: TelemetrySample, values) -> _Source:
 
 def _carries(values, source: _Source) -> bool:
     return any(d.source is source and d.key in values for d in _DETAILS)
+
+
+def _scale(value: Value, divisor: int, factor: int) -> Value:
+    if divisor == factor or value.WhichOneof("kind") != "number_value":
+        return value
+    return Value(number_value=value.number_value * factor / divisor)
 
 
 def _has(message: Message, field: FieldDescriptor) -> bool:
