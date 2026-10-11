@@ -51,13 +51,13 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <surefire-plugin.version>3.5.0</surefire-plugin.version>
-        <compiler-plugin.version>3.13.0</compiler-plugin.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <grpc.version>1.76.0</grpc.version>
+        <surefire-plugin.version>3.6.0</surefire-plugin.version>
+        <compiler-plugin.version>3.16.0</compiler-plugin.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <grpc.version>1.84.2</grpc.version>
         <protobuf.version>3.25.9</protobuf.version>
-        <jackson.version>2.18.11</jackson.version>
-        <lombok.version>1.18.42</lombok.version>
+        <jackson.version>2.22.3</jackson.version>
+        <lombok.version>1.18.48</lombok.version>
     </properties>
 
     <distributionManagement>
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>2.2.20</version>
+            <version>2.2.55</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -213,7 +213,7 @@
             <plugin>
                 <groupId>io.smallrye</groupId>
                 <artifactId>jandex-maven-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <id>make-index</id>
@@ -226,7 +226,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
