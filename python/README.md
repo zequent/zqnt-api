@@ -37,3 +37,7 @@ the code on every PR and fails if it differs.
 uv sync && uv run pytest -q && uv run ruff check .
 PYTHONDONTWRITEBYTECODE=1 uv run python scripts/gen_protos.py
 ```
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE); see [NOTICE](NOTICE).

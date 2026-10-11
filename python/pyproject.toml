@@ -4,6 +4,8 @@ version = "1.0.0"
 description = "Public Python API of the Zequent platform: protobuf/gRPC types and the telemetry mapping the Python SDKs build on"
 readme = "README.md"
 requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 dependencies = [
     "grpcio>=1.80.0",
     "protobuf>=6.31.1",
@@ -21,14 +23,14 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["zqnt_api"]
 
 [tool.hatch.build.targets.sdist]
-include = ["zqnt_api", "proto", "scripts", "tests", "README.md"]
+include = ["zqnt_api", "proto", "scripts", "tests", "README.md", "LICENSE", "NOTICE"]
 
 [tool.ruff]
 exclude = ["zqnt_api/generated/**"]
