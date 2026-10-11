@@ -7,7 +7,7 @@ and Client SDK ([`zqnt-client-sdk-python`](https://github.com/Zequent/zqnt-clien
 depend on this package only.
 
 ```bash
-uv add "zqnt-api @ git+https://github.com/Zequent/zqnt-api-python@vX.Y.Z"
+uv add "zqnt-api @ git+https://github.com/Zequent/zqnt-api-python@<branch or commit>"
 ```
 
 ## Modules
@@ -30,6 +30,14 @@ uv add "zqnt-api @ git+https://github.com/Zequent/zqnt-api-python@vX.Y.Z"
 `scripts/gen_protos.py` with the grpcio-tools and mypy-protobuf versions in `uv.lock`. Both are
 updated by an automated PR after every contract change; do not edit them by hand. CI regenerates
 the code on every PR and fails if it differs.
+
+## Versions
+
+The package starts at version 3.0.0, matching platform 3.0. Releases are `vX.Y.Z` tags, cut by
+the maintainer; until then there are only previews. Every PR build reports its preview version
+`3.0.0+pr<n>.<sha>` (the base version from `pyproject.toml`, the PR number and the commit);
+consumers pin a preview by git branch or commit in `[tool.uv.sources]` and move to the release
+tag once it exists.
 
 ## Development
 

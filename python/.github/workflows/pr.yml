@@ -32,6 +32,15 @@ jobs:
       - name: Tests
         run: uv run pytest -q
 
+      - name: Preview version
+        id: version
+        run: |
+          VERSION=$(grep "^version" pyproject.toml | cut -d'"' -f2)
+          PR_VERSION="${VERSION}+pr${{ github.event.number }}.$(git rev-parse --short HEAD)"
+          sed -i "s/^version = \".*\"/version = \"${PR_VERSION}\"/" pyproject.toml
+          echo "pr_version=${PR_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Preview version: ${PR_VERSION}" | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Build
         run: uv build
 
