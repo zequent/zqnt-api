@@ -232,7 +232,7 @@ jobs:
           BASE=$(mvn -B help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')
           VERSION="${BASE}-PR${{ github.event.pull_request.number }}-${SHA}-SNAPSHOT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "Java preview: \`com.zqnt:zqnt-api-java:${VERSION}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Java preview: \`com.zqnt:zqnt-api:${VERSION}\`" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ steps.version.outputs.version }} -DgenerateBackupPoms=false
@@ -254,7 +254,7 @@ jobs:
               '```xml',
               '<dependency>',
               '    <groupId>com.zqnt</groupId>',
-              '    <artifactId>zqnt-api-java</artifactId>',
+              '    <artifactId>zqnt-api</artifactId>',
               `    <version>${version}</version>`,
               '</dependency>',
               '```',
