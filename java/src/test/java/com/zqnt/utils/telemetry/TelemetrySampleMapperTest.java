@@ -38,7 +38,7 @@ class TelemetrySampleMapperTest {
                         .setSubAssetAtHome(true).setSubAssetCharging(true).setSubAssetPercentage(87f)
                         .setDebugModeOpen(false).setHasActiveManualControlSession(false)
                         .setCoverState(AssetCoverStateEnum.COVER_STATE_CLOSED)
-                        .setWorkingVoltage(24_000).setWorkingCurrent(1_250).setSupplyVoltage(230)
+                        .setWorkingVoltage(24_000).setWorkingCurrent(1_250).setSupplyVoltage(230_400)
                         .setPositionValid(true)
                         .setNetworkInformation(AssetTelemetryDetails.AssetNetworkInformation.newBuilder()
                                 .setType(NetworkTypeEnum.NETWORK_TYPE_4_G).setRate(512.5f)
@@ -149,6 +149,23 @@ class TelemetrySampleMapperTest {
         assertEquals(TelemetryValueType.TELEMETRY_VALUE_TYPE_NUMBER, described.get(DOCK_ENVIRONMENT_TEMPERATURE).getType());
         assertEquals("°C", described.get(DOCK_ENVIRONMENT_TEMPERATURE).getUnit());
         assertEquals(TelemetryValueType.TELEMETRY_VALUE_TYPE_BOOLEAN, described.get(DOCK_DRONE_CHARGING).getType());
+    }
+
+    @Test
+    void theSupplyVoltageIsVoltsInV3AndMillivoltsInV2() {
+        Map<String, Value> details = toSample(dock(), "").getDetails().getFieldsMap();
+        assertEquals(230.4, details.get(DOCK_SUPPLY_VOLTAGE).getNumberValue());
+        assertEquals(24_000, details.get(DOCK_WORKING_VOLTAGE).getNumberValue());
+        Map<String, String> units = telemetryFields().stream()
+                .collect(Collectors.toMap(TelemetryField::getKey, TelemetryField::getUnit));
+        assertEquals("V", units.get(DOCK_SUPPLY_VOLTAGE));
+        assertEquals("mV", units.get(DOCK_WORKING_VOLTAGE));
+
+        TelemetrySample sample = TelemetrySample.newBuilder()
+                .setAsset(AssetRef.newBuilder().setSn("DRONE-1"))
+                .setDetails(Struct.newBuilder().putFields(DOCK_SUPPLY_VOLTAGE, Value.newBuilder().setNumberValue(16.204).build()))
+                .build();
+        assertEquals(16_204, toTelemetry(sample).getAsset().getSupplyVoltage());
     }
 
     @Test
