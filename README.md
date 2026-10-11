@@ -15,7 +15,7 @@ zqnt-api/
     v3/              3.x contracts, packages `zqnt.<domain>.v3` under zqnt/<domain>/v3/
       COMMAND_CATALOG.md, command_catalog.json   the dotted command ids
   go/                Go module github.com/zequent/zqnt-api/go/v3   (gen/ is generated, committed)
-  java/              Maven artifact com.zqnt:zqnt-api-java          (generated at build time)
+  java/              Maven artifact com.zqnt:zqnt-api          (generated at build time)
   python/            Python package zqnt-api, module zqnt_api       (zqnt_api/generated is committed)
 ```
 
@@ -39,7 +39,7 @@ Import paths are below `github.com/zequent/zqnt-api/go/v3/`, e.g.
 ```xml
 <dependency>
     <groupId>com.zqnt</groupId>
-    <artifactId>zqnt-api-java</artifactId>
+    <artifactId>zqnt-api</artifactId>
     <version>${zqnt-api.version}</version>
 </dependency>
 ```
@@ -65,14 +65,14 @@ See [python/README.md](python/README.md).
 
 One version for everything in this repository, starting at 3.0.0 to match platform 3.0. A
 release is the tag `vX.Y.Z`, cut by the maintainer; the release workflow adds the Go module tag
-`go/vX.Y.Z`, publishes `com.zqnt:zqnt-api-java:X.Y.Z` and attaches the Python wheel to the GitHub
+`go/vX.Y.Z`, publishes `com.zqnt:zqnt-api:X.Y.Z` and attaches the Python wheel to the GitHub
 Release.
 
 Until a release exists there are previews. Every PR build
 
 - is tagged `pr-<n>-<sha>`: Go `go get github.com/zequent/zqnt-api/go/v3@pr-<n>-<sha>` (resolves
   to a pseudo-version), Python `tag = "pr-<n>-<sha>"` (or `rev = "<commit>"`);
-- publishes `com.zqnt:zqnt-api-java:3.0.0-PR<n>-<sha>-SNAPSHOT`.
+- publishes `com.zqnt:zqnt-api:3.0.0-PR<n>-<sha>-SNAPSHOT`.
 
 `<sha>` is the commit CI built (for a PR, GitHub's merge commit), shown in the job summary. Move to
 the release once it is out.
