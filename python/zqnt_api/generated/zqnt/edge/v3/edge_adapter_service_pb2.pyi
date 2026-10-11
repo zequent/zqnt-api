@@ -113,18 +113,28 @@ class BoundingBox(_message.Message):
     def __init__(self, x: _Optional[float] = ..., y: _Optional[float] = ..., width: _Optional[float] = ..., height: _Optional[float] = ...) -> None: ...
 
 class Detection(_message.Message):
-    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position")
+    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees")
     OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     OBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
     CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
     BOUNDING_BOX_FIELD_NUMBER: _ClassVar[int]
     POSITION_FIELD_NUMBER: _ClassVar[int]
+    RANGE_METERS_FIELD_NUMBER: _ClassVar[int]
+    BEARING_DEGREES_FIELD_NUMBER: _ClassVar[int]
+    ELEVATION_DEGREES_FIELD_NUMBER: _ClassVar[int]
+    SPEED_FIELD_NUMBER: _ClassVar[int]
+    HEADING_DEGREES_FIELD_NUMBER: _ClassVar[int]
     object_id: str
     object_type: str
     confidence: float
     bounding_box: BoundingBox
     position: _common_pb2.GeoPoint
-    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ...) -> None: ...
+    range_meters: float
+    bearing_degrees: float
+    elevation_degrees: float
+    speed: float
+    heading_degrees: float
+    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ...) -> None: ...
 
 class StreamDetectionsResponse(_message.Message):
     __slots__ = ("asset", "detections", "stream_url", "observed_at")
