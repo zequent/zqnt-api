@@ -105,7 +105,7 @@ class DecisionResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     decision_result: DecisionResultProto
-    def __init__(self, has_errors: bool = ..., tid: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., decision_result: _Optional[_Union[DecisionResultProto, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., tid: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., decision_result: _Optional[_Union[DecisionResultProto, _Mapping]] = ...) -> None: ...
 
 class SimulateAssetSelectionRequest(_message.Message):
     __slots__ = ("base", "organization_id", "object_type", "confidence", "latitude", "longitude", "theatre_id", "capability_id", "priority")
@@ -147,7 +147,7 @@ class AssetSelectionCandidateProto(_message.Message):
     distance_meters: float
     theatre_id: str
     reason: str
-    def __init__(self, sn: _Optional[str] = ..., asset_type: _Optional[str] = ..., battery_percent: _Optional[int] = ..., available: bool = ..., held_by_priority: _Optional[int] = ..., distance_meters: _Optional[float] = ..., theatre_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+    def __init__(self, sn: _Optional[str] = ..., asset_type: _Optional[str] = ..., battery_percent: _Optional[int] = ..., available: _Optional[bool] = ..., held_by_priority: _Optional[int] = ..., distance_meters: _Optional[float] = ..., theatre_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
 
 class AssetSelectionPolicyStepProto(_message.Message):
     __slots__ = ("policy_id", "priority", "strategy", "outcome", "note", "rejections", "level")
@@ -196,7 +196,7 @@ class SimulateAssetSelectionResponse(_message.Message):
     candidates: _containers.RepeatedCompositeFieldContainer[AssetSelectionCandidateProto]
     theatre_id: str
     status: str
-    def __init__(self, has_errors: bool = ..., tid: _Optional[str] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., selected_asset_sn: _Optional[str] = ..., answered_by_policy_id: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[AssetSelectionPolicyStepProto, _Mapping]]] = ..., candidates: _Optional[_Iterable[_Union[AssetSelectionCandidateProto, _Mapping]]] = ..., theatre_id: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., tid: _Optional[str] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., selected_asset_sn: _Optional[str] = ..., answered_by_policy_id: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[AssetSelectionPolicyStepProto, _Mapping]]] = ..., candidates: _Optional[_Iterable[_Union[AssetSelectionCandidateProto, _Mapping]]] = ..., theatre_id: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...
 
 class CheckFlightPathRequest(_message.Message):
     __slots__ = ("base", "organization_id", "command_id", "latitude", "longitude", "altitude")
@@ -224,7 +224,7 @@ class FlightPathZoneHitProto(_message.Message):
     zone_name: str
     enforcement: _mission_autonomy_types_pb2_1.ZoneEnforcementType
     destination_inside: bool
-    def __init__(self, zone_id: _Optional[str] = ..., zone_name: _Optional[str] = ..., enforcement: _Optional[_Union[_mission_autonomy_types_pb2_1.ZoneEnforcementType, str]] = ..., destination_inside: bool = ...) -> None: ...
+    def __init__(self, zone_id: _Optional[str] = ..., zone_name: _Optional[str] = ..., enforcement: _Optional[_Union[_mission_autonomy_types_pb2_1.ZoneEnforcementType, str]] = ..., destination_inside: _Optional[bool] = ...) -> None: ...
 
 class CheckFlightPathResponse(_message.Message):
     __slots__ = ("has_errors", "tid", "error", "verdict", "summary", "zones", "reroute", "position_known")
@@ -244,4 +244,4 @@ class CheckFlightPathResponse(_message.Message):
     zones: _containers.RepeatedCompositeFieldContainer[FlightPathZoneHitProto]
     reroute: _containers.RepeatedCompositeFieldContainer[_mission_autonomy_dto_pb2_1.GeoPointProtoDTO]
     position_known: bool
-    def __init__(self, has_errors: bool = ..., tid: _Optional[str] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., verdict: _Optional[_Union[FlightPathVerdict, str]] = ..., summary: _Optional[str] = ..., zones: _Optional[_Iterable[_Union[FlightPathZoneHitProto, _Mapping]]] = ..., reroute: _Optional[_Iterable[_Union[_mission_autonomy_dto_pb2_1.GeoPointProtoDTO, _Mapping]]] = ..., position_known: bool = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., tid: _Optional[str] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., verdict: _Optional[_Union[FlightPathVerdict, str]] = ..., summary: _Optional[str] = ..., zones: _Optional[_Iterable[_Union[FlightPathZoneHitProto, _Mapping]]] = ..., reroute: _Optional[_Iterable[_Union[_mission_autonomy_dto_pb2_1.GeoPointProtoDTO, _Mapping]]] = ..., position_known: _Optional[bool] = ...) -> None: ...

@@ -11,7 +11,7 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from . import media_pb2 as media__pb2
 from . import mission_autonomy_contracts_pb2 as mission__autonomy__contracts__pb2
 
-GRPC_GENERATED_VERSION = '1.80.0'
+GRPC_GENERATED_VERSION = '1.84.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -31,7 +31,7 @@ if _version_not_supported:
     )
 
 
-class ConnectorServiceStub(object):
+class ConnectorServiceStub:
     """ConnectorService owns persisted asset metadata, workflow persistence,
     telemetry/detection storage, policies, and runtime technical configuration.
     """
@@ -574,7 +574,7 @@ class ConnectorServiceStub(object):
                 _registered_method=True)
 
 
-class ConnectorServiceServicer(object):
+class ConnectorServiceServicer:
     """ConnectorService owns persisted asset metadata, workflow persistence,
     telemetry/detection storage, policies, and runtime technical configuration.
     """
@@ -1881,7 +1881,7 @@ def add_ConnectorServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class ConnectorService(object):
+class ConnectorService:
     """ConnectorService owns persisted asset metadata, workflow persistence,
     telemetry/detection storage, policies, and runtime technical configuration.
     """

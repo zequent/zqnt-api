@@ -40,7 +40,7 @@ class ScopedExecutionConfigProtoDTO(_message.Message):
     active: bool
     revision: str
     description: str
-    def __init__(self, id: _Optional[str] = ..., key: _Optional[str] = ..., value: _Optional[_Union[_struct_pb2.Value, _Mapping]] = ..., scope: _Optional[_Union[_capability_execution_types_pb2.ExecutionConfigScopeTypeProto, str]] = ..., scope_target: _Optional[str] = ..., active: bool = ..., revision: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., key: _Optional[str] = ..., value: _Optional[_Union[_struct_pb2.Value, _Mapping]] = ..., scope: _Optional[_Union[_capability_execution_types_pb2.ExecutionConfigScopeTypeProto, str]] = ..., scope_target: _Optional[str] = ..., active: _Optional[bool] = ..., revision: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
 
 class ExecutionConfigContextProto(_message.Message):
     __slots__ = ("skill_id", "organization_id", "theatre_id", "asset_id", "asset_sn", "execution_overrides")
@@ -93,7 +93,7 @@ class ExecutionConditionGroupProto(_message.Message):
     operator: _capability_execution_types_pb2.ExecutionConditionGroupOperatorProto
     conditions: _containers.RepeatedCompositeFieldContainer[ExecutionConditionProto]
     negate: bool
-    def __init__(self, operator: _Optional[_Union[_capability_execution_types_pb2.ExecutionConditionGroupOperatorProto, str]] = ..., conditions: _Optional[_Iterable[_Union[ExecutionConditionProto, _Mapping]]] = ..., negate: bool = ...) -> None: ...
+    def __init__(self, operator: _Optional[_Union[_capability_execution_types_pb2.ExecutionConditionGroupOperatorProto, str]] = ..., conditions: _Optional[_Iterable[_Union[ExecutionConditionProto, _Mapping]]] = ..., negate: _Optional[bool] = ...) -> None: ...
 
 class ExecutionConditionProto(_message.Message):
     __slots__ = ("comparison", "group", "constant", "result_when_missing")
@@ -105,7 +105,7 @@ class ExecutionConditionProto(_message.Message):
     group: ExecutionConditionGroupProto
     constant: bool
     result_when_missing: bool
-    def __init__(self, comparison: _Optional[_Union[ExecutionComparisonProto, _Mapping]] = ..., group: _Optional[_Union[ExecutionConditionGroupProto, _Mapping]] = ..., constant: bool = ..., result_when_missing: bool = ...) -> None: ...
+    def __init__(self, comparison: _Optional[_Union[ExecutionComparisonProto, _Mapping]] = ..., group: _Optional[_Union[ExecutionConditionGroupProto, _Mapping]] = ..., constant: _Optional[bool] = ..., result_when_missing: _Optional[bool] = ...) -> None: ...
 
 class CommandNodeConfigProto(_message.Message):
     __slots__ = ("command_id", "required_parameters", "parameter_defaults", "parameter_mapping", "command_schema_version")
@@ -131,7 +131,7 @@ class SkillNodeConfigProto(_message.Message):
     parameter_mapping: _struct_pb2.Struct
     skill_version: str
     follow_latest: bool
-    def __init__(self, skill_id: _Optional[str] = ..., parameter_mapping: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., skill_version: _Optional[str] = ..., follow_latest: bool = ...) -> None: ...
+    def __init__(self, skill_id: _Optional[str] = ..., parameter_mapping: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., skill_version: _Optional[str] = ..., follow_latest: _Optional[bool] = ...) -> None: ...
 
 class GatewayNodeConfigProto(_message.Message):
     __slots__ = ("join_mode", "output_mapping")
@@ -217,7 +217,7 @@ class ExecutionNodeProtoDTO(_message.Message):
     failure_strategy: _capability_execution_types_pb2.ExecutionFailureStrategyProto
     retry_policy: _mission_autonomy_dto_pb2.RetryPolicyProtoDTO
     enabled: bool
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., type: _Optional[_Union[_capability_execution_types_pb2.ExecutionNodeTypeProto, str]] = ..., command: _Optional[_Union[CommandNodeConfigProto, _Mapping]] = ..., skill: _Optional[_Union[SkillNodeConfigProto, _Mapping]] = ..., condition: _Optional[_Union[ExecutionConditionProto, _Mapping]] = ..., gateway: _Optional[_Union[GatewayNodeConfigProto, _Mapping]] = ..., wait: _Optional[_Union[WaitNodeConfigProto, _Mapping]] = ..., event_wait: _Optional[_Union[EventWaitNodeConfigProto, _Mapping]] = ..., human_approval: _Optional[_Union[HumanApprovalNodeConfigProto, _Mapping]] = ..., ai: _Optional[_Union[AiNodeConfigProto, _Mapping]] = ..., timeout_seconds: _Optional[int] = ..., failure_strategy: _Optional[_Union[_capability_execution_types_pb2.ExecutionFailureStrategyProto, str]] = ..., retry_policy: _Optional[_Union[_mission_autonomy_dto_pb2.RetryPolicyProtoDTO, _Mapping]] = ..., enabled: bool = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., type: _Optional[_Union[_capability_execution_types_pb2.ExecutionNodeTypeProto, str]] = ..., command: _Optional[_Union[CommandNodeConfigProto, _Mapping]] = ..., skill: _Optional[_Union[SkillNodeConfigProto, _Mapping]] = ..., condition: _Optional[_Union[ExecutionConditionProto, _Mapping]] = ..., gateway: _Optional[_Union[GatewayNodeConfigProto, _Mapping]] = ..., wait: _Optional[_Union[WaitNodeConfigProto, _Mapping]] = ..., event_wait: _Optional[_Union[EventWaitNodeConfigProto, _Mapping]] = ..., human_approval: _Optional[_Union[HumanApprovalNodeConfigProto, _Mapping]] = ..., ai: _Optional[_Union[AiNodeConfigProto, _Mapping]] = ..., timeout_seconds: _Optional[int] = ..., failure_strategy: _Optional[_Union[_capability_execution_types_pb2.ExecutionFailureStrategyProto, str]] = ..., retry_policy: _Optional[_Union[_mission_autonomy_dto_pb2.RetryPolicyProtoDTO, _Mapping]] = ..., enabled: _Optional[bool] = ...) -> None: ...
 
 class ExecutionEdgeProtoDTO(_message.Message):
     __slots__ = ("id", "source_node_id", "target_node_id", "type", "condition", "priority", "label")
@@ -251,7 +251,7 @@ class GraphNodeLayoutProtoDTO(_message.Message):
     color: str
     collapsed: bool
     editor_metadata: _struct_pb2.Struct
-    def __init__(self, node_id: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., color: _Optional[str] = ..., collapsed: bool = ..., editor_metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
+    def __init__(self, node_id: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., color: _Optional[str] = ..., collapsed: _Optional[bool] = ..., editor_metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
 
 class ExecutionGraphLayoutProtoDTO(_message.Message):
     __slots__ = ("nodes", "zoom", "viewport_x", "viewport_y")
@@ -303,7 +303,7 @@ class SkillProtoDTO(_message.Message):
     output_mapping: _struct_pb2.Struct
     source_application_id: str
     source_version: str
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., graph: _Optional[_Union[ExecutionGraphProtoDTO, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: bool = ..., required_asset_capabilities: _Optional[_Iterable[str]] = ..., output_mapping: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., source_application_id: _Optional[str] = ..., source_version: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., graph: _Optional[_Union[ExecutionGraphProtoDTO, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: _Optional[bool] = ..., required_asset_capabilities: _Optional[_Iterable[str]] = ..., output_mapping: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., source_application_id: _Optional[str] = ..., source_version: _Optional[str] = ...) -> None: ...
 
 class ApplicationChangeProtoDTO(_message.Message):
     __slots__ = ("at", "author", "note", "automatic")
@@ -315,7 +315,7 @@ class ApplicationChangeProtoDTO(_message.Message):
     author: str
     note: str
     automatic: bool
-    def __init__(self, at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., author: _Optional[str] = ..., note: _Optional[str] = ..., automatic: bool = ...) -> None: ...
+    def __init__(self, at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., author: _Optional[str] = ..., note: _Optional[str] = ..., automatic: _Optional[bool] = ...) -> None: ...
 
 class ApplicationProtoDTO(_message.Message):
     __slots__ = ("id", "version", "name", "description", "skills", "scopes", "default_config", "enabled", "revision", "created_at", "modified_at", "organization_id", "changelog", "change_note")
@@ -347,7 +347,7 @@ class ApplicationProtoDTO(_message.Message):
     organization_id: str
     changelog: _containers.RepeatedCompositeFieldContainer[ApplicationChangeProtoDTO]
     change_note: str
-    def __init__(self, id: _Optional[str] = ..., version: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., skills: _Optional[_Iterable[_Union[SkillProtoDTO, _Mapping]]] = ..., scopes: _Optional[_Iterable[_Union[ApplicationScopeProtoDTO, _Mapping]]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: bool = ..., revision: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., organization_id: _Optional[str] = ..., changelog: _Optional[_Iterable[_Union[ApplicationChangeProtoDTO, _Mapping]]] = ..., change_note: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., version: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., skills: _Optional[_Iterable[_Union[SkillProtoDTO, _Mapping]]] = ..., scopes: _Optional[_Iterable[_Union[ApplicationScopeProtoDTO, _Mapping]]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: _Optional[bool] = ..., revision: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., organization_id: _Optional[str] = ..., changelog: _Optional[_Iterable[_Union[ApplicationChangeProtoDTO, _Mapping]]] = ..., change_note: _Optional[str] = ...) -> None: ...
 
 class ApplicationPauseProtoDTO(_message.Message):
     __slots__ = ("application_id", "skill_id", "paused_by", "paused_at", "reason", "organization_id")
@@ -435,7 +435,7 @@ class SkillExecutionOptionsProto(_message.Message):
     nfz_policy_profile: str
     config_overrides: _struct_pb2.Struct
     no_fly_zone_override: bool
-    def __init__(self, dry_run: bool = ..., validate_only: bool = ..., auto_start: bool = ..., priority: _Optional[int] = ..., timeout_seconds: _Optional[int] = ..., failure_strategy: _Optional[_Union[_capability_execution_types_pb2.ExecutionFailureStrategyProto, str]] = ..., retry_policy: _Optional[_Union[_mission_autonomy_dto_pb2.RetryPolicyProtoDTO, _Mapping]] = ..., preflight_profile: _Optional[str] = ..., nfz_policy_profile: _Optional[str] = ..., config_overrides: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., no_fly_zone_override: bool = ...) -> None: ...
+    def __init__(self, dry_run: _Optional[bool] = ..., validate_only: _Optional[bool] = ..., auto_start: _Optional[bool] = ..., priority: _Optional[int] = ..., timeout_seconds: _Optional[int] = ..., failure_strategy: _Optional[_Union[_capability_execution_types_pb2.ExecutionFailureStrategyProto, str]] = ..., retry_policy: _Optional[_Union[_mission_autonomy_dto_pb2.RetryPolicyProtoDTO, _Mapping]] = ..., preflight_profile: _Optional[str] = ..., nfz_policy_profile: _Optional[str] = ..., config_overrides: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., no_fly_zone_override: _Optional[bool] = ...) -> None: ...
 
 class ExecutionNodeStateProtoDTO(_message.Message):
     __slots__ = ("id", "node_id", "command_id", "target", "parameters", "status", "attempt", "progress", "external_execution_id", "started_at", "completed_at", "error", "output", "dispatched_asset_sn", "dispatch_reason", "warnings")

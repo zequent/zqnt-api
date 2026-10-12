@@ -7,7 +7,7 @@ from . import capability_execution_contracts_pb2 as capability__execution__contr
 from . import mission_autonomy_contracts_pb2 as mission__autonomy__contracts__pb2
 from . import mission_autonomy_pb2 as mission__autonomy__pb2
 
-GRPC_GENERATED_VERSION = '1.80.0'
+GRPC_GENERATED_VERSION = '1.84.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -27,7 +27,7 @@ if _version_not_supported:
     )
 
 
-class MissionAutonomyServiceStub(object):
+class MissionAutonomyServiceStub:
     """MissionAutonomyService manages applications (skill packages), skill executions, schedules and decisions.
     """
 
@@ -169,7 +169,7 @@ class MissionAutonomyServiceStub(object):
                 _registered_method=True)
 
 
-class MissionAutonomyServiceServicer(object):
+class MissionAutonomyServiceServicer:
     """MissionAutonomyService manages applications (skill packages), skill executions, schedules and decisions.
     """
 
@@ -480,7 +480,7 @@ def add_MissionAutonomyServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class MissionAutonomyService(object):
+class MissionAutonomyService:
     """MissionAutonomyService manages applications (skill packages), skill executions, schedules and decisions.
     """
 

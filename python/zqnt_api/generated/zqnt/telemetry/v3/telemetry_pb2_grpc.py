@@ -5,7 +5,7 @@ import warnings
 
 from zqnt_api.generated.zqnt.telemetry.v3 import telemetry_pb2 as zqnt_dot_telemetry_dot_v3_dot_telemetry__pb2
 
-GRPC_GENERATED_VERSION = '1.80.0'
+GRPC_GENERATED_VERSION = '1.84.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -25,7 +25,7 @@ if _version_not_supported:
     )
 
 
-class TelemetryServiceStub(object):
+class TelemetryServiceStub:
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -51,7 +51,7 @@ class TelemetryServiceStub(object):
                 _registered_method=True)
 
 
-class TelemetryServiceServicer(object):
+class TelemetryServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def WatchTelemetry(self, request, context):
@@ -98,7 +98,7 @@ def add_TelemetryServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class TelemetryService(object):
+class TelemetryService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -183,7 +183,7 @@ class TelemetryService(object):
             _registered_method=True)
 
 
-class TelemetryIngestServiceStub(object):
+class TelemetryIngestServiceStub:
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -209,7 +209,7 @@ class TelemetryIngestServiceStub(object):
                 _registered_method=True)
 
 
-class TelemetryIngestServiceServicer(object):
+class TelemetryIngestServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def PublishTelemetry(self, request_iterator, context):
@@ -256,7 +256,7 @@ def add_TelemetryIngestServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class TelemetryIngestService(object):
+class TelemetryIngestService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
