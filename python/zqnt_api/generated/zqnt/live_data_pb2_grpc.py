@@ -8,7 +8,7 @@ from . import device_control_contracts_pb2 as device__control__contracts__pb2
 from . import events_pb2 as events__pb2
 from . import live_data_types_pb2 as live__data__types__pb2
 
-GRPC_GENERATED_VERSION = '1.80.0'
+GRPC_GENERATED_VERSION = '1.84.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -28,7 +28,7 @@ if _version_not_supported:
     )
 
 
-class LiveDataServiceStub(object):
+class LiveDataServiceStub:
     """LiveDataService provides RPC methods for telemetry, detections, notifications,
     and live stream management. Payload models are defined in live-data-types.proto.
     """
@@ -106,7 +106,7 @@ class LiveDataServiceStub(object):
                 _registered_method=True)
 
 
-class LiveDataServiceServicer(object):
+class LiveDataServiceServicer:
     """LiveDataService provides RPC methods for telemetry, detections, notifications,
     and live stream management. Payload models are defined in live-data-types.proto.
     """
@@ -265,7 +265,7 @@ def add_LiveDataServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class LiveDataService(object):
+class LiveDataService:
     """LiveDataService provides RPC methods for telemetry, detections, notifications,
     and live stream management. Payload models are defined in live-data-types.proto.
     """

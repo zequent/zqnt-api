@@ -120,7 +120,7 @@ class CommandSafety(_message.Message):
     undo_command_id: str
     preconditions: _containers.RepeatedScalarFieldContainer[str]
     effects: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, risk: _Optional[_Union[CommandRisk, str]] = ..., reversible: bool = ..., undo_command_id: _Optional[str] = ..., preconditions: _Optional[_Iterable[str]] = ..., effects: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, risk: _Optional[_Union[CommandRisk, str]] = ..., reversible: _Optional[bool] = ..., undo_command_id: _Optional[str] = ..., preconditions: _Optional[_Iterable[str]] = ..., effects: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class CapabilityErrorSpec(_message.Message):
     __slots__ = ("code", "description")

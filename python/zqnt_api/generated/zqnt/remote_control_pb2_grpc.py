@@ -5,7 +5,7 @@ import warnings
 
 from . import device_control_contracts_pb2 as device__control__contracts__pb2
 
-GRPC_GENERATED_VERSION = '1.80.0'
+GRPC_GENERATED_VERSION = '1.84.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -25,7 +25,7 @@ if _version_not_supported:
     )
 
 
-class RemoteControlServiceStub(object):
+class RemoteControlServiceStub:
     """RemoteControlService is the client-facing command gateway.
     It uses the same command contracts as EdgeAdapterService so SDKs and adapters
     can share validation, mapping, tests, and documentation.
@@ -159,7 +159,7 @@ class RemoteControlServiceStub(object):
                 _registered_method=True)
 
 
-class RemoteControlServiceServicer(object):
+class RemoteControlServiceServicer:
     """RemoteControlService is the client-facing command gateway.
     It uses the same command contracts as EdgeAdapterService so SDKs and adapters
     can share validation, mapping, tests, and documentation.
@@ -452,7 +452,7 @@ def add_RemoteControlServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class RemoteControlService(object):
+class RemoteControlService:
     """RemoteControlService is the client-facing command gateway.
     It uses the same command contracts as EdgeAdapterService so SDKs and adapters
     can share validation, mapping, tests, and documentation.
