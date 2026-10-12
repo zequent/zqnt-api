@@ -266,8 +266,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "grpcio", specifier = ">=1.80.0" },
-    { name = "protobuf", specifier = ">=6.31.1" },
+    { name = "grpcio", specifier = ">=1.84.0" },
+    { name = "protobuf", specifier = ">=7.35.1" },
 ]
 
 [package.metadata.requires-dev]

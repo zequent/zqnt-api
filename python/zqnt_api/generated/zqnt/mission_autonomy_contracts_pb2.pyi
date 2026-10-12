@@ -61,7 +61,7 @@ class UploadMissionNfzZonesRequest(_message.Message):
     mission_id: str
     zones: _containers.RepeatedCompositeFieldContainer[_mission_autonomy_dto_pb2.MissionZoneProtoDTO]
     replace_existing: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., mission_id: _Optional[str] = ..., zones: _Optional[_Iterable[_Union[_mission_autonomy_dto_pb2.MissionZoneProtoDTO, _Mapping]]] = ..., replace_existing: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., mission_id: _Optional[str] = ..., zones: _Optional[_Iterable[_Union[_mission_autonomy_dto_pb2.MissionZoneProtoDTO, _Mapping]]] = ..., replace_existing: _Optional[bool] = ...) -> None: ...
 
 class GetTaskRequest(_message.Message):
     __slots__ = ("base", "task_id")
@@ -217,7 +217,7 @@ class MissionResponse(_message.Message):
     error: _base_pb2.GlobalErrorMessage
     progress: _base_pb2.CommandProgress
     mission: _mission_autonomy_dto_pb2.MissionProtoDTO
-    def __init__(self, has_errors: bool = ..., tid: _Optional[str] = ..., mission_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ..., mission: _Optional[_Union[_mission_autonomy_dto_pb2.MissionProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., tid: _Optional[str] = ..., mission_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ..., mission: _Optional[_Union[_mission_autonomy_dto_pb2.MissionProtoDTO, _Mapping]] = ...) -> None: ...
 
 class TaskResponse(_message.Message):
     __slots__ = ("has_errors", "tid", "task_id", "timestamp", "empty", "error", "progress", "task")
@@ -237,7 +237,7 @@ class TaskResponse(_message.Message):
     error: _base_pb2.GlobalErrorMessage
     progress: _base_pb2.CommandProgress
     task: _mission_autonomy_dto_pb2.TaskProtoDTO
-    def __init__(self, has_errors: bool = ..., tid: _Optional[str] = ..., task_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ..., task: _Optional[_Union[_mission_autonomy_dto_pb2.TaskProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., tid: _Optional[str] = ..., task_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ..., task: _Optional[_Union[_mission_autonomy_dto_pb2.TaskProtoDTO, _Mapping]] = ...) -> None: ...
 
 class SchedulerResponse(_message.Message):
     __slots__ = ("has_errors", "tid", "scheduler_id", "timestamp", "empty", "error", "progress", "scheduler", "schedulers")
@@ -259,7 +259,7 @@ class SchedulerResponse(_message.Message):
     progress: _base_pb2.CommandProgress
     scheduler: _mission_autonomy_dto_pb2.SchedulerProtoDTO
     schedulers: _mission_autonomy_dto_pb2.SchedulerProtoDTOList
-    def __init__(self, has_errors: bool = ..., tid: _Optional[str] = ..., scheduler_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ..., scheduler: _Optional[_Union[_mission_autonomy_dto_pb2.SchedulerProtoDTO, _Mapping]] = ..., schedulers: _Optional[_Union[_mission_autonomy_dto_pb2.SchedulerProtoDTOList, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., tid: _Optional[str] = ..., scheduler_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ..., scheduler: _Optional[_Union[_mission_autonomy_dto_pb2.SchedulerProtoDTO, _Mapping]] = ..., schedulers: _Optional[_Union[_mission_autonomy_dto_pb2.SchedulerProtoDTOList, _Mapping]] = ...) -> None: ...
 
 class WaypointsResponse(_message.Message):
     __slots__ = ("has_errors", "tid", "task_id", "timestamp", "empty", "error", "waypoints")
@@ -277,4 +277,4 @@ class WaypointsResponse(_message.Message):
     empty: _empty_pb2.Empty
     error: _base_pb2.GlobalErrorMessage
     waypoints: WaypointsList
-    def __init__(self, has_errors: bool = ..., tid: _Optional[str] = ..., task_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., waypoints: _Optional[_Union[WaypointsList, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., tid: _Optional[str] = ..., task_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., waypoints: _Optional[_Union[WaypointsList, _Mapping]] = ...) -> None: ...

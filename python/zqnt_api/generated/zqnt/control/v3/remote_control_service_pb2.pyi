@@ -35,7 +35,7 @@ class ExecuteCommandRequest(_message.Message):
     command: _command_pb2.Command
     reason: str
     no_fly_zone_override: bool
-    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ..., command: _Optional[_Union[_command_pb2.Command, _Mapping]] = ..., reason: _Optional[str] = ..., no_fly_zone_override: bool = ...) -> None: ...
+    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ..., command: _Optional[_Union[_command_pb2.Command, _Mapping]] = ..., reason: _Optional[str] = ..., no_fly_zone_override: _Optional[bool] = ...) -> None: ...
 
 class ExecuteCommandResponse(_message.Message):
     __slots__ = ("result",)

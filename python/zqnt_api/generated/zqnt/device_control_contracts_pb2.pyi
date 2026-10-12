@@ -98,7 +98,7 @@ class CommandResponse(_message.Message):
     error: _base_pb2.GlobalErrorMessage
     progress: _base_pb2.CommandProgress
     live_stream_start_response: LiveStreamStartResponse
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ..., live_stream_start_response: _Optional[_Union[LiveStreamStartResponse, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ..., live_stream_start_response: _Optional[_Union[LiveStreamStartResponse, _Mapping]] = ...) -> None: ...
 
 class CustomCommandRequest(_message.Message):
     __slots__ = ("base", "command_id", "params", "target")
@@ -128,7 +128,7 @@ class CustomCommandResponse(_message.Message):
     empty: _empty_pb2.Empty
     error: _base_pb2.GlobalErrorMessage
     progress: _base_pb2.CommandProgress
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., command_id: _Optional[str] = ..., result: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., command_id: _Optional[str] = ..., result: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., progress: _Optional[_Union[_base_pb2.CommandProgress, _Mapping]] = ...) -> None: ...
 
 class CapabilityTarget(_message.Message):
     __slots__ = ("type", "target_ref")
@@ -295,7 +295,7 @@ class ReportAssetRuntimeResponse(_message.Message):
     empty: _empty_pb2.Empty
     error: _base_pb2.GlobalErrorMessage
     accepted_revision: str
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., accepted_revision: _Optional[str] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., accepted_revision: _Optional[str] = ...) -> None: ...
 
 class AssetCapabilitiesResponse(_message.Message):
     __slots__ = ("capabilities", "error")
@@ -343,7 +343,7 @@ class AssetRuntimeResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     runtime: AssetRuntimeSnapshot
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., runtime: _Optional[_Union[AssetRuntimeSnapshot, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., runtime: _Optional[_Union[AssetRuntimeSnapshot, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class GeoCoordinate(_message.Message):
     __slots__ = ("latitude", "longitude", "altitude")
@@ -399,7 +399,7 @@ class LiveStreamState(_message.Message):
     is_live: bool
     started_at: _timestamp_pb2.Timestamp
     asset_type: _asset_pb2.AssetTypeEnum
-    def __init__(self, video_id: _Optional[str] = ..., stream_url: _Optional[str] = ..., is_live: bool = ..., started_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., asset_type: _Optional[_Union[_asset_pb2.AssetTypeEnum, str]] = ...) -> None: ...
+    def __init__(self, video_id: _Optional[str] = ..., stream_url: _Optional[str] = ..., is_live: _Optional[bool] = ..., started_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., asset_type: _Optional[_Union[_asset_pb2.AssetTypeEnum, str]] = ...) -> None: ...
 
 class LiveStreamStartResponse(_message.Message):
     __slots__ = ("stream_url", "video_id")
@@ -439,7 +439,7 @@ class ManualControlState(_message.Message):
     client_id: str
     user_id: str
     session_id: str
-    def __init__(self, state: _Optional[_Union[_asset_pb2.ManualControlStateEnum, str]] = ..., sn: _Optional[str] = ..., asset_id: _Optional[str] = ..., active: bool = ..., client_id: _Optional[str] = ..., user_id: _Optional[str] = ..., session_id: _Optional[str] = ...) -> None: ...
+    def __init__(self, state: _Optional[_Union[_asset_pb2.ManualControlStateEnum, str]] = ..., sn: _Optional[str] = ..., asset_id: _Optional[str] = ..., active: _Optional[bool] = ..., client_id: _Optional[str] = ..., user_id: _Optional[str] = ..., session_id: _Optional[str] = ...) -> None: ...
 
 class EmptyCommandRequest(_message.Message):
     __slots__ = ("base",)
@@ -455,7 +455,7 @@ class CoordinateCommandRequest(_message.Message):
     base: _base_pb2.RequestBase
     coordinate: GeoCoordinate
     no_fly_zone_override: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., coordinate: _Optional[_Union[GeoCoordinate, _Mapping]] = ..., no_fly_zone_override: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., coordinate: _Optional[_Union[GeoCoordinate, _Mapping]] = ..., no_fly_zone_override: _Optional[bool] = ...) -> None: ...
 
 class LookAtCommandRequest(_message.Message):
     __slots__ = ("base", "coordinate", "payload_index", "locked")
@@ -467,7 +467,7 @@ class LookAtCommandRequest(_message.Message):
     coordinate: GeoCoordinate
     payload_index: str
     locked: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., coordinate: _Optional[_Union[GeoCoordinate, _Mapping]] = ..., payload_index: _Optional[str] = ..., locked: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., coordinate: _Optional[_Union[GeoCoordinate, _Mapping]] = ..., payload_index: _Optional[str] = ..., locked: _Optional[bool] = ...) -> None: ...
 
 class ReturnToHomeCommandRequest(_message.Message):
     __slots__ = ("base", "request")
@@ -499,7 +499,7 @@ class ToggleCommandRequest(_message.Message):
     ENABLED_FIELD_NUMBER: _ClassVar[int]
     base: _base_pb2.RequestBase
     enabled: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., enabled: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., enabled: _Optional[bool] = ...) -> None: ...
 
 class SpotlightControlRequest(_message.Message):
     __slots__ = ("base", "light_switch")
@@ -507,7 +507,7 @@ class SpotlightControlRequest(_message.Message):
     LIGHT_SWITCH_FIELD_NUMBER: _ClassVar[int]
     base: _base_pb2.RequestBase
     light_switch: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., light_switch: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., light_switch: _Optional[bool] = ...) -> None: ...
 
 class TaskCommandRequest(_message.Message):
     __slots__ = ("base", "task_id")
@@ -523,7 +523,7 @@ class CloseCoverCommandRequest(_message.Message):
     FORCE_FIELD_NUMBER: _ClassVar[int]
     base: _base_pb2.RequestBase
     force: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., force: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., force: _Optional[bool] = ...) -> None: ...
 
 class BootSubAssetCommandRequest(_message.Message):
     __slots__ = ("base", "boot_up")
@@ -531,7 +531,7 @@ class BootSubAssetCommandRequest(_message.Message):
     BOOT_UP_FIELD_NUMBER: _ClassVar[int]
     base: _base_pb2.RequestBase
     boot_up: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., boot_up: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., boot_up: _Optional[bool] = ...) -> None: ...
 
 class ChangeAcModeCommandRequest(_message.Message):
     __slots__ = ("base", "mode")

@@ -99,7 +99,7 @@ class AssetStatusEvent(_message.Message):
     asset_id: str
     online: bool
     message: str
-    def __init__(self, sn: _Optional[str] = ..., asset_id: _Optional[str] = ..., online: bool = ..., message: _Optional[str] = ...) -> None: ...
+    def __init__(self, sn: _Optional[str] = ..., asset_id: _Optional[str] = ..., online: _Optional[bool] = ..., message: _Optional[str] = ...) -> None: ...
 
 class CommandExecutionEvent(_message.Message):
     __slots__ = ("external_execution_id", "command_id", "status", "progress", "message", "output", "error", "occurred_at", "asset_sn")
@@ -163,7 +163,7 @@ class LiveStreamCapabilityEvent(_message.Message):
     available: bool
     video_id: str
     gateway_sn: str
-    def __init__(self, sn: _Optional[str] = ..., asset_id: _Optional[str] = ..., available: bool = ..., video_id: _Optional[str] = ..., gateway_sn: _Optional[str] = ...) -> None: ...
+    def __init__(self, sn: _Optional[str] = ..., asset_id: _Optional[str] = ..., available: _Optional[bool] = ..., video_id: _Optional[str] = ..., gateway_sn: _Optional[str] = ...) -> None: ...
 
 class NotificationEvent(_message.Message):
     __slots__ = ("asset_status", "mission", "error", "asset_runtime", "skill_execution", "command_execution", "live_stream_capability")
@@ -223,4 +223,4 @@ class NotificationResponse(_message.Message):
     stream_heartbeat: NotificationStreamHeartbeat
     source_status: NotificationSourceStatus
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., has_errors: bool = ..., sn: _Optional[str] = ..., asset_id: _Optional[str] = ..., event: _Optional[_Union[NotificationEvent, _Mapping]] = ..., stream_heartbeat: _Optional[_Union[NotificationStreamHeartbeat, _Mapping]] = ..., source_status: _Optional[_Union[NotificationSourceStatus, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., has_errors: _Optional[bool] = ..., sn: _Optional[str] = ..., asset_id: _Optional[str] = ..., event: _Optional[_Union[NotificationEvent, _Mapping]] = ..., stream_heartbeat: _Optional[_Union[NotificationStreamHeartbeat, _Mapping]] = ..., source_status: _Optional[_Union[NotificationSourceStatus, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
