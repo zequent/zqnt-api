@@ -5,7 +5,7 @@ import warnings
 
 from zqnt_api.generated.zqnt.control.v3 import remote_control_service_pb2 as zqnt_dot_control_dot_v3_dot_remote__control__service__pb2
 
-GRPC_GENERATED_VERSION = '1.80.0'
+GRPC_GENERATED_VERSION = '1.84.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -25,7 +25,7 @@ if _version_not_supported:
     )
 
 
-class RemoteControlServiceStub(object):
+class RemoteControlServiceStub:
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -61,7 +61,7 @@ class RemoteControlServiceStub(object):
                 _registered_method=True)
 
 
-class RemoteControlServiceServicer(object):
+class RemoteControlServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def GetCapabilities(self, request, context):
@@ -132,7 +132,7 @@ def add_RemoteControlServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class RemoteControlService(object):
+class RemoteControlService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod

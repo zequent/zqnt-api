@@ -43,7 +43,7 @@ class ListApplicationsRequest(_message.Message):
     enabled_only: bool
     page_size: int
     page_token: str
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., scope: _Optional[_Union[_capability_execution_dto_pb2.ApplicationScopeProtoDTO, _Mapping]] = ..., enabled_only: bool = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., scope: _Optional[_Union[_capability_execution_dto_pb2.ApplicationScopeProtoDTO, _Mapping]] = ..., enabled_only: _Optional[bool] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ...) -> None: ...
 
 class DeleteApplicationRequest(_message.Message):
     __slots__ = ("base", "application_id", "version", "expected_revision")
@@ -171,7 +171,7 @@ class SignalSkillExecutionRequest(_message.Message):
     data: _struct_pb2.Struct
     approved: bool
     idempotency_key: str
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., execution_id: _Optional[str] = ..., node_id: _Optional[str] = ..., event_type: _Optional[str] = ..., data: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., approved: bool = ..., idempotency_key: _Optional[str] = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., execution_id: _Optional[str] = ..., node_id: _Optional[str] = ..., event_type: _Optional[str] = ..., data: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., approved: _Optional[bool] = ..., idempotency_key: _Optional[str] = ...) -> None: ...
 
 class ResolveExecutionConfigRequest(_message.Message):
     __slots__ = ("base", "context", "keys")
@@ -193,7 +193,7 @@ class ResolveExecutionConfigResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     config: _capability_execution_dto_pb2.ResolvedExecutionConfigProtoDTO
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., config: _Optional[_Union[_capability_execution_dto_pb2.ResolvedExecutionConfigProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., config: _Optional[_Union[_capability_execution_dto_pb2.ResolvedExecutionConfigProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class ApplicationResponse(_message.Message):
     __slots__ = ("has_errors", "meta", "application", "error", "empty", "warnings")
@@ -209,7 +209,7 @@ class ApplicationResponse(_message.Message):
     error: _base_pb2.GlobalErrorMessage
     empty: _empty_pb2.Empty
     warnings: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., application: _Optional[_Union[_capability_execution_dto_pb2.ApplicationProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., warnings: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., application: _Optional[_Union[_capability_execution_dto_pb2.ApplicationProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., warnings: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ApplicationList(_message.Message):
     __slots__ = ("applications", "next_page_token")
@@ -229,7 +229,7 @@ class ApplicationListResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     result: ApplicationList
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., result: _Optional[_Union[ApplicationList, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., result: _Optional[_Union[ApplicationList, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class ApplicationEnvironmentList(_message.Message):
     __slots__ = ("pointers",)
@@ -247,7 +247,7 @@ class ApplicationEnvironmentsResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     result: ApplicationEnvironmentList
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., result: _Optional[_Union[ApplicationEnvironmentList, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., result: _Optional[_Union[ApplicationEnvironmentList, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class SkillExecutionResponse(_message.Message):
     __slots__ = ("has_errors", "meta", "execution", "error", "empty")
@@ -261,7 +261,7 @@ class SkillExecutionResponse(_message.Message):
     execution: _capability_execution_dto_pb2.SkillExecutionProtoDTO
     error: _base_pb2.GlobalErrorMessage
     empty: _empty_pb2.Empty
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., execution: _Optional[_Union[_capability_execution_dto_pb2.SkillExecutionProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., execution: _Optional[_Union[_capability_execution_dto_pb2.SkillExecutionProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ...) -> None: ...
 
 class SkillExecutionList(_message.Message):
     __slots__ = ("executions", "next_page_token")
@@ -281,7 +281,7 @@ class SkillExecutionListResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     result: SkillExecutionList
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., result: _Optional[_Union[SkillExecutionList, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., result: _Optional[_Union[SkillExecutionList, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class SetApplicationPauseRequest(_message.Message):
     __slots__ = ("base", "application_id", "skill_id", "paused", "reason")
@@ -295,7 +295,7 @@ class SetApplicationPauseRequest(_message.Message):
     skill_id: str
     paused: bool
     reason: str
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., application_id: _Optional[str] = ..., skill_id: _Optional[str] = ..., paused: bool = ..., reason: _Optional[str] = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., application_id: _Optional[str] = ..., skill_id: _Optional[str] = ..., paused: _Optional[bool] = ..., reason: _Optional[str] = ...) -> None: ...
 
 class ListApplicationPausesRequest(_message.Message):
     __slots__ = ("base", "application_id")
@@ -321,4 +321,4 @@ class ApplicationPauseListResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     result: ApplicationPauseList
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., result: _Optional[_Union[ApplicationPauseList, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., result: _Optional[_Union[ApplicationPauseList, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...

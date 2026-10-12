@@ -84,7 +84,7 @@ class AuthenticatedUserProtoDTO(_message.Message):
     enabled: bool
     created_at: _timestamp_pb2.Timestamp
     provider: str
-    def __init__(self, user_id: _Optional[str] = ..., email: _Optional[str] = ..., organization_id: _Optional[str] = ..., roles: _Optional[_Iterable[str]] = ..., enabled: bool = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., provider: _Optional[str] = ...) -> None: ...
+    def __init__(self, user_id: _Optional[str] = ..., email: _Optional[str] = ..., organization_id: _Optional[str] = ..., roles: _Optional[_Iterable[str]] = ..., enabled: _Optional[bool] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., provider: _Optional[str] = ...) -> None: ...
 
 class AuthenticateUserResponse(_message.Message):
     __slots__ = ("has_errors", "meta", "user", "error")
@@ -96,7 +96,7 @@ class AuthenticateUserResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     user: AuthenticatedUserProtoDTO
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., user: _Optional[_Union[AuthenticatedUserProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., user: _Optional[_Union[AuthenticatedUserProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class CreateUserRequest(_message.Message):
     __slots__ = ("base", "organization_id", "email", "password", "roles", "user_id")
@@ -124,7 +124,7 @@ class CreateUserResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     user: AuthenticatedUserProtoDTO
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., user: _Optional[_Union[AuthenticatedUserProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., user: _Optional[_Union[AuthenticatedUserProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class ResetPasswordRequest(_message.Message):
     __slots__ = ("base", "user_id")
@@ -144,7 +144,7 @@ class ResetPasswordResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     new_password: str
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., new_password: _Optional[str] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., new_password: _Optional[str] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class RecordAuthAuditEventRequest(_message.Message):
     __slots__ = ("base", "event_type", "user_id", "organization_id", "email", "source_ip", "detail")
@@ -180,7 +180,7 @@ class ListUsersResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     users: _containers.RepeatedCompositeFieldContainer[AuthenticatedUserProtoDTO]
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., users: _Optional[_Iterable[_Union[AuthenticatedUserProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., users: _Optional[_Iterable[_Union[AuthenticatedUserProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class GetUserByIdRequest(_message.Message):
     __slots__ = ("base", "user_id")
@@ -208,7 +208,7 @@ class SetUserEnabledRequest(_message.Message):
     base: _base_pb2.RequestBase
     user_id: str
     enabled: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., user_id: _Optional[str] = ..., enabled: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., user_id: _Optional[str] = ..., enabled: _Optional[bool] = ...) -> None: ...
 
 class DeleteUserRequest(_message.Message):
     __slots__ = ("base", "user_id")
@@ -247,7 +247,7 @@ class IdentityProviderConfigProtoDTO(_message.Message):
     enabled: bool
     created_at: _timestamp_pb2.Timestamp
     updated_at: _timestamp_pb2.Timestamp
-    def __init__(self, organization_id: _Optional[str] = ..., issuer_url: _Optional[str] = ..., client_id: _Optional[str] = ..., client_secret: _Optional[str] = ..., email_domains: _Optional[_Iterable[str]] = ..., role_claim_name: _Optional[str] = ..., claim_role_mapping: _Optional[_Mapping[str, str]] = ..., enabled: bool = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, organization_id: _Optional[str] = ..., issuer_url: _Optional[str] = ..., client_id: _Optional[str] = ..., client_secret: _Optional[str] = ..., email_domains: _Optional[_Iterable[str]] = ..., role_claim_name: _Optional[str] = ..., claim_role_mapping: _Optional[_Mapping[str, str]] = ..., enabled: _Optional[bool] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class UpsertIdentityProviderRequest(_message.Message):
     __slots__ = ("base", "config")
@@ -283,7 +283,7 @@ class IdentityProviderResponse(_message.Message):
     meta: _base_pb2.ResponseMeta
     config: IdentityProviderConfigProtoDTO
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, has_errors: bool = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., config: _Optional[_Union[IdentityProviderConfigProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, has_errors: _Optional[bool] = ..., meta: _Optional[_Union[_base_pb2.ResponseMeta, _Mapping]] = ..., config: _Optional[_Union[IdentityProviderConfigProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class FindOidcUserRequest(_message.Message):
     __slots__ = ("base", "organization_id", "external_subject")
@@ -377,7 +377,7 @@ class AssetPayloadResponse(_message.Message):
     has_errors: bool
     payload: _asset_pb2.AssetPayloadProtoDTO
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., payload: _Optional[_Union[_asset_pb2.AssetPayloadProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., payload: _Optional[_Union[_asset_pb2.AssetPayloadProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class AssetPayloadListResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "payloads", "error")
@@ -389,7 +389,7 @@ class AssetPayloadListResponse(_message.Message):
     has_errors: bool
     payloads: _containers.RepeatedCompositeFieldContainer[_asset_pb2.AssetPayloadProtoDTO]
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., payloads: _Optional[_Iterable[_Union[_asset_pb2.AssetPayloadProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., payloads: _Optional[_Iterable[_Union[_asset_pb2.AssetPayloadProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class SetAssetPropertyRequest(_message.Message):
     __slots__ = ("base", "sn", "key", "value", "description")
@@ -433,7 +433,7 @@ class AssetPropertyResponse(_message.Message):
     has_errors: bool
     property: _asset_pb2.AssetPropertyProtoDTO
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., property: _Optional[_Union[_asset_pb2.AssetPropertyProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., property: _Optional[_Union[_asset_pb2.AssetPropertyProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class AssetPropertyListResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "properties", "error")
@@ -445,7 +445,7 @@ class AssetPropertyListResponse(_message.Message):
     has_errors: bool
     properties: _containers.RepeatedCompositeFieldContainer[_asset_pb2.AssetPropertyProtoDTO]
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., properties: _Optional[_Iterable[_Union[_asset_pb2.AssetPropertyProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., properties: _Optional[_Iterable[_Union[_asset_pb2.AssetPropertyProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class SkillContractProtoDTO(_message.Message):
     __slots__ = ("id", "command_id", "skill_id", "display_name", "description", "schema_version", "input_schema", "output_schema", "errors", "events", "requirements", "source", "provider", "status", "first_seen_at", "last_seen_at", "previous_schema_version", "compatibility", "compatibility_notes", "required_permissions")
@@ -539,7 +539,7 @@ class SkillContractResponse(_message.Message):
     has_errors: bool
     contract: SkillContractProtoDTO
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., contract: _Optional[_Union[SkillContractProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., contract: _Optional[_Union[SkillContractProtoDTO, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class SkillContractListResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "contracts", "error")
@@ -551,7 +551,7 @@ class SkillContractListResponse(_message.Message):
     has_errors: bool
     contracts: _containers.RepeatedCompositeFieldContainer[SkillContractProtoDTO]
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., contracts: _Optional[_Iterable[_Union[SkillContractProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., contracts: _Optional[_Iterable[_Union[SkillContractProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class ConnectorGetAssetByIdRequest(_message.Message):
     __slots__ = ("base", "asset_id")
@@ -583,7 +583,7 @@ class AssetListResponse(_message.Message):
     has_errors: bool
     assets: _containers.RepeatedCompositeFieldContainer[_asset_pb2.AssetProtoDTO]
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., assets: _Optional[_Iterable[_Union[_asset_pb2.AssetProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., assets: _Optional[_Iterable[_Union[_asset_pb2.AssetProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class ConnectorRegisterAssetRequest(_message.Message):
     __slots__ = ("base", "asset")
@@ -663,7 +663,7 @@ class AssetClaimResponse(_message.Message):
     error: _base_pb2.GlobalErrorMessage
     claim: AssetClaimProtoDTO
     code: str
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., claim: _Optional[_Union[AssetClaimProtoDTO, _Mapping]] = ..., code: _Optional[str] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., claim: _Optional[_Union[AssetClaimProtoDTO, _Mapping]] = ..., code: _Optional[str] = ...) -> None: ...
 
 class RedeemAssetClaimRequest(_message.Message):
     __slots__ = ("base", "code", "asset")
@@ -693,7 +693,7 @@ class AssetClaimDescriptionResponse(_message.Message):
     has_errors: bool
     error: _base_pb2.GlobalErrorMessage
     organization_name: str
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., organization_name: _Optional[str] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., organization_name: _Optional[str] = ...) -> None: ...
 
 class ListAssetClaimsRequest(_message.Message):
     __slots__ = ("base", "include_closed")
@@ -701,7 +701,7 @@ class ListAssetClaimsRequest(_message.Message):
     INCLUDE_CLOSED_FIELD_NUMBER: _ClassVar[int]
     base: _base_pb2.RequestBase
     include_closed: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., include_closed: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., include_closed: _Optional[bool] = ...) -> None: ...
 
 class AssetClaimListResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "claims", "error")
@@ -713,7 +713,7 @@ class AssetClaimListResponse(_message.Message):
     has_errors: bool
     claims: _containers.RepeatedCompositeFieldContainer[AssetClaimProtoDTO]
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., claims: _Optional[_Iterable[_Union[AssetClaimProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., claims: _Optional[_Iterable[_Union[AssetClaimProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class RevokeAssetClaimRequest(_message.Message):
     __slots__ = ("base", "claim_id")
@@ -771,7 +771,7 @@ class ConnectorResponse(_message.Message):
     asset: _asset_pb2.AssetProtoDTO
     sub_asset: _asset_pb2.SubAssetProtoDTO
     organization: _asset_pb2.OrganizationProtoDTO
-    def __init__(self, tid: _Optional[str] = ..., id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., has_errors: bool = ..., asset_id: _Optional[str] = ..., response_message: _Optional[str] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., asset: _Optional[_Union[_asset_pb2.AssetProtoDTO, _Mapping]] = ..., sub_asset: _Optional[_Union[_asset_pb2.SubAssetProtoDTO, _Mapping]] = ..., organization: _Optional[_Union[_asset_pb2.OrganizationProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., has_errors: _Optional[bool] = ..., asset_id: _Optional[str] = ..., response_message: _Optional[str] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., asset: _Optional[_Union[_asset_pb2.AssetProtoDTO, _Mapping]] = ..., sub_asset: _Optional[_Union[_asset_pb2.SubAssetProtoDTO, _Mapping]] = ..., organization: _Optional[_Union[_asset_pb2.OrganizationProtoDTO, _Mapping]] = ...) -> None: ...
 
 class AssetMonitoringResponse(_message.Message):
     __slots__ = ("tid", "timestamp", "has_errors", "empty", "error", "assets")
@@ -787,7 +787,7 @@ class AssetMonitoringResponse(_message.Message):
     empty: _empty_pb2.Empty
     error: _base_pb2.GlobalErrorMessage
     assets: ConnectorAssetList
-    def __init__(self, tid: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., has_errors: bool = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., assets: _Optional[_Union[ConnectorAssetList, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., has_errors: _Optional[bool] = ..., empty: _Optional[_Union[_empty_pb2.Empty, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., assets: _Optional[_Union[ConnectorAssetList, _Mapping]] = ...) -> None: ...
 
 class ConnectorGetOrganizationRequest(_message.Message):
     __slots__ = ("base", "bind_code")
@@ -884,7 +884,7 @@ class AssetTelemetryProto(_message.Message):
     is_online: bool
     source_system: str
     telemetry_data: _containers.ScalarMap[str, str]
-    def __init__(self, asset_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., latitude: _Optional[float] = ..., longitude: _Optional[float] = ..., altitude: _Optional[float] = ..., relative_altitude: _Optional[float] = ..., heading: _Optional[float] = ..., temperature: _Optional[float] = ..., humidity: _Optional[float] = ..., wind_speed: _Optional[float] = ..., battery_percentage: _Optional[float] = ..., network_type: _Optional[str] = ..., network_quality: _Optional[int] = ..., operational_mode: _Optional[str] = ..., is_online: bool = ..., source_system: _Optional[str] = ..., telemetry_data: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    def __init__(self, asset_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., latitude: _Optional[float] = ..., longitude: _Optional[float] = ..., altitude: _Optional[float] = ..., relative_altitude: _Optional[float] = ..., heading: _Optional[float] = ..., temperature: _Optional[float] = ..., humidity: _Optional[float] = ..., wind_speed: _Optional[float] = ..., battery_percentage: _Optional[float] = ..., network_type: _Optional[str] = ..., network_quality: _Optional[int] = ..., operational_mode: _Optional[str] = ..., is_online: _Optional[bool] = ..., source_system: _Optional[str] = ..., telemetry_data: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class SubAssetTelemetryProto(_message.Message):
     __slots__ = ("asset_id", "timestamp", "latitude", "longitude", "altitude", "relative_altitude", "heading", "horizontal_speed", "vertical_speed", "wind_speed", "battery_percentage", "operational_mode", "is_online", "source_system", "telemetry_data")
@@ -925,7 +925,7 @@ class SubAssetTelemetryProto(_message.Message):
     is_online: bool
     source_system: str
     telemetry_data: _containers.ScalarMap[str, str]
-    def __init__(self, asset_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., latitude: _Optional[float] = ..., longitude: _Optional[float] = ..., altitude: _Optional[float] = ..., relative_altitude: _Optional[float] = ..., heading: _Optional[float] = ..., horizontal_speed: _Optional[float] = ..., vertical_speed: _Optional[float] = ..., wind_speed: _Optional[float] = ..., battery_percentage: _Optional[float] = ..., operational_mode: _Optional[str] = ..., is_online: bool = ..., source_system: _Optional[str] = ..., telemetry_data: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    def __init__(self, asset_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., latitude: _Optional[float] = ..., longitude: _Optional[float] = ..., altitude: _Optional[float] = ..., relative_altitude: _Optional[float] = ..., heading: _Optional[float] = ..., horizontal_speed: _Optional[float] = ..., vertical_speed: _Optional[float] = ..., wind_speed: _Optional[float] = ..., battery_percentage: _Optional[float] = ..., operational_mode: _Optional[str] = ..., is_online: _Optional[bool] = ..., source_system: _Optional[str] = ..., telemetry_data: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class PolicyProtoDTO(_message.Message):
     __slots__ = ("id", "name", "description", "policy_type", "scope", "scope_target", "priority", "active", "strategy_type", "conditions", "constraints", "actions", "organization_id", "created_at", "modified_at")
@@ -959,7 +959,7 @@ class PolicyProtoDTO(_message.Message):
     organization_id: str
     created_at: _timestamp_pb2.Timestamp
     modified_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., policy_type: _Optional[str] = ..., scope: _Optional[str] = ..., scope_target: _Optional[str] = ..., priority: _Optional[int] = ..., active: bool = ..., strategy_type: _Optional[str] = ..., conditions: _Optional[str] = ..., constraints: _Optional[str] = ..., actions: _Optional[str] = ..., organization_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., policy_type: _Optional[str] = ..., scope: _Optional[str] = ..., scope_target: _Optional[str] = ..., priority: _Optional[int] = ..., active: _Optional[bool] = ..., strategy_type: _Optional[str] = ..., conditions: _Optional[str] = ..., constraints: _Optional[str] = ..., actions: _Optional[str] = ..., organization_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class PolicyProtoDTOList(_message.Message):
     __slots__ = ("policies",)
@@ -981,7 +981,7 @@ class ConnectorGetAllPoliciesRequest(_message.Message):
     INCLUDE_INACTIVE_FIELD_NUMBER: _ClassVar[int]
     base: _base_pb2.RequestBase
     include_inactive: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., include_inactive: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., include_inactive: _Optional[bool] = ...) -> None: ...
 
 class ConnectorPolicyResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "policy_list")
@@ -995,7 +995,7 @@ class ConnectorPolicyResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     policy_list: PolicyProtoDTOList
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., policy_list: _Optional[_Union[PolicyProtoDTOList, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., policy_list: _Optional[_Union[PolicyProtoDTOList, _Mapping]] = ...) -> None: ...
 
 class GetPolicyByIdRequest(_message.Message):
     __slots__ = ("base", "id")
@@ -1043,7 +1043,7 @@ class ConnectorPolicySingleResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     policy: PolicyProtoDTO
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., policy: _Optional[_Union[PolicyProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., policy: _Optional[_Union[PolicyProtoDTO, _Mapping]] = ...) -> None: ...
 
 class ConnectorDeletePolicyResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "deleted", "error")
@@ -1057,7 +1057,7 @@ class ConnectorDeletePolicyResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     deleted: bool
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: bool = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: _Optional[bool] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class ConnectorGetAllOrganizationsRequest(_message.Message):
     __slots__ = ("base",)
@@ -1117,7 +1117,7 @@ class ConnectorOrganizationResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     organization_list: OrganizationProtoDTOList
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., organization_list: _Optional[_Union[OrganizationProtoDTOList, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., organization_list: _Optional[_Union[OrganizationProtoDTOList, _Mapping]] = ...) -> None: ...
 
 class ConnectorOrganizationSingleResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "organization")
@@ -1131,7 +1131,7 @@ class ConnectorOrganizationSingleResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     organization: _asset_pb2.OrganizationProtoDTO
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., organization: _Optional[_Union[_asset_pb2.OrganizationProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., organization: _Optional[_Union[_asset_pb2.OrganizationProtoDTO, _Mapping]] = ...) -> None: ...
 
 class ConnectorDeleteOrganizationResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "deleted", "error")
@@ -1145,7 +1145,7 @@ class ConnectorDeleteOrganizationResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     deleted: bool
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: bool = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: _Optional[bool] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class TheatreProtoDTO(_message.Message):
     __slots__ = ("id", "organization_id", "name", "description", "geo_zone", "assets", "assigned_user_ids", "created_at", "modified_at", "parent_theatre_id")
@@ -1231,7 +1231,7 @@ class ConnectorTheatreResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     theatre_list: TheatreProtoDTOList
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., theatre_list: _Optional[_Union[TheatreProtoDTOList, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., theatre_list: _Optional[_Union[TheatreProtoDTOList, _Mapping]] = ...) -> None: ...
 
 class ConnectorTheatreSingleResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "theatre")
@@ -1245,7 +1245,7 @@ class ConnectorTheatreSingleResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     theatre: TheatreProtoDTO
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., theatre: _Optional[_Union[TheatreProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., theatre: _Optional[_Union[TheatreProtoDTO, _Mapping]] = ...) -> None: ...
 
 class ConnectorDeleteTheatreResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "deleted", "error")
@@ -1259,7 +1259,7 @@ class ConnectorDeleteTheatreResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     deleted: bool
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: bool = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: _Optional[bool] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class AssignUserToTheatreRequest(_message.Message):
     __slots__ = ("base", "user_id", "theatre_id")
@@ -1291,7 +1291,7 @@ class TheatreAssignmentResponse(_message.Message):
     has_errors: bool
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class ListNoFlyZonesRequest(_message.Message):
     __slots__ = ("base", "organization_id", "active_only")
@@ -1301,7 +1301,7 @@ class ListNoFlyZonesRequest(_message.Message):
     base: _base_pb2.RequestBase
     organization_id: str
     active_only: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., organization_id: _Optional[str] = ..., active_only: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., organization_id: _Optional[str] = ..., active_only: _Optional[bool] = ...) -> None: ...
 
 class UpsertNoFlyZoneRequest(_message.Message):
     __slots__ = ("base", "zone")
@@ -1333,7 +1333,7 @@ class NoFlyZoneListResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     zones: _containers.RepeatedCompositeFieldContainer[_mission_autonomy_dto_pb2_1.MissionZoneProtoDTO]
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., zones: _Optional[_Iterable[_Union[_mission_autonomy_dto_pb2_1.MissionZoneProtoDTO, _Mapping]]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., zones: _Optional[_Iterable[_Union[_mission_autonomy_dto_pb2_1.MissionZoneProtoDTO, _Mapping]]] = ...) -> None: ...
 
 class NoFlyZoneSingleResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "zone")
@@ -1347,7 +1347,7 @@ class NoFlyZoneSingleResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     zone: _mission_autonomy_dto_pb2_1.MissionZoneProtoDTO
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., zone: _Optional[_Union[_mission_autonomy_dto_pb2_1.MissionZoneProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., zone: _Optional[_Union[_mission_autonomy_dto_pb2_1.MissionZoneProtoDTO, _Mapping]] = ...) -> None: ...
 
 class DeleteNoFlyZoneResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "deleted")
@@ -1361,7 +1361,7 @@ class DeleteNoFlyZoneResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     deleted: bool
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., deleted: bool = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., deleted: _Optional[bool] = ...) -> None: ...
 
 class ProvisionLicensedOrganizationRequest(_message.Message):
     __slots__ = ("base", "organization_id", "name", "description", "credentials")
@@ -1391,7 +1391,7 @@ class ProvisionLicensedOrganizationResponse(_message.Message):
     error: _base_pb2.GlobalErrorMessage
     organization: _asset_pb2.OrganizationProtoDTO
     already_exists: bool
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., organization: _Optional[_Union[_asset_pb2.OrganizationProtoDTO, _Mapping]] = ..., already_exists: bool = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., organization: _Optional[_Union[_asset_pb2.OrganizationProtoDTO, _Mapping]] = ..., already_exists: _Optional[bool] = ...) -> None: ...
 
 class LicenseActivationCredentialsProtoDTO(_message.Message):
     __slots__ = ("organization_id", "activation_id", "sealed_token", "sealing_scheme", "created_at", "modified_at")
@@ -1451,7 +1451,7 @@ class LicenseActivationCredentialsListResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     credentials: _containers.RepeatedCompositeFieldContainer[LicenseActivationCredentialsProtoDTO]
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., credentials: _Optional[_Iterable[_Union[LicenseActivationCredentialsProtoDTO, _Mapping]]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., credentials: _Optional[_Iterable[_Union[LicenseActivationCredentialsProtoDTO, _Mapping]]] = ...) -> None: ...
 
 class LicenseActivationCredentialsSingleResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "credentials")
@@ -1465,7 +1465,7 @@ class LicenseActivationCredentialsSingleResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     credentials: LicenseActivationCredentialsProtoDTO
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., credentials: _Optional[_Union[LicenseActivationCredentialsProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., credentials: _Optional[_Union[LicenseActivationCredentialsProtoDTO, _Mapping]] = ...) -> None: ...
 
 class DeleteLicenseActivationCredentialsResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "deleted")
@@ -1479,7 +1479,7 @@ class DeleteLicenseActivationCredentialsResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     deleted: bool
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., deleted: bool = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., deleted: _Optional[bool] = ...) -> None: ...
 
 class EventTriggerProtoDTO(_message.Message):
     __slots__ = ("id", "name", "active", "event_type", "asset_sn", "object_type", "min_confidence", "telemetry_field", "comparison_operator", "comparison_value", "webhook_token", "application_id", "skill_id", "execution_parameters_json", "auto_start", "cooldown_seconds", "last_fired_at", "created_at", "modified_at", "bridge_id", "dispatch_target", "priority", "organization_id", "theatre_id", "attention_reason")
@@ -1533,7 +1533,7 @@ class EventTriggerProtoDTO(_message.Message):
     organization_id: str
     theatre_id: str
     attention_reason: str
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., active: bool = ..., event_type: _Optional[str] = ..., asset_sn: _Optional[str] = ..., object_type: _Optional[str] = ..., min_confidence: _Optional[float] = ..., telemetry_field: _Optional[str] = ..., comparison_operator: _Optional[str] = ..., comparison_value: _Optional[str] = ..., webhook_token: _Optional[str] = ..., application_id: _Optional[str] = ..., skill_id: _Optional[str] = ..., execution_parameters_json: _Optional[str] = ..., auto_start: bool = ..., cooldown_seconds: _Optional[int] = ..., last_fired_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., bridge_id: _Optional[str] = ..., dispatch_target: _Optional[str] = ..., priority: _Optional[int] = ..., organization_id: _Optional[str] = ..., theatre_id: _Optional[str] = ..., attention_reason: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., active: _Optional[bool] = ..., event_type: _Optional[str] = ..., asset_sn: _Optional[str] = ..., object_type: _Optional[str] = ..., min_confidence: _Optional[float] = ..., telemetry_field: _Optional[str] = ..., comparison_operator: _Optional[str] = ..., comparison_value: _Optional[str] = ..., webhook_token: _Optional[str] = ..., application_id: _Optional[str] = ..., skill_id: _Optional[str] = ..., execution_parameters_json: _Optional[str] = ..., auto_start: _Optional[bool] = ..., cooldown_seconds: _Optional[int] = ..., last_fired_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., bridge_id: _Optional[str] = ..., dispatch_target: _Optional[str] = ..., priority: _Optional[int] = ..., organization_id: _Optional[str] = ..., theatre_id: _Optional[str] = ..., attention_reason: _Optional[str] = ...) -> None: ...
 
 class EventTriggerProtoDTOList(_message.Message):
     __slots__ = ("event_triggers",)
@@ -1547,7 +1547,7 @@ class ConnectorGetAllEventTriggersRequest(_message.Message):
     ACTIVE_ONLY_FIELD_NUMBER: _ClassVar[int]
     base: _base_pb2.RequestBase
     active_only: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., active_only: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., active_only: _Optional[bool] = ...) -> None: ...
 
 class GetEventTriggerByIdRequest(_message.Message):
     __slots__ = ("base", "id")
@@ -1619,7 +1619,7 @@ class ConnectorEventTriggerResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     event_trigger_list: EventTriggerProtoDTOList
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., event_trigger_list: _Optional[_Union[EventTriggerProtoDTOList, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., event_trigger_list: _Optional[_Union[EventTriggerProtoDTOList, _Mapping]] = ...) -> None: ...
 
 class ConnectorEventTriggerSingleResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "event_trigger")
@@ -1633,7 +1633,7 @@ class ConnectorEventTriggerSingleResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     event_trigger: EventTriggerProtoDTO
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., event_trigger: _Optional[_Union[EventTriggerProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., event_trigger: _Optional[_Union[EventTriggerProtoDTO, _Mapping]] = ...) -> None: ...
 
 class ConnectorDeleteEventTriggerResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "deleted", "error")
@@ -1647,7 +1647,7 @@ class ConnectorDeleteEventTriggerResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     deleted: bool
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: bool = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: _Optional[bool] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class DetectionSummaryProtoDTO(_message.Message):
     __slots__ = ("id", "asset_sn", "object_type", "confidence", "detected_at", "object_id", "position")
@@ -1693,7 +1693,7 @@ class ConnectorDetectionListResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     detections: _containers.RepeatedCompositeFieldContainer[DetectionSummaryProtoDTO]
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., detections: _Optional[_Iterable[_Union[DetectionSummaryProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., detections: _Optional[_Iterable[_Union[DetectionSummaryProtoDTO, _Mapping]]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
 
 class GetLatestTelemetryForAssetRequest(_message.Message):
     __slots__ = ("base", "asset_sn")
@@ -1715,7 +1715,7 @@ class ConnectorTelemetrySingleResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     telemetry: AssetTelemetryProto
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., telemetry: _Optional[_Union[AssetTelemetryProto, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., telemetry: _Optional[_Union[AssetTelemetryProto, _Mapping]] = ...) -> None: ...
 
 class TechnicalConfigProtoDTO(_message.Message):
     __slots__ = ("id", "config_key", "config_value", "value_type", "scope", "scope_target", "active", "description", "organization_id", "created_at", "modified_at")
@@ -1741,7 +1741,7 @@ class TechnicalConfigProtoDTO(_message.Message):
     organization_id: str
     created_at: _timestamp_pb2.Timestamp
     modified_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., config_key: _Optional[str] = ..., config_value: _Optional[str] = ..., value_type: _Optional[str] = ..., scope: _Optional[str] = ..., scope_target: _Optional[str] = ..., active: bool = ..., description: _Optional[str] = ..., organization_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., config_key: _Optional[str] = ..., config_value: _Optional[str] = ..., value_type: _Optional[str] = ..., scope: _Optional[str] = ..., scope_target: _Optional[str] = ..., active: _Optional[bool] = ..., description: _Optional[str] = ..., organization_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class TechnicalConfigProtoDTOList(_message.Message):
     __slots__ = ("configs",)
@@ -1759,7 +1759,7 @@ class ConnectorGetConfigsRequest(_message.Message):
     scope: str
     scope_target: str
     include_inactive: bool
-    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., scope: _Optional[str] = ..., scope_target: _Optional[str] = ..., include_inactive: bool = ...) -> None: ...
+    def __init__(self, base: _Optional[_Union[_base_pb2.RequestBase, _Mapping]] = ..., scope: _Optional[str] = ..., scope_target: _Optional[str] = ..., include_inactive: _Optional[bool] = ...) -> None: ...
 
 class ConnectorConfigResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "error", "config_list")
@@ -1773,7 +1773,7 @@ class ConnectorConfigResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     config_list: TechnicalConfigProtoDTOList
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., config_list: _Optional[_Union[TechnicalConfigProtoDTOList, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., config_list: _Optional[_Union[TechnicalConfigProtoDTOList, _Mapping]] = ...) -> None: ...
 
 class GetTechnicalConfigByIdRequest(_message.Message):
     __slots__ = ("base", "id")
@@ -1821,7 +1821,7 @@ class ConnectorConfigSingleResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     error: _base_pb2.GlobalErrorMessage
     config: TechnicalConfigProtoDTO
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., config: _Optional[_Union[TechnicalConfigProtoDTO, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ..., config: _Optional[_Union[TechnicalConfigProtoDTO, _Mapping]] = ...) -> None: ...
 
 class ConnectorDeleteConfigResponse(_message.Message):
     __slots__ = ("tid", "has_errors", "timestamp", "deleted", "error")
@@ -1835,4 +1835,4 @@ class ConnectorDeleteConfigResponse(_message.Message):
     timestamp: _timestamp_pb2.Timestamp
     deleted: bool
     error: _base_pb2.GlobalErrorMessage
-    def __init__(self, tid: _Optional[str] = ..., has_errors: bool = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: bool = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, tid: _Optional[str] = ..., has_errors: _Optional[bool] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted: _Optional[bool] = ..., error: _Optional[_Union[_base_pb2.GlobalErrorMessage, _Mapping]] = ...) -> None: ...

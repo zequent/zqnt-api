@@ -5,7 +5,7 @@ import warnings
 
 from zqnt_api.generated.zqnt.edge.v3 import edge_adapter_service_pb2 as zqnt_dot_edge_dot_v3_dot_edge__adapter__service__pb2
 
-GRPC_GENERATED_VERSION = '1.80.0'
+GRPC_GENERATED_VERSION = '1.84.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -25,7 +25,7 @@ if _version_not_supported:
     )
 
 
-class EdgeAdapterServiceStub(object):
+class EdgeAdapterServiceStub:
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -61,7 +61,7 @@ class EdgeAdapterServiceStub(object):
                 _registered_method=True)
 
 
-class EdgeAdapterServiceServicer(object):
+class EdgeAdapterServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def GetCapabilities(self, request, context):
@@ -135,7 +135,7 @@ def add_EdgeAdapterServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class EdgeAdapterService(object):
+class EdgeAdapterService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -274,7 +274,7 @@ class EdgeAdapterService(object):
             _registered_method=True)
 
 
-class EdgeGatewayServiceStub(object):
+class EdgeGatewayServiceStub:
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -295,7 +295,7 @@ class EdgeGatewayServiceStub(object):
                 _registered_method=True)
 
 
-class EdgeGatewayServiceServicer(object):
+class EdgeGatewayServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def ReportCapabilities(self, request, context):
@@ -333,7 +333,7 @@ def add_EdgeGatewayServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class EdgeGatewayService(object):
+class EdgeGatewayService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod

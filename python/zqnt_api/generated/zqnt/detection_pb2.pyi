@@ -84,7 +84,7 @@ class DetectionControlRequest(_message.Message):
     task_id: str
     stream_url: str
     gimbal_tracking_enabled: bool
-    def __init__(self, command: _Optional[_Union[DetectionControlRequest.DetectionControlCommand, str]] = ..., asset_sn: _Optional[str] = ..., sub_asset_sn: _Optional[str] = ..., task_id: _Optional[str] = ..., stream_url: _Optional[str] = ..., gimbal_tracking_enabled: bool = ...) -> None: ...
+    def __init__(self, command: _Optional[_Union[DetectionControlRequest.DetectionControlCommand, str]] = ..., asset_sn: _Optional[str] = ..., sub_asset_sn: _Optional[str] = ..., task_id: _Optional[str] = ..., stream_url: _Optional[str] = ..., gimbal_tracking_enabled: _Optional[bool] = ...) -> None: ...
 
 class DetectionStreamRequest(_message.Message):
     __slots__ = ("base", "stream_url")
