@@ -22,6 +22,7 @@ this artifact only.
 | `com.zqnt.protos.common.v3` | `zqnt.common.v3`: AssetRef, RequestContext, Error, paging, GeoPoint |
 | `com.zqnt.protos.control.v3` | `zqnt.control.v3`: `RemoteControlService` for clients |
 | `com.zqnt.protos.edge.v3` | `zqnt.edge.v3`: `EdgeAdapterService` (adapter side), `EdgeGatewayService` (platform side) |
+| `com.zqnt.protos.stream.v3` | `zqnt.stream.v3`: `LiveStreamService`, the live video streams of an organization |
 | `com.zqnt.protos.telemetry.v3` | `zqnt.telemetry.v3`: TelemetrySample and the telemetry service |
 | `com.zqnt.utils.*.proto` (`common`, `connector`, `devicecontrol`, `edge.sdk`, `events`, `execution`, `livedata`, `media`, `mission`, `remotecontrol`) | the frozen 2.x contracts (package `zqnt`), wire-compatible with 2.0.0 |
 | `com.zqnt.utils.telemetry` | `TelemetrySampleMapper`: v2 `Telemetry` ⇄ v3 `TelemetrySample`, and the catalog of telemetry detail keys |
