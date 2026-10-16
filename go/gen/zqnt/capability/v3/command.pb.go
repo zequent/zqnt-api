@@ -315,8 +315,9 @@ func (x *CommandResult) GetError() *v3.Error {
 	return nil
 }
 
-// Progress and completion of a command that was ACCEPTED. `occurred_at` is required: an event
-// without it is refused, never silently dropped.
+// Progress and completion of a command that was ACCEPTED. Set `occurred_at` to when it happened on
+// the asset; an event without it takes the time the platform received it (counted and logged as an
+// adapter defect). An event without `command_execution_id` or `asset.sn` is refused.
 type CommandEvent struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
 	CommandExecutionId string                 `protobuf:"bytes,1,opt,name=command_execution_id,json=commandExecutionId,proto3" json:"command_execution_id,omitempty"`

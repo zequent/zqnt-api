@@ -58,8 +58,9 @@ message CommandResult {
   zqnt.common.v3.Error error = 5;
 }
 
-// Progress and completion of a command that was ACCEPTED. `occurred_at` is required: an event
-// without it is refused, never silently dropped.
+// Progress and completion of a command that was ACCEPTED. Set `occurred_at` to when it happened on
+// the asset; an event without it takes the time the platform received it (counted and logged as an
+// adapter defect). An event without `command_execution_id` or `asset.sn` is refused.
 message CommandEvent {
   string command_execution_id = 1;
   string command_id = 2;
