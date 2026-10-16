@@ -28,7 +28,9 @@ message LiveStream {
   int32 viewers = 4;
 }
 
-message ListLiveStreamsRequest {}
+message ListLiveStreamsRequest {
+  zqnt.common.v3.RequestContext context = 1;
+}
 
 message ListLiveStreamsResponse {
   repeated LiveStream streams = 1;

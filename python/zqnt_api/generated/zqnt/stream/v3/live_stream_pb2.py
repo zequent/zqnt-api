@@ -26,7 +26,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from zqnt_api.generated.zqnt.common.v3 import common_pb2 as zqnt_dot_common_dot_v3_dot_common__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n zqnt/stream/v3/live_stream.proto\x12\x0ezqnt.stream.v3\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bzqnt/common/v3/common.proto\"\x7f\n\nLiveStream\x12\'\n\x05\x61sset\x18\x01 \x01(\x0b\x32\x18.zqnt.common.v3.AssetRef\x12\x0c\n\x04path\x18\x02 \x01(\t\x12)\n\x05since\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0f\n\x07viewers\x18\x04 \x01(\x05\"\x18\n\x16ListLiveStreamsRequest\"F\n\x17ListLiveStreamsResponse\x12+\n\x07streams\x18\x01 \x03(\x0b\x32\x1a.zqnt.stream.v3.LiveStream2w\n\x11LiveStreamService\x12\x62\n\x0fListLiveStreams\x12&.zqnt.stream.v3.ListLiveStreamsRequest\x1a\'.zqnt.stream.v3.ListLiveStreamsResponseB\\\n\x19\x63om.zqnt.protos.stream.v3P\x01Z=github.com/zequent/zqnt-api/go/v3/gen/zqnt/stream/v3;streamv3b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n zqnt/stream/v3/live_stream.proto\x12\x0ezqnt.stream.v3\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bzqnt/common/v3/common.proto\"\x7f\n\nLiveStream\x12\'\n\x05\x61sset\x18\x01 \x01(\x0b\x32\x18.zqnt.common.v3.AssetRef\x12\x0c\n\x04path\x18\x02 \x01(\t\x12)\n\x05since\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0f\n\x07viewers\x18\x04 \x01(\x05\"I\n\x16ListLiveStreamsRequest\x12/\n\x07\x63ontext\x18\x01 \x01(\x0b\x32\x1e.zqnt.common.v3.RequestContext\"F\n\x17ListLiveStreamsResponse\x12+\n\x07streams\x18\x01 \x03(\x0b\x32\x1a.zqnt.stream.v3.LiveStream2w\n\x11LiveStreamService\x12\x62\n\x0fListLiveStreams\x12&.zqnt.stream.v3.ListLiveStreamsRequest\x1a\'.zqnt.stream.v3.ListLiveStreamsResponseB\\\n\x19\x63om.zqnt.protos.stream.v3P\x01Z=github.com/zequent/zqnt-api/go/v3/gen/zqnt/stream/v3;streamv3b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -37,9 +37,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_LIVESTREAM']._serialized_start=114
   _globals['_LIVESTREAM']._serialized_end=241
   _globals['_LISTLIVESTREAMSREQUEST']._serialized_start=243
-  _globals['_LISTLIVESTREAMSREQUEST']._serialized_end=267
-  _globals['_LISTLIVESTREAMSRESPONSE']._serialized_start=269
-  _globals['_LISTLIVESTREAMSRESPONSE']._serialized_end=339
-  _globals['_LIVESTREAMSERVICE']._serialized_start=341
-  _globals['_LIVESTREAMSERVICE']._serialized_end=460
+  _globals['_LISTLIVESTREAMSREQUEST']._serialized_end=316
+  _globals['_LISTLIVESTREAMSRESPONSE']._serialized_start=318
+  _globals['_LISTLIVESTREAMSRESPONSE']._serialized_end=388
+  _globals['_LIVESTREAMSERVICE']._serialized_start=390
+  _globals['_LIVESTREAMSERVICE']._serialized_end=509
 # @@protoc_insertion_point(module_scope)

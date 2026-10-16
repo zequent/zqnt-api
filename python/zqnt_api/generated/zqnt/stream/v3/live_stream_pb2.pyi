@@ -23,8 +23,10 @@ class LiveStream(_message.Message):
     def __init__(self, asset: _Optional[_Union[_common_pb2.AssetRef, _Mapping]] = ..., path: _Optional[str] = ..., since: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., viewers: _Optional[int] = ...) -> None: ...
 
 class ListLiveStreamsRequest(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...
+    __slots__ = ("context",)
+    CONTEXT_FIELD_NUMBER: _ClassVar[int]
+    context: _common_pb2.RequestContext
+    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ...) -> None: ...
 
 class ListLiveStreamsResponse(_message.Message):
     __slots__ = ("streams",)

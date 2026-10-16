@@ -100,6 +100,7 @@ func (x *LiveStream) GetViewers() int32 {
 
 type ListLiveStreamsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Context       *v3.RequestContext     `protobuf:"bytes,1,opt,name=context,proto3" json:"context,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -132,6 +133,13 @@ func (x *ListLiveStreamsRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListLiveStreamsRequest.ProtoReflect.Descriptor instead.
 func (*ListLiveStreamsRequest) Descriptor() ([]byte, []int) {
 	return file_zqnt_stream_v3_live_stream_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ListLiveStreamsRequest) GetContext() *v3.RequestContext {
+	if x != nil {
+		return x.Context
+	}
+	return nil
 }
 
 type ListLiveStreamsResponse struct {
@@ -188,8 +196,9 @@ const file_zqnt_stream_v3_live_stream_proto_rawDesc = "" +
 	"\x05asset\x18\x01 \x01(\v2\x18.zqnt.common.v3.AssetRefR\x05asset\x12\x12\n" +
 	"\x04path\x18\x02 \x01(\tR\x04path\x120\n" +
 	"\x05since\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x05since\x12\x18\n" +
-	"\aviewers\x18\x04 \x01(\x05R\aviewers\"\x18\n" +
-	"\x16ListLiveStreamsRequest\"O\n" +
+	"\aviewers\x18\x04 \x01(\x05R\aviewers\"R\n" +
+	"\x16ListLiveStreamsRequest\x128\n" +
+	"\acontext\x18\x01 \x01(\v2\x1e.zqnt.common.v3.RequestContextR\acontext\"O\n" +
 	"\x17ListLiveStreamsResponse\x124\n" +
 	"\astreams\x18\x01 \x03(\v2\x1a.zqnt.stream.v3.LiveStreamR\astreams2w\n" +
 	"\x11LiveStreamService\x12b\n" +
@@ -215,18 +224,20 @@ var file_zqnt_stream_v3_live_stream_proto_goTypes = []any{
 	(*ListLiveStreamsResponse)(nil), // 2: zqnt.stream.v3.ListLiveStreamsResponse
 	(*v3.AssetRef)(nil),             // 3: zqnt.common.v3.AssetRef
 	(*timestamppb.Timestamp)(nil),   // 4: google.protobuf.Timestamp
+	(*v3.RequestContext)(nil),       // 5: zqnt.common.v3.RequestContext
 }
 var file_zqnt_stream_v3_live_stream_proto_depIdxs = []int32{
 	3, // 0: zqnt.stream.v3.LiveStream.asset:type_name -> zqnt.common.v3.AssetRef
 	4, // 1: zqnt.stream.v3.LiveStream.since:type_name -> google.protobuf.Timestamp
-	0, // 2: zqnt.stream.v3.ListLiveStreamsResponse.streams:type_name -> zqnt.stream.v3.LiveStream
-	1, // 3: zqnt.stream.v3.LiveStreamService.ListLiveStreams:input_type -> zqnt.stream.v3.ListLiveStreamsRequest
-	2, // 4: zqnt.stream.v3.LiveStreamService.ListLiveStreams:output_type -> zqnt.stream.v3.ListLiveStreamsResponse
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	5, // 2: zqnt.stream.v3.ListLiveStreamsRequest.context:type_name -> zqnt.common.v3.RequestContext
+	0, // 3: zqnt.stream.v3.ListLiveStreamsResponse.streams:type_name -> zqnt.stream.v3.LiveStream
+	1, // 4: zqnt.stream.v3.LiveStreamService.ListLiveStreams:input_type -> zqnt.stream.v3.ListLiveStreamsRequest
+	2, // 5: zqnt.stream.v3.LiveStreamService.ListLiveStreams:output_type -> zqnt.stream.v3.ListLiveStreamsResponse
+	5, // [5:6] is the sub-list for method output_type
+	4, // [4:5] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_zqnt_stream_v3_live_stream_proto_init() }
