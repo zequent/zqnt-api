@@ -18,6 +18,7 @@ uv add "zqnt-api @ git+https://github.com/zequent/zqnt-api@<tag or commit>#subdi
 | `zqnt_api.generated.zqnt.common.v3` | `zqnt.common.v3`: AssetRef, RequestContext, Error, paging, GeoPoint |
 | `zqnt_api.generated.zqnt.control.v3` | `zqnt.control.v3`: `RemoteControlService` for clients |
 | `zqnt_api.generated.zqnt.edge.v3` | `zqnt.edge.v3`: `EdgeAdapterService` (adapter side), `EdgeGatewayService` (platform side) |
+| `zqnt_api.generated.zqnt.stream.v3` | `zqnt.stream.v3`: `LiveStreamService`, the live video streams of an organization |
 | `zqnt_api.generated.zqnt.telemetry.v3` | `zqnt.telemetry.v3`: TelemetrySample and the telemetry service |
 | `zqnt_api.generated.zqnt.<file>_pb2` | the frozen 2.x contracts (package `zqnt`), wire-compatible with 2.0.0 |
 | `zqnt_api.telemetry` | v2 `Telemetry` ⇄ v3 `TelemetrySample`, and the catalog of telemetry detail keys |
