@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+// Live video of assets. The media server is the source: a stream is listed while something
+// publishes to it, whatever started it.
+package zqnt.stream.v3;
+
+import "google/protobuf/timestamp.proto";
+import "zqnt/common/v3/common.proto";
+
+option go_package = "github.com/zequent/zqnt-api/go/v3/gen/zqnt/stream/v3;streamv3";
+option java_multiple_files = true;
+option java_package = "com.zqnt.protos.stream.v3";
+
+service LiveStreamService {
+  // Every stream of the caller's organization that is live right now. UNAVAILABLE when the
+  // platform has no current answer from the media server.
+  rpc ListLiveStreams(ListLiveStreamsRequest) returns (ListLiveStreamsResponse);
+}
+
+message LiveStream {
+  // The asset publishing; for a docked aircraft, the aircraft itself.
+  zqnt.common.v3.AssetRef asset = 1;
+  // The media server's path, e.g. "live/1581F5BKD225D00A1234/drone".
+  string path = 2;
+  // When the media server started receiving it.
+  google.protobuf.Timestamp since = 3;
+  // How many sessions are reading it (browsers, recorders, the AI adapter).
+  int32 viewers = 4;
+}
+
+message ListLiveStreamsRequest {
+  zqnt.common.v3.RequestContext context = 1;
+}
+
+message ListLiveStreamsResponse {
+  repeated LiveStream streams = 1;
+}

@@ -125,6 +125,14 @@ message HumanApprovalNodeConfigProto {
   string approval_type = 1;
   optional string approval_group = 2;
   optional int32 timeout_seconds = 3;
+  // How many different people must approve before the run goes on. Unset = 1. One rejection fails the node.
+  optional int32 required_approvals = 4;
+  // Roles (built-in or custom, by name or id) an approver must hold, organization-wide or for the run's site;
+  // any one of them is enough. Empty = whoever may approve runs (executions:approve), or approval_group.
+  repeated string approver_roles = 5;
+  // False: the person who requested the run (for an AI agent's run, the person it acts for) cannot approve it.
+  // Unset = true.
+  optional bool requester_may_approve = 6;
 }
 
 // The AI node's configuration (zqnt-core #164), the engine's copy of zqnt.application.v3.AiNodeConfig:
@@ -219,6 +227,11 @@ message SkillProtoDTO {
   // Server-owned: stamped on save; unset on an Application's own Skills.
   optional string source_application_id = 11;
   optional string source_version = 12;
+  // The AI assistant's view of this Skill (zqnt-core #263), versioned with it; field numbers and
+  // types identical to zqnt.application.v3.Skill. When to use it and what to watch out for:
+  optional string agent_guidance = 13;
+  // Offered to the assistant as a tool; unset = yes.
+  optional bool agent_available = 14;
 }
 
 // One entry of a version's changelog: what changed in it, when and by whom.
