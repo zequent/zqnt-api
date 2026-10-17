@@ -227,6 +227,11 @@ message SkillProtoDTO {
   // Server-owned: stamped on save; unset on an Application's own Skills.
   optional string source_application_id = 11;
   optional string source_version = 12;
+  // The AI assistant's view of this Skill (zqnt-core #263), versioned with it; field numbers and
+  // types identical to zqnt.application.v3.Skill. When to use it and what to watch out for:
+  optional string agent_guidance = 13;
+  // Offered to the assistant as a tool; unset = yes.
+  optional bool agent_available = 14;
 }
 
 // One entry of a version's changelog: what changed in it, when and by whom.
