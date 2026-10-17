@@ -914,8 +914,16 @@ type HumanApprovalNodeConfigProto struct {
 	ApprovalType   string                 `protobuf:"bytes,1,opt,name=approval_type,json=approvalType,proto3" json:"approval_type,omitempty"`
 	ApprovalGroup  *string                `protobuf:"bytes,2,opt,name=approval_group,json=approvalGroup,proto3,oneof" json:"approval_group,omitempty"`
 	TimeoutSeconds *int32                 `protobuf:"varint,3,opt,name=timeout_seconds,json=timeoutSeconds,proto3,oneof" json:"timeout_seconds,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// How many different people must approve before the run goes on. Unset = 1. One rejection fails the node.
+	RequiredApprovals *int32 `protobuf:"varint,4,opt,name=required_approvals,json=requiredApprovals,proto3,oneof" json:"required_approvals,omitempty"`
+	// Roles (built-in or custom, by name or id) an approver must hold, organization-wide or for the run's site;
+	// any one of them is enough. Empty = whoever may approve runs (executions:approve), or approval_group.
+	ApproverRoles []string `protobuf:"bytes,5,rep,name=approver_roles,json=approverRoles,proto3" json:"approver_roles,omitempty"`
+	// False: the person who requested the run (for an AI agent's run, the person it acts for) cannot approve it.
+	// Unset = true.
+	RequesterMayApprove *bool `protobuf:"varint,6,opt,name=requester_may_approve,json=requesterMayApprove,proto3,oneof" json:"requester_may_approve,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *HumanApprovalNodeConfigProto) Reset() {
@@ -967,6 +975,27 @@ func (x *HumanApprovalNodeConfigProto) GetTimeoutSeconds() int32 {
 		return *x.TimeoutSeconds
 	}
 	return 0
+}
+
+func (x *HumanApprovalNodeConfigProto) GetRequiredApprovals() int32 {
+	if x != nil && x.RequiredApprovals != nil {
+		return *x.RequiredApprovals
+	}
+	return 0
+}
+
+func (x *HumanApprovalNodeConfigProto) GetApproverRoles() []string {
+	if x != nil {
+		return x.ApproverRoles
+	}
+	return nil
+}
+
+func (x *HumanApprovalNodeConfigProto) GetRequesterMayApprove() bool {
+	if x != nil && x.RequesterMayApprove != nil {
+		return *x.RequesterMayApprove
+	}
+	return false
 }
 
 // The AI node's configuration (zqnt-core #164), the engine's copy of zqnt.application.v3.AiNodeConfig:
@@ -3127,13 +3156,18 @@ const file_capability_execution_dto_proto_rawDesc = "" +
 	"\x06filter\x18\x02 \x01(\v2\x1d.zqnt.ExecutionConditionProtoH\x00R\x06filter\x88\x01\x01\x12,\n" +
 	"\x0ftimeout_seconds\x18\x03 \x01(\x05H\x01R\x0etimeoutSeconds\x88\x01\x01B\t\n" +
 	"\a_filterB\x12\n" +
-	"\x10_timeout_seconds\"\xc4\x01\n" +
+	"\x10_timeout_seconds\"\x89\x03\n" +
 	"\x1cHumanApprovalNodeConfigProto\x12#\n" +
 	"\rapproval_type\x18\x01 \x01(\tR\fapprovalType\x12*\n" +
 	"\x0eapproval_group\x18\x02 \x01(\tH\x00R\rapprovalGroup\x88\x01\x01\x12,\n" +
-	"\x0ftimeout_seconds\x18\x03 \x01(\x05H\x01R\x0etimeoutSeconds\x88\x01\x01B\x11\n" +
+	"\x0ftimeout_seconds\x18\x03 \x01(\x05H\x01R\x0etimeoutSeconds\x88\x01\x01\x122\n" +
+	"\x12required_approvals\x18\x04 \x01(\x05H\x02R\x11requiredApprovals\x88\x01\x01\x12%\n" +
+	"\x0eapprover_roles\x18\x05 \x03(\tR\rapproverRoles\x127\n" +
+	"\x15requester_may_approve\x18\x06 \x01(\bH\x03R\x13requesterMayApprove\x88\x01\x01B\x11\n" +
 	"\x0f_approval_groupB\x12\n" +
-	"\x10_timeout_seconds\"\x90\x02\n" +
+	"\x10_timeout_secondsB\x15\n" +
+	"\x13_required_approvalsB\x18\n" +
+	"\x16_requester_may_approve\"\x90\x02\n" +
 	"\x11AiNodeConfigProto\x12\x16\n" +
 	"\x06prompt\x18\x01 \x01(\tR\x06prompt\x12%\n" +
 	"\x0eprompt_version\x18\x02 \x01(\tR\rpromptVersion\x12\x19\n" +
