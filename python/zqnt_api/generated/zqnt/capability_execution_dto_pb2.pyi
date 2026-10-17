@@ -160,14 +160,20 @@ class EventWaitNodeConfigProto(_message.Message):
     def __init__(self, event_type: _Optional[str] = ..., filter: _Optional[_Union[ExecutionConditionProto, _Mapping]] = ..., timeout_seconds: _Optional[int] = ...) -> None: ...
 
 class HumanApprovalNodeConfigProto(_message.Message):
-    __slots__ = ("approval_type", "approval_group", "timeout_seconds")
+    __slots__ = ("approval_type", "approval_group", "timeout_seconds", "required_approvals", "approver_roles", "requester_may_approve")
     APPROVAL_TYPE_FIELD_NUMBER: _ClassVar[int]
     APPROVAL_GROUP_FIELD_NUMBER: _ClassVar[int]
     TIMEOUT_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    REQUIRED_APPROVALS_FIELD_NUMBER: _ClassVar[int]
+    APPROVER_ROLES_FIELD_NUMBER: _ClassVar[int]
+    REQUESTER_MAY_APPROVE_FIELD_NUMBER: _ClassVar[int]
     approval_type: str
     approval_group: str
     timeout_seconds: int
-    def __init__(self, approval_type: _Optional[str] = ..., approval_group: _Optional[str] = ..., timeout_seconds: _Optional[int] = ...) -> None: ...
+    required_approvals: int
+    approver_roles: _containers.RepeatedScalarFieldContainer[str]
+    requester_may_approve: bool
+    def __init__(self, approval_type: _Optional[str] = ..., approval_group: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., required_approvals: _Optional[int] = ..., approver_roles: _Optional[_Iterable[str]] = ..., requester_may_approve: _Optional[bool] = ...) -> None: ...
 
 class AiNodeConfigProto(_message.Message):
     __slots__ = ("prompt", "prompt_version", "model_id", "output_schema", "allowed_tool_categories", "max_cost_micro_eur")
