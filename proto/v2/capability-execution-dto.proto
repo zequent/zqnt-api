@@ -125,6 +125,14 @@ message HumanApprovalNodeConfigProto {
   string approval_type = 1;
   optional string approval_group = 2;
   optional int32 timeout_seconds = 3;
+  // How many different people must approve before the run goes on. Unset = 1. One rejection fails the node.
+  optional int32 required_approvals = 4;
+  // Roles (built-in or custom, by name or id) an approver must hold, organization-wide or for the run's site;
+  // any one of them is enough. Empty = whoever may approve runs (executions:approve), or approval_group.
+  repeated string approver_roles = 5;
+  // False: the person who requested the run (for an AI agent's run, the person it acts for) cannot approve it.
+  // Unset = true.
+  optional bool requester_may_approve = 6;
 }
 
 // The AI node's configuration (zqnt-core #164), the engine's copy of zqnt.application.v3.AiNodeConfig:
