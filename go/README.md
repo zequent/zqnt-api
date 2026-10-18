@@ -13,6 +13,7 @@ go get github.com/zequent/zqnt-api/go/v3@<version>
 
 | Import path | Contract |
 |---|---|
+| `gen/zqnt/application_simulation/v3` | `zqnt.application_simulation.v3`: `SimulationService`, simulating an Application on a virtual fleet and reading its trace |
 | `gen/zqnt/capability/v3` | `zqnt.capability.v3`: Capability, CommandSafety, Command, CommandResult, CommandEvent |
 | `gen/zqnt/common/v3` | `zqnt.common.v3`: AssetRef, RequestContext, Error, paging, GeoPoint |
 | `gen/zqnt/control/v3` | `zqnt.control.v3`: `RemoteControlService` for clients |
