@@ -479,9 +479,12 @@ type WatchTelemetryRequest struct {
 	// Empty = every asset of the caller's organization.
 	Assets []*v3.AssetRef `protobuf:"bytes,2,rep,name=assets,proto3" json:"assets,omitempty"`
 	// At most one sample per asset per interval; unset = every sample.
-	MinInterval   *durationpb.Duration `protobuf:"bytes,3,opt,name=min_interval,json=minInterval,proto3" json:"min_interval,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	MinInterval *durationpb.Duration `protobuf:"bytes,3,opt,name=min_interval,json=minInterval,proto3" json:"min_interval,omitempty"`
+	// The organization whose assets to watch. Required for an `integration` credential, which serves
+	// several organizations; a client credential always watches its own and leaves it empty.
+	OrganizationId string `protobuf:"bytes,4,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *WatchTelemetryRequest) Reset() {
@@ -533,6 +536,13 @@ func (x *WatchTelemetryRequest) GetMinInterval() *durationpb.Duration {
 		return x.MinInterval
 	}
 	return nil
+}
+
+func (x *WatchTelemetryRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
 }
 
 type WatchTelemetryResponse struct {
@@ -1244,11 +1254,12 @@ const file_zqnt_telemetry_v3_telemetry_proto_rawDesc = "" +
 	"\bseverity\x18\x03 \x01(\x0e2 .zqnt.telemetry.v3.AlertSeverityR\bseverity\x12\x12\n" +
 	"\x04code\x18\x04 \x01(\tR\x04code\x12\x18\n" +
 	"\amessage\x18\x05 \x01(\tR\amessage\x121\n" +
-	"\adetails\x18\x06 \x01(\v2\x17.google.protobuf.StructR\adetails\"\xc1\x01\n" +
+	"\adetails\x18\x06 \x01(\v2\x17.google.protobuf.StructR\adetails\"\xea\x01\n" +
 	"\x15WatchTelemetryRequest\x128\n" +
 	"\acontext\x18\x01 \x01(\v2\x1e.zqnt.common.v3.RequestContextR\acontext\x120\n" +
 	"\x06assets\x18\x02 \x03(\v2\x18.zqnt.common.v3.AssetRefR\x06assets\x12<\n" +
-	"\fmin_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\vminInterval\"\xe2\x01\n" +
+	"\fmin_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\vminInterval\x12'\n" +
+	"\x0forganization_id\x18\x04 \x01(\tR\x0eorganizationId\"\xe2\x01\n" +
 	"\x16WatchTelemetryResponse\x12<\n" +
 	"\x06sample\x18\x01 \x01(\v2\".zqnt.telemetry.v3.TelemetrySampleH\x00R\x06sample\x12F\n" +
 	"\rsource_status\x18\x02 \x01(\v2\x1f.zqnt.telemetry.v3.SourceStatusH\x00R\fsourceStatus\x12:\n" +

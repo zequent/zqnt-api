@@ -99,14 +99,16 @@ class Alert(_message.Message):
     def __init__(self, asset: _Optional[_Union[_common_pb2.AssetRef, _Mapping]] = ..., occurred_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., severity: _Optional[_Union[AlertSeverity, str]] = ..., code: _Optional[str] = ..., message: _Optional[str] = ..., details: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
 
 class WatchTelemetryRequest(_message.Message):
-    __slots__ = ("context", "assets", "min_interval")
+    __slots__ = ("context", "assets", "min_interval", "organization_id")
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
     ASSETS_FIELD_NUMBER: _ClassVar[int]
     MIN_INTERVAL_FIELD_NUMBER: _ClassVar[int]
+    ORGANIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     context: _common_pb2.RequestContext
     assets: _containers.RepeatedCompositeFieldContainer[_common_pb2.AssetRef]
     min_interval: _duration_pb2.Duration
-    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ..., assets: _Optional[_Iterable[_Union[_common_pb2.AssetRef, _Mapping]]] = ..., min_interval: _Optional[_Union[datetime.timedelta, _duration_pb2.Duration, _Mapping]] = ...) -> None: ...
+    organization_id: str
+    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ..., assets: _Optional[_Iterable[_Union[_common_pb2.AssetRef, _Mapping]]] = ..., min_interval: _Optional[_Union[datetime.timedelta, _duration_pb2.Duration, _Mapping]] = ..., organization_id: _Optional[str] = ...) -> None: ...
 
 class WatchTelemetryResponse(_message.Message):
     __slots__ = ("sample", "source_status", "heartbeat")
