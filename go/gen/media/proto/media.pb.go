@@ -83,8 +83,10 @@ const (
 	MediaFileStatus_MEDIA_FILE_STATUS_UNSPECIFIED MediaFileStatus = 0
 	// Moved into the media bucket under its folder.
 	MediaFileStatus_MEDIA_FILE_STATUS_STORED MediaFileStatus = 1
-	// Recorded, but still at its inbox key because moving it failed; retried on the next report.
+	// Recorded, but still at its inbox key because moving it failed; retried with backoff.
 	MediaFileStatus_MEDIA_FILE_STATUS_PENDING MediaFileStatus = 2
+	// Still at its inbox key: every move attempt failed. failure_reason says why.
+	MediaFileStatus_MEDIA_FILE_STATUS_FAILED MediaFileStatus = 3
 )
 
 // Enum value maps for MediaFileStatus.
@@ -93,11 +95,13 @@ var (
 		0: "MEDIA_FILE_STATUS_UNSPECIFIED",
 		1: "MEDIA_FILE_STATUS_STORED",
 		2: "MEDIA_FILE_STATUS_PENDING",
+		3: "MEDIA_FILE_STATUS_FAILED",
 	}
 	MediaFileStatus_value = map[string]int32{
 		"MEDIA_FILE_STATUS_UNSPECIFIED": 0,
 		"MEDIA_FILE_STATUS_STORED":      1,
 		"MEDIA_FILE_STATUS_PENDING":     2,
+		"MEDIA_FILE_STATUS_FAILED":      3,
 	}
 )
 
@@ -237,7 +241,11 @@ type MediaFileProtoDTO struct {
 	// Vendor details that have no field of their own (payload model, is_original, ...).
 	Metadata map[string]string `protobuf:"bytes,23,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Short-lived presigned GET URL, filled on reads. Empty when the file cannot be served.
-	DownloadUrl   string `protobuf:"bytes,24,opt,name=download_url,json=downloadUrl,proto3" json:"download_url,omitempty"`
+	DownloadUrl string `protobuf:"bytes,24,opt,name=download_url,json=downloadUrl,proto3" json:"download_url,omitempty"`
+	// Why the last move into the media bucket failed. Empty once STORED.
+	FailureReason string `protobuf:"bytes,25,opt,name=failure_reason,json=failureReason,proto3" json:"failure_reason,omitempty"`
+	// Moves into the media bucket tried so far.
+	MoveAttempts  int32 `protobuf:"varint,26,opt,name=move_attempts,json=moveAttempts,proto3" json:"move_attempts,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -438,6 +446,20 @@ func (x *MediaFileProtoDTO) GetDownloadUrl() string {
 		return x.DownloadUrl
 	}
 	return ""
+}
+
+func (x *MediaFileProtoDTO) GetFailureReason() string {
+	if x != nil {
+		return x.FailureReason
+	}
+	return ""
+}
+
+func (x *MediaFileProtoDTO) GetMoveAttempts() int32 {
+	if x != nil {
+		return x.MoveAttempts
+	}
+	return 0
 }
 
 type RegisterMediaFileRequest struct {
@@ -784,7 +806,7 @@ const file_media_proto_rawDesc = "" +
 	"gimbal_yaw\x18\x05 \x01(\x01H\x02R\tgimbalYaw\x88\x01\x01B\x14\n" +
 	"\x12_absolute_altitudeB\x14\n" +
 	"\x12_relative_altitudeB\r\n" +
-	"\v_gimbal_yaw\"\x87\b\n" +
+	"\v_gimbal_yaw\"\xd3\b\n" +
 	"\x11MediaFileProtoDTO\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
 	"\n" +
@@ -817,7 +839,9 @@ const file_media_proto_rawDesc = "" +
 	"\bposition\x18\x15 \x01(\v2\x1a.zqnt.MediaCapturePositionH\x00R\bposition\x88\x01\x01\x12(\n" +
 	"\x10vendor_flight_id\x18\x16 \x01(\tR\x0evendorFlightId\x12A\n" +
 	"\bmetadata\x18\x17 \x03(\v2%.zqnt.MediaFileProtoDTO.MetadataEntryR\bmetadata\x12!\n" +
-	"\fdownload_url\x18\x18 \x01(\tR\vdownloadUrl\x1a;\n" +
+	"\fdownload_url\x18\x18 \x01(\tR\vdownloadUrl\x12%\n" +
+	"\x0efailure_reason\x18\x19 \x01(\tR\rfailureReason\x12#\n" +
+	"\rmove_attempts\x18\x1a \x01(\x05R\fmoveAttempts\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\v\n" +
@@ -860,11 +884,12 @@ const file_media_proto_rawDesc = "" +
 	"\x16MEDIA_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10MEDIA_TYPE_PHOTO\x10\x01\x12\x14\n" +
 	"\x10MEDIA_TYPE_VIDEO\x10\x02\x12\x14\n" +
-	"\x10MEDIA_TYPE_OTHER\x10\x03*q\n" +
+	"\x10MEDIA_TYPE_OTHER\x10\x03*\x8f\x01\n" +
 	"\x0fMediaFileStatus\x12!\n" +
 	"\x1dMEDIA_FILE_STATUS_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18MEDIA_FILE_STATUS_STORED\x10\x01\x12\x1d\n" +
-	"\x19MEDIA_FILE_STATUS_PENDING\x10\x02B;\n" +
+	"\x19MEDIA_FILE_STATUS_PENDING\x10\x02\x12\x1c\n" +
+	"\x18MEDIA_FILE_STATUS_FAILED\x10\x03B;\n" +
 	"\x1acom.zqnt.utils.media.protoB\n" +
 	"MediaProtoP\x01Z\x0fgen/media/protob\x06proto3"
 
