@@ -14,6 +14,7 @@ uv add "zqnt-api @ git+https://github.com/zequent/zqnt-api@<tag or commit>#subdi
 
 | Module | Content |
 |---|---|
+| `zqnt_api.generated.zqnt.application_simulation.v3` | `zqnt.application_simulation.v3`: `SimulationService`, simulating an Application on a virtual fleet and reading its trace |
 | `zqnt_api.generated.zqnt.capability.v3` | `zqnt.capability.v3`: Capability, CommandSafety, Command, CommandResult, CommandEvent |
 | `zqnt_api.generated.zqnt.common.v3` | `zqnt.common.v3`: AssetRef, RequestContext, Error, paging, GeoPoint |
 | `zqnt_api.generated.zqnt.control.v3` | `zqnt.control.v3`: `RemoteControlService` for clients |

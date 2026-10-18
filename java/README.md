@@ -18,6 +18,7 @@ this artifact only.
 
 | Package | Content |
 |---|---|
+| `com.zqnt.protos.application_simulation.v3` | `zqnt.application_simulation.v3`: `SimulationService`, simulating an Application on a virtual fleet and reading its trace |
 | `com.zqnt.protos.capability.v3` | `zqnt.capability.v3`: Capability, CapabilitySet (with the mounted Payloads and the TelemetryFields), CommandSafety, Command, CommandResult, CommandEvent |
 | `com.zqnt.protos.common.v3` | `zqnt.common.v3`: AssetRef, RequestContext, Error, paging, GeoPoint |
 | `com.zqnt.protos.control.v3` | `zqnt.control.v3`: `RemoteControlService` for clients |

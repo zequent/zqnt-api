@@ -1,0 +1,274 @@
+syntax = "proto3";
+
+// Simulating an Application before it flies. The platform's own engine runs it -- graph, mappings,
+// branches, joins, approvals, FAILURE/TIMEOUT edges, asset selection, safety rules -- on a virtual
+// fleet, and no command leaves the platform: every command is answered from its published contract
+// and the scenario of the request. The trace tells which way the run went through its graph and why.
+//
+// A simulated run is kept and marked as one, is left out of execution statistics and is not counted
+// against license limits. Real assets are never held, commanded or changed by it.
+package zqnt.application_simulation.v3;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "zqnt/common/v3/common.proto";
+
+option go_package = "github.com/zequent/zqnt-api/go/v3/gen/zqnt/application_simulation/v3;applicationsimulationv3";
+option java_multiple_files = true;
+option java_package = "com.zqnt.protos.application_simulation.v3";
+
+// Starting and cancelling a simulation need the permission executions:simulate, reading its trace
+// executions:read: a person needs it organization-wide or for the site of the run, a client
+// credential has both for its organization. Every call acts only on the caller's organization's
+// Applications and runs.
+service SimulationService {
+  // Starts a simulated run of an Application and answers once it is running; it continues in the
+  // platform. INVALID_ARGUMENT for an unusable scenario or fleet, NOT_FOUND for an Application that
+  // is not the caller's organization's.
+  rpc StartSimulation(StartSimulationRequest) returns (StartSimulationResponse);
+  // The path a simulated run took so far, or in full once it has ended. Poll it until `status` is
+  // final. NOT_FOUND for a run that is not a simulation of the caller's organization.
+  rpc GetSimulationTrace(GetSimulationTraceRequest) returns (GetSimulationTraceResponse);
+  // Stops a simulated run, e.g. one in real time. NOT_FOUND as for GetSimulationTrace.
+  rpc CancelSimulation(CancelSimulationRequest) returns (CancelSimulationResponse);
+}
+
+enum SimulationStatus {
+  SIMULATION_STATUS_UNSPECIFIED = 0;
+  SIMULATION_STATUS_PENDING = 1;
+  SIMULATION_STATUS_RUNNING = 2;
+  SIMULATION_STATUS_PAUSED = 3;
+  SIMULATION_STATUS_SUCCEEDED = 4;
+  SIMULATION_STATUS_FAILED = 5;
+  SIMULATION_STATUS_CANCELLED = 6;
+  SIMULATION_STATUS_TIMED_OUT = 7;
+  // Cancel requested; the simulated commands still running are being stopped.
+  SIMULATION_STATUS_CANCELLING = 8;
+}
+
+// How a simulated node ends.
+enum NodeOutcome {
+  NODE_OUTCOME_UNSPECIFIED = 0;
+  NODE_OUTCOME_SUCCESS = 1;
+  // Follows the node's FAILURE edges with `error_code` / `error_message`.
+  NODE_OUTCOME_FAILURE = 2;
+  // The command never answers: the node runs into its timeout and follows its TIMEOUT edges.
+  NODE_OUTCOME_TIMEOUT = 3;
+}
+
+// How a simulated human approval is answered.
+enum ApprovalAnswer {
+  APPROVAL_ANSWER_UNSPECIFIED = 0;
+  APPROVAL_ANSWER_APPROVE = 1;
+  // Follows the node's FAILURE edges.
+  APPROVAL_ANSWER_REJECT = 2;
+  // Nobody answers: the node times out and follows its TIMEOUT edges.
+  APPROVAL_ANSWER_NO_ANSWER = 3;
+}
+
+enum AssetType {
+  ASSET_TYPE_UNSPECIFIED = 0;
+  ASSET_TYPE_AIRCRAFT = 1;
+  ASSET_TYPE_DOCK = 2;
+  ASSET_TYPE_SENSOR = 3;
+  ASSET_TYPE_CAMERA = 4;
+  ASSET_TYPE_OTHER = 5;
+  ASSET_TYPE_JAMMER = 6;
+}
+
+// What one node does in the simulation. A node without a scenario succeeds after the request's
+// `command_duration`, with an output generated from its command's output schema.
+message NodeScenario {
+  // The node in the Application's graph; a node of a composed Skill is "<skill node id>/<node id>".
+  // Wins over `command_id`.
+  string node_id = 1;
+  // Every node sending this command (e.g. "flight.takeoff"), when no scenario names the node itself.
+  string command_id = 2;
+  // Unset = success.
+  NodeOutcome outcome = 3;
+  // FAILURE: a stable code, e.g. "flight.not_airborne", and a text for people.
+  string error_code = 4;
+  string error_message = 5;
+  // Simulated time until the outcome: a command's duration, when an approval is answered, when the
+  // event an EVENT_WAIT waits for arrives, when an AI node answers. Unset = `command_duration`.
+  google.protobuf.Duration delay = 6;
+  // Laid over the generated output, e.g. {"battery_percent": 18} to drive a branch. For an approval
+  // its comment, for an event wait the event's payload, for an AI node its answer.
+  google.protobuf.Struct output = 7;
+  // HUMAN_APPROVAL nodes: overrides the request's `approvals`.
+  ApprovalAnswer approval = 8;
+}
+
+// An asset of the virtual fleet: made up (`sn`, `type`, `commands`, ...) or a copy of one of the
+// organization's real assets (`copy_of_sn`) as the platform last heard of it -- nothing is sent to
+// the real one, and fields that are set override the copy's. Every virtual asset runs under a
+// serial number of its own, "VIRTUAL-<run>-<sn>", so it cannot be mistaken for a real one.
+message VirtualAsset {
+  // Unique in the fleet. Unset for a copy = the original's serial number.
+  string sn = 1;
+  // The serial number of a real asset of the caller's organization.
+  string copy_of_sn = 2;
+  string name = 3;
+  // Unset = an aircraft.
+  AssetType type = 4;
+  // The command ids it publishes, e.g. "flight.takeoff". Unset for a copy = what the original last
+  // published.
+  repeated string commands = 5;
+  // Where it is; altitude in metres above sea level. Unset for a copy = where the original is.
+  zqnt.common.v3.GeoPoint position = 6;
+  // 0..100. Unset = 100, for a copy the original's.
+  optional double battery_percent = 7;
+  // The site it is stationed at. A copy is stationed where the original is.
+  string site_id = 8;
+  // Unset = online.
+  optional bool online = 9;
+}
+
+message StartSimulationRequest {
+  // `idempotency_key` is required: a start retried with the same key answers the run it started.
+  zqnt.common.v3.RequestContext context = 1;
+  string application_id = 2;
+  // Unset = the version promoted to production, else the newest.
+  string application_version = 3;
+  // The Skill of the Application to run. Unset = its first.
+  string skill_id = 4;
+  // The run's input, read by mappings as `$.input.<field>`.
+  google.protobuf.Struct inputs = 5;
+  // Only an asset of this site is chosen.
+  string site_id = 6;
+  // Waits, timeouts and command durations pass in real time. Unset = fast-forward: a 30-minute
+  // flight is simulated in moments, and its timings in the trace stay those of the flight.
+  bool real_time = 7;
+  // How long a command without a scenario delay takes, in simulated time. Unset = 10 seconds.
+  google.protobuf.Duration command_duration = 8;
+  // How an approval without a scenario of its own is answered. Unset = approved.
+  ApprovalAnswer approvals = 9;
+  repeated NodeScenario nodes = 10;
+  // What asset selection, policies and sites choose from. Empty = a copy of every aircraft and dock
+  // of the organization.
+  repeated VirtualAsset fleet = 11;
+}
+
+message StartSimulationResponse {
+  string execution_id = 1;
+  SimulationStatus status = 2;
+}
+
+message GetSimulationTraceRequest {
+  zqnt.common.v3.RequestContext context = 1;
+  string execution_id = 2;
+}
+
+message GetSimulationTraceResponse {
+  SimulationTrace trace = 1;
+}
+
+message CancelSimulationRequest {
+  zqnt.common.v3.RequestContext context = 1;
+  string execution_id = 2;
+}
+
+message CancelSimulationResponse {
+  SimulationStatus status = 1;
+}
+
+enum NodeType {
+  NODE_TYPE_UNSPECIFIED = 0;
+  // Sends one command to an asset.
+  NODE_TYPE_COMMAND = 1;
+  // Runs another Skill, composed into the Application.
+  NODE_TYPE_SKILL = 2;
+  NODE_TYPE_CONDITION = 3;
+  NODE_TYPE_PARALLEL_GATEWAY = 4;
+  NODE_TYPE_JOIN_GATEWAY = 5;
+  NODE_TYPE_WAIT = 6;
+  NODE_TYPE_EVENT_WAIT = 7;
+  NODE_TYPE_HUMAN_APPROVAL = 8;
+  NODE_TYPE_END = 9;
+  // Asks the AI assistant; its structured answer is the node's output.
+  NODE_TYPE_AI = 10;
+}
+
+enum NodeStatus {
+  NODE_STATUS_UNSPECIFIED = 0;
+  NODE_STATUS_PENDING = 1;
+  NODE_STATUS_RUNNING = 2;
+  NODE_STATUS_SUCCEEDED = 3;
+  NODE_STATUS_FAILED = 4;
+  NODE_STATUS_SKIPPED = 5;
+  NODE_STATUS_CANCELLED = 6;
+  NODE_STATUS_TIMED_OUT = 7;
+  // Waiting for a person (an approval) or an event.
+  NODE_STATUS_WAITING = 8;
+  NODE_STATUS_PAUSED = 9;
+}
+
+enum EdgeType {
+  EDGE_TYPE_UNSPECIFIED = 0;
+  EDGE_TYPE_NORMAL = 1;
+  EDGE_TYPE_SUCCESS = 2;
+  // From a SKILL node it catches a failure anywhere inside that Skill. A rejected approval is a
+  // failure.
+  EDGE_TYPE_FAILURE = 3;
+  // An approval nobody answered, or a node that ran out of time.
+  EDGE_TYPE_TIMEOUT = 4;
+  EDGE_TYPE_COMPENSATION = 5;
+}
+
+// Why the run went from one node to the next.
+message TraceTransition {
+  string target_node_id = 1;
+  EdgeType edge_type = 2;
+  // In words, e.g. "succeeded", "condition true", "failed: flight.not_airborne", "timed out".
+  string reason = 3;
+}
+
+// One node that ran.
+message TraceStep {
+  string node_id = 1;
+  string name = 2;
+  NodeType type = 3;
+  // COMMAND nodes.
+  string command_id = 4;
+  NodeStatus status = 5;
+  int32 attempt = 6;
+  // Who performed it: the run's asset, or the one it was dispatched to (a virtual serial number).
+  string asset_sn = 7;
+  // Set when the node went to another asset than the run's own, in words.
+  string dispatch_reason = 8;
+  // What went in: the command's parameters after mapping.
+  google.protobuf.Struct input = 9;
+  google.protobuf.Struct output = 10;
+  zqnt.common.v3.Error error = 11;
+  // What to know about how the node ran, without it having failed.
+  repeated string warnings = 12;
+  google.protobuf.Timestamp started_at = 13;
+  google.protobuf.Timestamp completed_at = 14;
+  // From the run's start to this node's start, and how long the node took, in simulated time.
+  google.protobuf.Duration offset = 15;
+  google.protobuf.Duration duration = 16;
+  repeated TraceTransition next = 17;
+  // What decided the node's outcome, e.g. "scenario: failure" or "generated from the output schema
+  // of flight.takeoff".
+  string simulated_by = 18;
+}
+
+// The path a simulated run took through its graph, in the order its nodes started.
+message SimulationTrace {
+  string execution_id = 1;
+  SimulationStatus status = 2;
+  // The asset the platform chose for the run (a virtual serial number).
+  string asset_sn = 3;
+  // The run skipped its waits.
+  bool fast_forward = 4;
+  // From start to end (or to now), in simulated time.
+  google.protobuf.Duration duration = 5;
+  repeated TraceStep steps = 6;
+  // Nodes that never ran: branches not taken.
+  repeated string skipped_node_ids = 7;
+  zqnt.common.v3.Error error = 8;
+  google.protobuf.Struct output = 9;
+  // The fleet, under the serial numbers the run used.
+  repeated VirtualAsset fleet = 10;
+}
