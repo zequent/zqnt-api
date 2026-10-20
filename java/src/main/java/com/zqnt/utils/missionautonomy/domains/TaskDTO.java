@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -53,12 +53,12 @@ public class TaskDTO implements Serializable {
     /**
      * Task creation timestamp
      */
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     /**
      * Last modification timestamp
      */
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt;
 
     /**
      * User/system who last modified this task

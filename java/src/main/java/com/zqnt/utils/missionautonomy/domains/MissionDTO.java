@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,16 +24,16 @@ import java.util.UUID;
 @Builder
 public class MissionDTO implements Serializable {
     private UUID id;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private Instant createdAt;
+    private Instant modifiedAt;
     private String modifiedFrom;
     private String name;
     private String description;
     private MissionStatus status;
     private MissionType type;
     private String geoJson;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private Instant startDate;
+    private Instant endDate;
     private DynamicConfigDTO missionConfig;
     private AutonomyConfigDTO autonomyConfig;
     private String externalId;

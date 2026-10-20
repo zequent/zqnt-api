@@ -3,7 +3,6 @@ package com.zqnt.utils.core;
 import com.google.protobuf.Timestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -11,46 +10,21 @@ import java.time.ZoneOffset;
 
 public class ProtobufHelpers {
 
-	// LocalDateTime → Protobuf Timestamp
-	public static Timestamp toTimestamp(LocalDateTime localDateTime) {
-		if (localDateTime == null) {
+	public static Timestamp toTimestamp(Instant instant) {
+		if (instant == null) {
 			return null;
 		}
-		Instant instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
 		return Timestamp.newBuilder()
 				.setSeconds(instant.getEpochSecond())
 				.setNanos(instant.getNano())
 				.build();
 	}
 
-	// LocalDateTime mit spezifischer Timezone → Protobuf Timestamp
-	public static Timestamp toTimestamp(LocalDateTime localDateTime, ZoneId zoneId) {
-		if (localDateTime == null) {
-			return null;
-		}
-		Instant instant = localDateTime.atZone(zoneId).toInstant();
-		return Timestamp.newBuilder()
-				.setSeconds(instant.getEpochSecond())
-				.setNanos(instant.getNano())
-				.build();
-	}
-
-	// Protobuf Timestamp → LocalDateTime (System Timezone)
-	public static LocalDateTime toLocalDateTime(Timestamp timestamp) {
+	public static Instant toInstant(Timestamp timestamp) {
 		if (timestamp == null) {
 			return null;
 		}
-		Instant instant = Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
-		return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-	}
-
-	// Protobuf Timestamp → LocalDateTime mit spezifischer Timezone
-	public static LocalDateTime toLocalDateTime(Timestamp timestamp, ZoneId zoneId) {
-		if (timestamp == null) {
-			return null;
-		}
-		Instant instant = Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
-		return LocalDateTime.ofInstant(instant, zoneId);
+		return Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
 	}
 
 	// Protobuf Timestamp → OffsetDateTime (UTC)
