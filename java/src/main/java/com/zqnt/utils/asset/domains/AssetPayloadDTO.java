@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +19,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AssetPayloadDTO implements Serializable {
     private UUID id;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private Instant createdAt;
+    private Instant modifiedAt;
     private String modifiedFrom;
     private String externalId;
     private String externalType;
@@ -39,7 +39,7 @@ public class AssetPayloadDTO implements Serializable {
     @Builder.Default
     private List<PayloadCommandDefinitionDTO> commands = new ArrayList<>();
     private Boolean active;
-    private LocalDateTime lastSeenAt;
+    private Instant lastSeenAt;
 
     public void validate() {
         if (name == null || name.isBlank()) {
