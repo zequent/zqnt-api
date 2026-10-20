@@ -93,6 +93,9 @@ message WatchTelemetryRequest {
   repeated zqnt.common.v3.AssetRef assets = 2;
   // At most one sample per asset per interval; unset = every sample.
   google.protobuf.Duration min_interval = 3;
+  // The organization whose assets to watch. Required for an `integration` credential, which serves
+  // several organizations; a client credential always watches its own and leaves it empty.
+  string organization_id = 4;
 }
 
 message WatchTelemetryResponse {

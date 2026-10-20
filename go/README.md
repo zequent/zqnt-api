@@ -13,10 +13,12 @@ go get github.com/zequent/zqnt-api/go/v3@<version>
 
 | Import path | Contract |
 |---|---|
+| `gen/zqnt/application_simulation/v3` | `zqnt.application_simulation.v3`: `SimulationService`, simulating an Application on a virtual fleet and reading its trace |
 | `gen/zqnt/capability/v3` | `zqnt.capability.v3`: Capability, CommandSafety, Command, CommandResult, CommandEvent |
 | `gen/zqnt/common/v3` | `zqnt.common.v3`: AssetRef, RequestContext, Error, paging, GeoPoint |
 | `gen/zqnt/control/v3` | `zqnt.control.v3`: `RemoteControlService` for clients |
 | `gen/zqnt/edge/v3` | `zqnt.edge.v3`: `EdgeAdapterService` (adapter side), `EdgeGatewayService` (platform side) |
+| `gen/zqnt/stream/v3` | `zqnt.stream.v3`: `LiveStreamService`, the live video streams of an organization |
 | `gen/zqnt/telemetry/v3` | `zqnt.telemetry.v3`: TelemetrySample and the telemetry service |
 | `gen/common/...`, `gen/edge/sdk/proto`, `gen/livedata/proto`, `gen/remotecontrol/proto`, `gen/connector/proto`, `gen/missionautonomy/...`, `gen/execution/...`, `gen/devicecontrol/...`, `gen/events/proto`, `gen/media/proto` | the frozen 2.x contracts (package `zqnt`), wire-compatible with 2.0.0 |
 | `telemetry` | v2 `Telemetry` ⇄ v3 `TelemetrySample`, and the catalog of telemetry detail keys |

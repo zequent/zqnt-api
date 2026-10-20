@@ -29,6 +29,7 @@ class MediaFileStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     MEDIA_FILE_STATUS_UNSPECIFIED: _ClassVar[MediaFileStatus]
     MEDIA_FILE_STATUS_STORED: _ClassVar[MediaFileStatus]
     MEDIA_FILE_STATUS_PENDING: _ClassVar[MediaFileStatus]
+    MEDIA_FILE_STATUS_FAILED: _ClassVar[MediaFileStatus]
 MEDIA_TYPE_UNSPECIFIED: MediaType
 MEDIA_TYPE_PHOTO: MediaType
 MEDIA_TYPE_VIDEO: MediaType
@@ -36,6 +37,7 @@ MEDIA_TYPE_OTHER: MediaType
 MEDIA_FILE_STATUS_UNSPECIFIED: MediaFileStatus
 MEDIA_FILE_STATUS_STORED: MediaFileStatus
 MEDIA_FILE_STATUS_PENDING: MediaFileStatus
+MEDIA_FILE_STATUS_FAILED: MediaFileStatus
 
 class MediaCapturePosition(_message.Message):
     __slots__ = ("latitude", "longitude", "absolute_altitude", "relative_altitude", "gimbal_yaw")
@@ -52,7 +54,7 @@ class MediaCapturePosition(_message.Message):
     def __init__(self, latitude: _Optional[float] = ..., longitude: _Optional[float] = ..., absolute_altitude: _Optional[float] = ..., relative_altitude: _Optional[float] = ..., gimbal_yaw: _Optional[float] = ...) -> None: ...
 
 class MediaFileProtoDTO(_message.Message):
-    __slots__ = ("id", "media_type", "status", "file_name", "content_type", "size_bytes", "bucket", "object_key", "folder_path", "asset_sn", "device_sn", "organization_id", "organization_name", "execution_id", "application_id", "application_name", "skill_id", "skill_name", "captured_at", "uploaded_at", "position", "vendor_flight_id", "metadata", "download_url")
+    __slots__ = ("id", "media_type", "status", "file_name", "content_type", "size_bytes", "bucket", "object_key", "folder_path", "asset_sn", "device_sn", "organization_id", "organization_name", "execution_id", "application_id", "application_name", "skill_id", "skill_name", "captured_at", "uploaded_at", "position", "vendor_flight_id", "metadata", "download_url", "failure_reason", "move_attempts")
     class MetadataEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -84,6 +86,8 @@ class MediaFileProtoDTO(_message.Message):
     VENDOR_FLIGHT_ID_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
     DOWNLOAD_URL_FIELD_NUMBER: _ClassVar[int]
+    FAILURE_REASON_FIELD_NUMBER: _ClassVar[int]
+    MOVE_ATTEMPTS_FIELD_NUMBER: _ClassVar[int]
     id: str
     media_type: MediaType
     status: MediaFileStatus
@@ -108,7 +112,9 @@ class MediaFileProtoDTO(_message.Message):
     vendor_flight_id: str
     metadata: _containers.ScalarMap[str, str]
     download_url: str
-    def __init__(self, id: _Optional[str] = ..., media_type: _Optional[_Union[MediaType, str]] = ..., status: _Optional[_Union[MediaFileStatus, str]] = ..., file_name: _Optional[str] = ..., content_type: _Optional[str] = ..., size_bytes: _Optional[int] = ..., bucket: _Optional[str] = ..., object_key: _Optional[str] = ..., folder_path: _Optional[str] = ..., asset_sn: _Optional[str] = ..., device_sn: _Optional[str] = ..., organization_id: _Optional[str] = ..., organization_name: _Optional[str] = ..., execution_id: _Optional[str] = ..., application_id: _Optional[str] = ..., application_name: _Optional[str] = ..., skill_id: _Optional[str] = ..., skill_name: _Optional[str] = ..., captured_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., uploaded_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., position: _Optional[_Union[MediaCapturePosition, _Mapping]] = ..., vendor_flight_id: _Optional[str] = ..., metadata: _Optional[_Mapping[str, str]] = ..., download_url: _Optional[str] = ...) -> None: ...
+    failure_reason: str
+    move_attempts: int
+    def __init__(self, id: _Optional[str] = ..., media_type: _Optional[_Union[MediaType, str]] = ..., status: _Optional[_Union[MediaFileStatus, str]] = ..., file_name: _Optional[str] = ..., content_type: _Optional[str] = ..., size_bytes: _Optional[int] = ..., bucket: _Optional[str] = ..., object_key: _Optional[str] = ..., folder_path: _Optional[str] = ..., asset_sn: _Optional[str] = ..., device_sn: _Optional[str] = ..., organization_id: _Optional[str] = ..., organization_name: _Optional[str] = ..., execution_id: _Optional[str] = ..., application_id: _Optional[str] = ..., application_name: _Optional[str] = ..., skill_id: _Optional[str] = ..., skill_name: _Optional[str] = ..., captured_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., uploaded_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., position: _Optional[_Union[MediaCapturePosition, _Mapping]] = ..., vendor_flight_id: _Optional[str] = ..., metadata: _Optional[_Mapping[str, str]] = ..., download_url: _Optional[str] = ..., failure_reason: _Optional[str] = ..., move_attempts: _Optional[int] = ...) -> None: ...
 
 class RegisterMediaFileRequest(_message.Message):
     __slots__ = ("base", "asset_sn", "device_sn", "source_bucket", "source_object_key", "file_name", "execution_id", "vendor_flight_id", "captured_at", "position", "metadata")

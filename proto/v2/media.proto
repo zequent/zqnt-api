@@ -30,8 +30,10 @@ enum MediaFileStatus {
   MEDIA_FILE_STATUS_UNSPECIFIED = 0;
   // Moved into the media bucket under its folder.
   MEDIA_FILE_STATUS_STORED = 1;
-  // Recorded, but still at its inbox key because moving it failed; retried on the next report.
+  // Recorded, but still at its inbox key because moving it failed; retried with backoff.
   MEDIA_FILE_STATUS_PENDING = 2;
+  // Still at its inbox key: every move attempt failed. failure_reason says why.
+  MEDIA_FILE_STATUS_FAILED = 3;
 }
 
 message MediaCapturePosition {
@@ -81,6 +83,11 @@ message MediaFileProtoDTO {
 
   // Short-lived presigned GET URL, filled on reads. Empty when the file cannot be served.
   string download_url = 24;
+
+  // Why the last move into the media bucket failed. Empty once STORED.
+  string failure_reason = 25;
+  // Moves into the media bucket tried so far.
+  int32 move_attempts = 26;
 }
 
 message RegisterMediaFileRequest {

@@ -33,6 +33,7 @@ Risk levels: **Observe** reads only · **Adjust** changes settings, nothing move
 | `detection.wait` | — | Waits for a detection. |
 | `detection.count` | — | Counts detected objects. |
 | `detection.control` | — | Starts or stops object detection (2.x form). |
+| `detections.stream` | — | Streams the detections of the live video. |
 
 ## Adjust
 
@@ -53,8 +54,7 @@ Risk levels: **Observe** reads only · **Adjust** changes settings, nothing move
 | `widget.set` | — | Changes a payload setting. |
 | `parachute.led.set` | — | Switches the parachute light. |
 | `dock.light` | — | Switches the landing-pad light. |
-| `dock.open_cover` | `dock.close_cover` | Opens the dock cover (no flight task running). |
-| `dock.close_cover` | `dock.open_cover` | Closes the dock cover (no flight task running). |
+| `dock.light.toggle` | — | Switches the landing-pad light. |
 | `dock.putter` | — | Moves the centring putters on the landing pad. |
 | `dock.start_charging` | `dock.stop_charging` | Starts charging the docked aircraft. |
 | `dock.stop_charging` | `dock.start_charging` | Stops charging the docked aircraft. |
@@ -67,8 +67,6 @@ Risk levels: **Observe** reads only · **Adjust** changes settings, nothing move
 | `radar.look_at` | — | Turns the radar towards a location. |
 | `radar.point` | — | Turns the radar. |
 | `radar.set_mode` | — | Switches the radar between search and track. |
-| `jammer.look_at` | — | Turns the jammer towards a location. |
-| `jammer.set_bands` | — | Changes the bands the jammer can deny. |
 | `mission.pause` | `mission.resume` | Pauses the running route (airborne). |
 | `mission.prepare` | — | Uploads a route to the dock. |
 | `flight.manual.enter` | `flight.manual.exit` | Starts manual control (stick input via StreamManualControl). |
@@ -88,6 +86,8 @@ Risk levels: **Observe** reads only · **Adjust** changes settings, nothing move
 | `mission.start` | `mission.stop` | Starts the prepared route. |
 | `mission.resume` | `mission.pause` | Resumes a paused route. |
 | `mission.stop` | — | Stops the route. |
+| `dock.open_cover` | `dock.close_cover` | Opens the dock cover, a moving part that can hurt someone at the dock (no flight task running). |
+| `dock.close_cover` | `dock.open_cover` | Closes the dock cover (no flight task running). |
 
 ## Critical
 
@@ -98,8 +98,10 @@ Risk levels: **Observe** reads only · **Adjust** changes settings, nothing move
 | `asset.boot_sub_asset` | — | Powers the aircraft on or off (docked). |
 | `link.mode` | — | Changes how the dock talks to the aircraft; a wrong mode can cut the link. |
 | `jammer.enabled` | — | Starts or stops radio jamming; denies every receiver in the beam. |
+| `jammer.look_at` | — | Turns the jammer towards a location; while it jams, whatever is in the new beam is denied. |
+| `jammer.set_bands` | — | Changes the bands the jammer denies; while it jams, receivers on the new bands go dark. |
 
-## Vendor commands (rated by the adapter)
+## Vendor commands (rated by the adapter; the platform counts them as Critical when it does not)
 
 | Command id | What it does |
 |---|---|

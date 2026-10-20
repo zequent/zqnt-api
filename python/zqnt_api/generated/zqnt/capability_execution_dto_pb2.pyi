@@ -160,14 +160,20 @@ class EventWaitNodeConfigProto(_message.Message):
     def __init__(self, event_type: _Optional[str] = ..., filter: _Optional[_Union[ExecutionConditionProto, _Mapping]] = ..., timeout_seconds: _Optional[int] = ...) -> None: ...
 
 class HumanApprovalNodeConfigProto(_message.Message):
-    __slots__ = ("approval_type", "approval_group", "timeout_seconds")
+    __slots__ = ("approval_type", "approval_group", "timeout_seconds", "required_approvals", "approver_roles", "requester_may_approve")
     APPROVAL_TYPE_FIELD_NUMBER: _ClassVar[int]
     APPROVAL_GROUP_FIELD_NUMBER: _ClassVar[int]
     TIMEOUT_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    REQUIRED_APPROVALS_FIELD_NUMBER: _ClassVar[int]
+    APPROVER_ROLES_FIELD_NUMBER: _ClassVar[int]
+    REQUESTER_MAY_APPROVE_FIELD_NUMBER: _ClassVar[int]
     approval_type: str
     approval_group: str
     timeout_seconds: int
-    def __init__(self, approval_type: _Optional[str] = ..., approval_group: _Optional[str] = ..., timeout_seconds: _Optional[int] = ...) -> None: ...
+    required_approvals: int
+    approver_roles: _containers.RepeatedScalarFieldContainer[str]
+    requester_may_approve: bool
+    def __init__(self, approval_type: _Optional[str] = ..., approval_group: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., required_approvals: _Optional[int] = ..., approver_roles: _Optional[_Iterable[str]] = ..., requester_may_approve: _Optional[bool] = ...) -> None: ...
 
 class AiNodeConfigProto(_message.Message):
     __slots__ = ("prompt", "prompt_version", "model_id", "output_schema", "allowed_tool_categories", "max_cost_micro_eur")
@@ -278,7 +284,7 @@ class ExecutionGraphProtoDTO(_message.Message):
     def __init__(self, start_node_id: _Optional[str] = ..., nodes: _Optional[_Iterable[_Union[ExecutionNodeProtoDTO, _Mapping]]] = ..., edges: _Optional[_Iterable[_Union[ExecutionEdgeProtoDTO, _Mapping]]] = ..., layout: _Optional[_Union[ExecutionGraphLayoutProtoDTO, _Mapping]] = ...) -> None: ...
 
 class SkillProtoDTO(_message.Message):
-    __slots__ = ("id", "name", "description", "graph", "input_schema", "output_schema", "default_config", "enabled", "required_asset_capabilities", "output_mapping", "source_application_id", "source_version")
+    __slots__ = ("id", "name", "description", "graph", "input_schema", "output_schema", "default_config", "enabled", "required_asset_capabilities", "output_mapping", "source_application_id", "source_version", "agent_guidance", "agent_available")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
@@ -291,6 +297,8 @@ class SkillProtoDTO(_message.Message):
     OUTPUT_MAPPING_FIELD_NUMBER: _ClassVar[int]
     SOURCE_APPLICATION_ID_FIELD_NUMBER: _ClassVar[int]
     SOURCE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    AGENT_GUIDANCE_FIELD_NUMBER: _ClassVar[int]
+    AGENT_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     id: str
     name: str
     description: str
@@ -303,7 +311,9 @@ class SkillProtoDTO(_message.Message):
     output_mapping: _struct_pb2.Struct
     source_application_id: str
     source_version: str
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., graph: _Optional[_Union[ExecutionGraphProtoDTO, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: _Optional[bool] = ..., required_asset_capabilities: _Optional[_Iterable[str]] = ..., output_mapping: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., source_application_id: _Optional[str] = ..., source_version: _Optional[str] = ...) -> None: ...
+    agent_guidance: str
+    agent_available: bool
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., graph: _Optional[_Union[ExecutionGraphProtoDTO, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: _Optional[bool] = ..., required_asset_capabilities: _Optional[_Iterable[str]] = ..., output_mapping: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., source_application_id: _Optional[str] = ..., source_version: _Optional[str] = ..., agent_guidance: _Optional[str] = ..., agent_available: _Optional[bool] = ...) -> None: ...
 
 class ApplicationChangeProtoDTO(_message.Message):
     __slots__ = ("at", "author", "note", "automatic")
