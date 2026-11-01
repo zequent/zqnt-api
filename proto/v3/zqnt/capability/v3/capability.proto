@@ -138,6 +138,9 @@ message Capability {
   CompletionMode completion = 20;
   // For ASYNCHRONOUS: the event in `events` that reports the outcome, e.g. `flight.takeoff.completed`.
   string completion_event = 21;
+  // The compact layout this command has on tiny links (tiny_schemas.json). 0 = the command cannot
+  // be sent over a tiny link, so an asset reachable only that way is not chosen for it.
+  uint32 tiny_schema_id = 22;
 }
 
 enum SnapshotState {

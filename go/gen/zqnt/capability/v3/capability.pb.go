@@ -772,8 +772,11 @@ type Capability struct {
 	Completion CompletionMode `protobuf:"varint,20,opt,name=completion,proto3,enum=zqnt.capability.v3.CompletionMode" json:"completion,omitempty"`
 	// For ASYNCHRONOUS: the event in `events` that reports the outcome, e.g. `flight.takeoff.completed`.
 	CompletionEvent string `protobuf:"bytes,21,opt,name=completion_event,json=completionEvent,proto3" json:"completion_event,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// The compact layout this command has on tiny links (tiny_schemas.json). 0 = the command cannot
+	// be sent over a tiny link, so an asset reachable only that way is not chosen for it.
+	TinySchemaId  uint32 `protobuf:"varint,22,opt,name=tiny_schema_id,json=tinySchemaId,proto3" json:"tiny_schema_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Capability) Reset() {
@@ -951,6 +954,13 @@ func (x *Capability) GetCompletionEvent() string {
 		return x.CompletionEvent
 	}
 	return ""
+}
+
+func (x *Capability) GetTinySchemaId() uint32 {
+	if x != nil {
+		return x.TinySchemaId
+	}
+	return 0
 }
 
 // Everything one asset can do right now.
@@ -1295,7 +1305,7 @@ const file_zqnt_capability_v3_capability_proto_rawDesc = "" +
 	"\x10runtime_features\x18\x03 \x03(\tR\x0fruntimeFeatures\x127\n" +
 	"\n" +
 	"properties\x18\x04 \x01(\v2\x17.google.protobuf.StructR\n" +
-	"properties\"\x87\t\n" +
+	"properties\"\xad\t\n" +
 	"\n" +
 	"Capability\x12\x1d\n" +
 	"\n" +
@@ -1322,7 +1332,8 @@ const file_zqnt_capability_v3_capability_proto_rawDesc = "" +
 	"\n" +
 	"completion\x18\x14 \x01(\x0e2\".zqnt.capability.v3.CompletionModeR\n" +
 	"completion\x12)\n" +
-	"\x10completion_event\x18\x15 \x01(\tR\x0fcompletionEvent\x1a;\n" +
+	"\x10completion_event\x18\x15 \x01(\tR\x0fcompletionEvent\x12$\n" +
+	"\x0etiny_schema_id\x18\x16 \x01(\rR\ftinySchemaId\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf5\x03\n" +
