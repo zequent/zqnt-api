@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -16,8 +16,8 @@ import java.util.UUID;
 public class DetectionDTO implements Serializable {
 
     private UUID id;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private Instant createdAt;
+    private Instant modifiedAt;
     private String modifiedFrom;
 
     private String assetSn;
@@ -34,5 +34,5 @@ public class DetectionDTO implements Serializable {
     private Float boundingBoxHeight;
 
     private String streamUrl;
-    private LocalDateTime detectedAt;
+    private Instant detectedAt;
 }

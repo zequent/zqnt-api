@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.Map;
 public class TelemetryData {
 
     private String id;
-    private LocalDateTime timestamp;
+    private Instant timestamp;
     private String sn;
     private Double latitude;
     private Double longitude;
@@ -129,7 +129,7 @@ public class TelemetryData {
         private String componentId;
         private String externalId;
         private String kind;
-        private LocalDateTime timestamp;
+        private Instant timestamp;
         private CameraData cameraData;
         private RangeFinderData rangeFinderData;
         private SensorData sensorData;
@@ -143,7 +143,7 @@ public class TelemetryData {
     @AllArgsConstructor
     public static class PayloadTelemetry {
         private String id;
-        private LocalDateTime timestamp;
+        private Instant timestamp;
         private CameraData cameraData;
         private RangeFinderData rangeFinderData;
         private SensorData sensorData;
