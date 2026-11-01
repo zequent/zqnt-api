@@ -23,6 +23,7 @@ class CommandState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     COMMAND_STATE_REJECTED: _ClassVar[CommandState]
     COMMAND_STATE_CANCELLED: _ClassVar[CommandState]
     COMMAND_STATE_TIMED_OUT: _ClassVar[CommandState]
+    COMMAND_STATE_QUEUED: _ClassVar[CommandState]
 COMMAND_STATE_UNSPECIFIED: CommandState
 COMMAND_STATE_ACCEPTED: CommandState
 COMMAND_STATE_RUNNING: CommandState
@@ -31,6 +32,7 @@ COMMAND_STATE_FAILED: CommandState
 COMMAND_STATE_REJECTED: CommandState
 COMMAND_STATE_CANCELLED: CommandState
 COMMAND_STATE_TIMED_OUT: CommandState
+COMMAND_STATE_QUEUED: CommandState
 
 class ExecutionRef(_message.Message):
     __slots__ = ("execution_id", "node_id")
@@ -41,20 +43,22 @@ class ExecutionRef(_message.Message):
     def __init__(self, execution_id: _Optional[str] = ..., node_id: _Optional[str] = ...) -> None: ...
 
 class Command(_message.Message):
-    __slots__ = ("asset", "command_id", "params", "target", "timeout", "execution")
+    __slots__ = ("asset", "command_id", "params", "target", "timeout", "execution", "expires_at")
     ASSET_FIELD_NUMBER: _ClassVar[int]
     COMMAND_ID_FIELD_NUMBER: _ClassVar[int]
     PARAMS_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
     TIMEOUT_FIELD_NUMBER: _ClassVar[int]
     EXECUTION_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
     asset: _common_pb2.AssetRef
     command_id: str
     params: _struct_pb2.Struct
     target: _capability_pb2.Target
     timeout: _duration_pb2.Duration
     execution: ExecutionRef
-    def __init__(self, asset: _Optional[_Union[_common_pb2.AssetRef, _Mapping]] = ..., command_id: _Optional[str] = ..., params: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., target: _Optional[_Union[_capability_pb2.Target, _Mapping]] = ..., timeout: _Optional[_Union[datetime.timedelta, _duration_pb2.Duration, _Mapping]] = ..., execution: _Optional[_Union[ExecutionRef, _Mapping]] = ...) -> None: ...
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, asset: _Optional[_Union[_common_pb2.AssetRef, _Mapping]] = ..., command_id: _Optional[str] = ..., params: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., target: _Optional[_Union[_capability_pb2.Target, _Mapping]] = ..., timeout: _Optional[_Union[datetime.timedelta, _duration_pb2.Duration, _Mapping]] = ..., execution: _Optional[_Union[ExecutionRef, _Mapping]] = ..., expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class CommandResult(_message.Message):
     __slots__ = ("command_execution_id", "command_id", "state", "result", "error")

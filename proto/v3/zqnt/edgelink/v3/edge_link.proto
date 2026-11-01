@@ -1,0 +1,347 @@
+syntax = "proto3";
+
+// How an Edge Node talks to the platform. The node always dials out and keeps one session per
+// link (Connect), or posts batches where a stream is not possible (PostBatch). Everything the node
+// reports travels as a numbered Envelope; the platform acknowledges it only after a durable
+// hand-off, and the node resends whatever stays unacknowledged. Commands come down the same
+// session with a deadline (Command.expires_at) and run at most once on the node.
+//
+// Frame numbering (decided once, zqnt-api#32):
+//   UplinkFrame    1 hello, 2 envelope, 3 ack, 4 ping, 5 relay; 6-15 reserved for future frames.
+//   DownlinkFrame  1 welcome, 2 ack, 3 command, 4 pong, 5 policy, 6 revocation, 7 relay_delivery;
+//                  8-15 reserved for future frames.
+// The transport plan assigned 6 to Revocation and the mesh plan assigned 6 to relay_delivery;
+// Revocation keeps 6, relay_delivery takes 7. Envelope bodies start at 10; 17 is reserved for
+// the node's audit record, which has no public message yet.
+//
+// This package is separate from zqnt.edge.v3 because the envelope carries telemetry types, and
+// zqnt.telemetry.v3 already imports zqnt.edge.v3 (Go packages must not import each other).
+package zqnt.edgelink.v3;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "zqnt/capability/v3/capability.proto";
+import "zqnt/capability/v3/command.proto";
+import "zqnt/common/v3/common.proto";
+import "zqnt/telemetry/v3/telemetry.proto";
+
+option go_package = "github.com/zequent/zqnt-api/go/v3/gen/zqnt/edgelink/v3;edgelinkv3";
+option java_multiple_files = true;
+option java_package = "com.zqnt.protos.edgelink.v3";
+
+// Implemented by the platform (edge-link), called by Edge Nodes. The node's identity comes from
+// its credential and the signed Hello, never from a field alone.
+service EdgeLinkService {
+  // One session per link. The first uplink frame is Hello, the first downlink frame Welcome.
+  // buf:lint:ignore RPC_REQUEST_STANDARD_NAME
+  // buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
+  rpc Connect(stream UplinkFrame) returns (stream DownlinkFrame);
+  // For links without a long-lived stream (HTTP batch, store-and-forward bursts). The answer
+  // carries the acks for the batch and whatever the platform has queued for the node.
+  // buf:lint:ignore RPC_REQUEST_STANDARD_NAME
+  // buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
+  rpc PostBatch(UplinkBatch) returns (DownlinkBatch);
+}
+
+// Priority class of a message. Each lane has its own queue, quota and drain order on the node.
+enum Lane {
+  LANE_UNSPECIFIED = 0;
+  // Alerts of WARNING and above, alarm detections.
+  LANE_ALARM = 1;
+  // Command events.
+  LANE_COMMAND_REPLY = 2;
+  // Capabilities, link and topology reports.
+  LANE_STATUS = 3;
+  // Telemetry samples.
+  LANE_TELEMETRY = 4;
+  // Detection details, media metadata, logs.
+  LANE_BULK = 5;
+}
+
+// Numbers one message of one sender. The node numbers its uplink, the platform its downlink to
+// that node; `epoch` increases whenever the sender's store is reset, and `seq` restarts with it.
+message MessageId {
+  uint32 epoch = 1;
+  uint32 seq = 2;
+}
+
+// Everything up to and including `cumulative_seq` of `epoch` has been received and handed off
+// durably. Bit i of `selective_bitmap` (least significant bit of byte 0 first) acknowledges
+// `cumulative_seq + 1 + i`. A duplicate is acknowledged again and dropped.
+message Ack {
+  uint32 epoch = 1;
+  uint32 cumulative_seq = 2;
+  bytes selective_bitmap = 3;
+}
+
+// One numbered message from an Edge Node.
+message Envelope {
+  string node_id = 1;
+  MessageId id = 2;
+  // When it happened on the node. Device time is authoritative for ordering and freshness.
+  google.protobuf.Timestamp device_time = 3;
+  Lane lane = 4;
+  // The node had no time sync; the platform rebases `device_time` on first contact.
+  bool clock_unsynced = 5;
+  // Set by the platform, never by the node: the Edge Nodes that carried this message, the
+  // relay nearest the origin first, the gateway that reached the platform last.
+  repeated string via_path = 6;
+
+  reserved 17;
+  reserved "audit";
+
+  oneof body {
+    zqnt.telemetry.v3.TelemetrySample sample = 10;
+    zqnt.telemetry.v3.DetectionBatch detections = 11;
+    zqnt.telemetry.v3.Alert alert = 12;
+    zqnt.capability.v3.CommandEvent command_event = 13;
+    zqnt.capability.v3.CapabilitySet capabilities = 14;
+    LinkReport link_report = 15;
+    TopologyReport topology = 16;
+  }
+}
+
+message UplinkFrame {
+  reserved 6 to 15;
+
+  oneof frame {
+    Hello hello = 1;
+    Envelope envelope = 2;
+    // Acknowledges the platform's downlink (CommandDelivery, PolicyUpdate, Revocation,
+    // RelayDelivery).
+    Ack ack = 3;
+    Ping ping = 4;
+    // Sealed frames this node relays for its neighbours.
+    RelayBatch relay = 5;
+  }
+}
+
+message DownlinkFrame {
+  reserved 8 to 15;
+
+  oneof frame {
+    Welcome welcome = 1;
+    // Acknowledges the node's envelopes.
+    Ack ack = 2;
+    CommandDelivery command = 3;
+    Pong pong = 4;
+    PolicyUpdate policy = 5;
+    Revocation revocation = 6;
+    // A sealed frame for a node this relay or gateway serves.
+    RelayDelivery relay_delivery = 7;
+  }
+}
+
+message UplinkBatch {
+  string node_id = 1;
+  repeated UplinkFrame frames = 2;
+}
+
+message DownlinkBatch {
+  repeated DownlinkFrame frames = 1;
+}
+
+// Opens a session. Signed by the node's identity key over the handshake transcript as the crypto
+// suite defines it.
+message Hello {
+  string node_id = 1;
+  // Crypto suite id from the suite registry (commercial, FIPS/CNSA, post-quantum hybrid).
+  uint32 crypto_suite = 2;
+  // The node's ephemeral key for the session key exchange.
+  bytes ephemeral_pub = 3;
+  bytes signature = 4;
+  // The node's monotonic clock and wall clock when it sent Hello, for the clock offset.
+  uint64 monotonic_ms = 5;
+  google.protobuf.Timestamp wallclock = 6;
+  // Encodings the node can use on this link, e.g. "full", "lean", "tiny".
+  repeated string encodings = 7;
+  // The assets this node serves.
+  repeated string asset_sns = 8;
+  // Kind of the link this session runs on, e.g. "ip-session", "mqtt", "lora-raw".
+  string link_kind = 9;
+  string runtime_version = 10;
+  // How far the node has received the platform's downlink, so it resumes there.
+  Ack downlink_acked = 11;
+}
+
+// Answers Hello. Signed by the platform over the handshake transcript.
+message Welcome {
+  bytes ephemeral_pub = 1;
+  bytes signature = 2;
+  // Platform time minus node wall clock at Hello.
+  sint64 clock_offset_ms = 3;
+  // How far the platform has received the node's envelopes; the node resends from there.
+  Ack resume_from = 4;
+  string session_id = 5;
+  LinkPolicy policy = 6;
+}
+
+message Ping {
+  uint32 nonce = 1;
+  uint64 monotonic_ms = 2;
+}
+
+message Pong {
+  uint32 nonce = 1;
+  // Echo of Ping.monotonic_ms, for the round-trip time.
+  uint64 monotonic_ms = 2;
+  google.protobuf.Timestamp platform_time = 3;
+}
+
+// What the platform tells a node about how to use this link. Later phases add their settings
+// (per-lane routing, budgets, EMCON).
+message LinkPolicy {
+  // Changes whenever the policy changes; the node reports the revision it applies.
+  string revision = 1;
+  // How often the node pings while the session is idle.
+  google.protobuf.Duration ping_interval = 2;
+}
+
+message PolicyUpdate {
+  MessageId id = 1;
+  LinkPolicy policy = 2;
+}
+
+// Runs or cancels a command on an asset served by the node. The node runs a
+// `command_execution_id` at most once, refuses it after `Command.expires_at` (REJECTED,
+// `command.expired`) and reports the outcome as CommandEvents in the COMMAND_REPLY lane.
+message CommandDelivery {
+  MessageId id = 1;
+  zqnt.common.v3.RequestContext context = 2;
+  string command_execution_id = 3;
+
+  oneof action {
+    zqnt.capability.v3.Command execute = 4;
+    CommandCancel cancel = 5;
+  }
+}
+
+message CommandCancel {
+  string reason = 1;
+}
+
+// Edge Nodes the platform no longer accepts. The receiving node drops their frames instead of
+// relaying them, and stops serving them if it is one of them.
+message Revocation {
+  MessageId id = 1;
+  repeated string node_ids = 2;
+  google.protobuf.Timestamp revoked_at = 3;
+  string reason = 4;
+}
+
+// One sealed frame a relay received from a neighbour. Relays never decrypt or re-seal it.
+message RelayItem {
+  bytes frame = 1;
+  // The relay's link the frame arrived on.
+  string rx_link = 2;
+  sint32 rssi = 3;
+  sint32 snr = 4;
+  // Hops reported by the mesh, if it reports any.
+  uint32 mesh_hops = 5;
+  // Relay depth: how many Edge Nodes in relay mode carried the frame, this one included.
+  uint32 relay_hop = 6;
+  google.protobuf.Timestamp rx_time = 7;
+}
+
+message RelayBatch {
+  repeated RelayItem items = 1;
+}
+
+// A sealed frame for a node reached through this relay or gateway. The relay transmits it on the
+// link where it last heard that node and drops it at `expires_at`.
+message RelayDelivery {
+  // The target's short tag from the sealed frame header.
+  uint32 node_tag = 1;
+  string node_id = 2;
+  bytes frame = 3;
+  google.protobuf.Timestamp expires_at = 4;
+  MessageId id = 5;
+}
+
+enum LinkState {
+  LINK_STATE_UNSPECIFIED = 0;
+  LINK_STATE_UP = 1;
+  LINK_STATE_DEGRADED = 2;
+  LINK_STATE_DOWN = 3;
+}
+
+// Health of one of the node's links.
+message LinkStatus {
+  // The node's id for the link, e.g. "lte" or "lora".
+  string link_id = 1;
+  // Link driver, e.g. "ip-session", "mqtt", "lora-raw".
+  string driver = 2;
+  LinkState state = 3;
+  string state_reason = 4;
+  // Smoothed round-trip time.
+  uint32 rtt_ms = 5;
+  // Smoothed loss, 0..1.
+  float loss = 6;
+  uint64 bandwidth_estimate_bps = 7;
+  // Bytes sent and received in the current budget period.
+  uint64 bytes_used = 8;
+  google.protobuf.Timestamp last_rx = 9;
+  uint32 probe_failures = 10;
+}
+
+// What one lane holds on the node, waiting for acknowledgement.
+message LaneBacklog {
+  Lane lane = 1;
+  uint64 items = 2;
+  uint64 bytes = 3;
+  google.protobuf.Timestamp oldest = 4;
+}
+
+// The node's links and queues, sent in the STATUS lane.
+message LinkReport {
+  repeated LinkStatus links = 1;
+  repeated LaneBacklog backlog = 2;
+  // The LinkPolicy revision the node applies.
+  string policy_revision = 3;
+}
+
+enum MeshKind {
+  MESH_KIND_UNSPECIFIED = 0;
+  // Not a mesh: a point-to-point or star link.
+  MESH_KIND_NONE = 1;
+  // The radios route at L2/L3 (802.11s, batman-adv, Babel, MANET radios).
+  MESH_KIND_IP_MESH = 2;
+  // Controlled flooding (MeshCore, Meshtastic, our relay protocol).
+  MESH_KIND_FLOOD = 3;
+  MESH_KIND_ROUTED = 4;
+  MESH_KIND_SINGLE_HOP = 5;
+}
+
+message MeshInfo {
+  MeshKind kind = 1;
+  // 0 = unknown.
+  uint32 max_hops = 2;
+  // e.g. "batman-adv", "meshcore", "meshtastic".
+  string mesh_name = 3;
+}
+
+// A peer the node hears on one link.
+message Neighbor {
+  // Mesh-native id: MAC address, node number, public key hash.
+  string peer_id = 1;
+  // The peer's short tag, when learned from a sealed frame header.
+  optional uint32 node_tag = 2;
+  optional sint32 rssi = 3;
+  optional sint32 snr = 4;
+  // 0..1, normalised from the mesh's own metric (TQ, ETX, ...).
+  optional float link_quality = 5;
+  google.protobuf.Timestamp last_heard = 6;
+  optional uint32 hops = 7;
+}
+
+message LinkTopology {
+  string link_id = 1;
+  MeshInfo mesh = 2;
+  repeated Neighbor neighbors = 3;
+}
+
+// The node's mesh neighbourhood per link, sent in the STATUS lane on change and at most every
+// few minutes.
+message TopologyReport {
+  repeated LinkTopology links = 1;
+}

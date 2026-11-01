@@ -33,6 +33,11 @@ message Command {
   // Unset = the capability's own default timeout.
   google.protobuf.Duration timeout = 5;
   ExecutionRef execution = 6;
+  // The command must not start after this. Until then the platform holds it while no path to the
+  // Edge Node can carry it (QUEUED); after it the command fails as TIMED_OUT
+  // (`edge.undeliverable`), and a node that receives it late refuses it (`command.expired`).
+  // Unset = the default for the capability's risk class. `timeout` counts from ACCEPTED.
+  google.protobuf.Timestamp expires_at = 7;
 }
 
 enum CommandState {
@@ -46,6 +51,8 @@ enum CommandState {
   COMMAND_STATE_REJECTED = 5;
   COMMAND_STATE_CANCELLED = 6;
   COMMAND_STATE_TIMED_OUT = 7;
+  // Held by the platform until a path to the Edge Node can carry it or `expires_at` passes.
+  COMMAND_STATE_QUEUED = 8;
 }
 
 message CommandResult {
