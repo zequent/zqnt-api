@@ -7,8 +7,11 @@
 // How an Edge Node talks to the platform. The node always dials out and keeps one session per
 // link (Connect), or posts batches where a stream is not possible (PostBatch). Everything the node
 // reports travels as a numbered Envelope; the platform acknowledges it only after a durable
-// hand-off, and the node resends whatever stays unacknowledged. Commands come down the same
-// session with a deadline (Command.expires_at) and run at most once on the node.
+// hand-off, and the node resends whatever stays unacknowledged. The node numbers all lanes in one
+// sequence and drains them by priority, so seqs arrive out of order; it reports a low-water mark
+// (Envelope.held_from) so the platform can acknowledge past seqs it dropped or replaced for good.
+// Commands come down the same session with a deadline (Command.expires_at) and run at most once
+// on the node.
 //
 // Frame numbering (decided once, zqnt-api#32):
 //   UplinkFrame    1 hello, 2 envelope, 3 ack, 4 ping, 5 relay; 6-15 reserved for future frames.
@@ -223,9 +226,10 @@ func (MeshKind) EnumDescriptor() ([]byte, []int) {
 // Numbers one message of one sender. The node numbers its uplink, the platform its downlink to
 // that node; `epoch` increases whenever the sender's store is reset, and `seq` restarts with it.
 type MessageId struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Epoch         uint32                 `protobuf:"varint,1,opt,name=epoch,proto3" json:"epoch,omitempty"`
-	Seq           uint32                 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Epoch uint32                 `protobuf:"varint,1,opt,name=epoch,proto3" json:"epoch,omitempty"`
+	// Starts at 1 in every epoch; 0 means nothing sent or received.
+	Seq           uint32 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -276,14 +280,18 @@ func (x *MessageId) GetSeq() uint32 {
 
 // Everything up to and including `cumulative_seq` of `epoch` has been received and handed off
 // durably. Bit i of `selective_bitmap` (least significant bit of byte 0 first) acknowledges
-// `cumulative_seq + 1 + i`. A duplicate is acknowledged again and dropped.
+// `selective_base + 1 + i`, or `cumulative_seq + 1 + i` when `selective_base` is 0. A duplicate is
+// acknowledged again and dropped.
 type Ack struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Epoch           uint32                 `protobuf:"varint,1,opt,name=epoch,proto3" json:"epoch,omitempty"`
 	CumulativeSeq   uint32                 `protobuf:"varint,2,opt,name=cumulative_seq,json=cumulativeSeq,proto3" json:"cumulative_seq,omitempty"`
 	SelectiveBitmap []byte                 `protobuf:"bytes,3,opt,name=selective_bitmap,json=selectiveBitmap,proto3" json:"selective_bitmap,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Where the selective bitmap starts (see above), so seqs far beyond a gap can be acknowledged.
+	// 0 = it starts right after `cumulative_seq`.
+	SelectiveBase uint32 `protobuf:"varint,4,opt,name=selective_base,json=selectiveBase,proto3" json:"selective_base,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Ack) Reset() {
@@ -337,6 +345,13 @@ func (x *Ack) GetSelectiveBitmap() []byte {
 	return nil
 }
 
+func (x *Ack) GetSelectiveBase() uint32 {
+	if x != nil {
+		return x.SelectiveBase
+	}
+	return 0
+}
+
 // One numbered message from an Edge Node.
 type Envelope struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
@@ -350,6 +365,10 @@ type Envelope struct {
 	// Set by the platform, never by the node: the Edge Nodes that carried this message, the
 	// relay nearest the origin first, the gateway that reached the platform last.
 	ViaPath []string `protobuf:"bytes,6,rep,name=via_path,json=viaPath,proto3" json:"via_path,omitempty"`
+	// The lowest seq of this epoch the node still holds; everything below was acknowledged or
+	// dropped/replaced for good. The platform advances `cumulative_seq` to `held_from - 1`.
+	// 0 = not reported.
+	HeldFrom uint32 `protobuf:"varint,7,opt,name=held_from,json=heldFrom,proto3" json:"held_from,omitempty"`
 	// Types that are valid to be assigned to Body:
 	//
 	//	*Envelope_Sample
@@ -434,6 +453,13 @@ func (x *Envelope) GetViaPath() []string {
 		return x.ViaPath
 	}
 	return nil
+}
+
+func (x *Envelope) GetHeldFrom() uint32 {
+	if x != nil {
+		return x.HeldFrom
+	}
+	return 0
 }
 
 func (x *Envelope) GetBody() isEnvelope_Body {
@@ -2352,11 +2378,12 @@ const file_zqnt_edgelink_v3_edge_link_proto_rawDesc = "" +
 	" zqnt/edgelink/v3/edge_link.proto\x12\x10zqnt.edgelink.v3\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a#zqnt/capability/v3/capability.proto\x1a zqnt/capability/v3/command.proto\x1a\x1bzqnt/common/v3/common.proto\x1a!zqnt/telemetry/v3/telemetry.proto\"3\n" +
 	"\tMessageId\x12\x14\n" +
 	"\x05epoch\x18\x01 \x01(\rR\x05epoch\x12\x10\n" +
-	"\x03seq\x18\x02 \x01(\rR\x03seq\"m\n" +
+	"\x03seq\x18\x02 \x01(\rR\x03seq\"\x94\x01\n" +
 	"\x03Ack\x12\x14\n" +
 	"\x05epoch\x18\x01 \x01(\rR\x05epoch\x12%\n" +
 	"\x0ecumulative_seq\x18\x02 \x01(\rR\rcumulativeSeq\x12)\n" +
-	"\x10selective_bitmap\x18\x03 \x01(\fR\x0fselectiveBitmap\"\xd8\x05\n" +
+	"\x10selective_bitmap\x18\x03 \x01(\fR\x0fselectiveBitmap\x12%\n" +
+	"\x0eselective_base\x18\x04 \x01(\rR\rselectiveBase\"\xf5\x05\n" +
 	"\bEnvelope\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12+\n" +
 	"\x02id\x18\x02 \x01(\v2\x1b.zqnt.edgelink.v3.MessageIdR\x02id\x12;\n" +
@@ -2364,7 +2391,8 @@ const file_zqnt_edgelink_v3_edge_link_proto_rawDesc = "" +
 	"deviceTime\x12*\n" +
 	"\x04lane\x18\x04 \x01(\x0e2\x16.zqnt.edgelink.v3.LaneR\x04lane\x12%\n" +
 	"\x0eclock_unsynced\x18\x05 \x01(\bR\rclockUnsynced\x12\x19\n" +
-	"\bvia_path\x18\x06 \x03(\tR\aviaPath\x12<\n" +
+	"\bvia_path\x18\x06 \x03(\tR\aviaPath\x12\x1b\n" +
+	"\theld_from\x18\a \x01(\rR\bheldFrom\x12<\n" +
 	"\x06sample\x18\n" +
 	" \x01(\v2\".zqnt.telemetry.v3.TelemetrySampleH\x00R\x06sample\x12C\n" +
 	"\n" +

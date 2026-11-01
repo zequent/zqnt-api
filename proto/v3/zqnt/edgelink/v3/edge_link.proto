@@ -3,8 +3,11 @@ syntax = "proto3";
 // How an Edge Node talks to the platform. The node always dials out and keeps one session per
 // link (Connect), or posts batches where a stream is not possible (PostBatch). Everything the node
 // reports travels as a numbered Envelope; the platform acknowledges it only after a durable
-// hand-off, and the node resends whatever stays unacknowledged. Commands come down the same
-// session with a deadline (Command.expires_at) and run at most once on the node.
+// hand-off, and the node resends whatever stays unacknowledged. The node numbers all lanes in one
+// sequence and drains them by priority, so seqs arrive out of order; it reports a low-water mark
+// (Envelope.held_from) so the platform can acknowledge past seqs it dropped or replaced for good.
+// Commands come down the same session with a deadline (Command.expires_at) and run at most once
+// on the node.
 //
 // Frame numbering (decided once, zqnt-api#32):
 //   UplinkFrame    1 hello, 2 envelope, 3 ack, 4 ping, 5 relay; 6-15 reserved for future frames.
@@ -62,16 +65,21 @@ enum Lane {
 // that node; `epoch` increases whenever the sender's store is reset, and `seq` restarts with it.
 message MessageId {
   uint32 epoch = 1;
+  // Starts at 1 in every epoch; 0 means nothing sent or received.
   uint32 seq = 2;
 }
 
 // Everything up to and including `cumulative_seq` of `epoch` has been received and handed off
 // durably. Bit i of `selective_bitmap` (least significant bit of byte 0 first) acknowledges
-// `cumulative_seq + 1 + i`. A duplicate is acknowledged again and dropped.
+// `selective_base + 1 + i`, or `cumulative_seq + 1 + i` when `selective_base` is 0. A duplicate is
+// acknowledged again and dropped.
 message Ack {
   uint32 epoch = 1;
   uint32 cumulative_seq = 2;
   bytes selective_bitmap = 3;
+  // Where the selective bitmap starts (see above), so seqs far beyond a gap can be acknowledged.
+  // 0 = it starts right after `cumulative_seq`.
+  uint32 selective_base = 4;
 }
 
 // One numbered message from an Edge Node.
@@ -86,6 +94,10 @@ message Envelope {
   // Set by the platform, never by the node: the Edge Nodes that carried this message, the
   // relay nearest the origin first, the gateway that reached the platform last.
   repeated string via_path = 6;
+  // The lowest seq of this epoch the node still holds; everything below was acknowledged or
+  // dropped/replaced for good. The platform advances `cumulative_seq` to `held_from - 1`.
+  // 0 = not reported.
+  uint32 held_from = 7;
 
   reserved 17;
   reserved "audit";
