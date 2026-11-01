@@ -4,8 +4,11 @@ isort:skip_file
 How an Edge Node talks to the platform. The node always dials out and keeps one session per
 link (Connect), or posts batches where a stream is not possible (PostBatch). Everything the node
 reports travels as a numbered Envelope; the platform acknowledges it only after a durable
-hand-off, and the node resends whatever stays unacknowledged. Commands come down the same
-session with a deadline (Command.expires_at) and run at most once on the node.
+hand-off, and the node resends whatever stays unacknowledged. The node numbers all lanes in one
+sequence and drains them by priority, so seqs arrive out of order; it reports a low-water mark
+(Envelope.held_from) so the platform can acknowledge past seqs it dropped or replaced for good.
+Commands come down the same session with a deadline (Command.expires_at) and run at most once
+on the node.
 
 Frame numbering (decided once, zqnt-api#32):
   UplinkFrame    1 hello, 2 envelope, 3 ack, 4 ping, 5 relay; 6-15 reserved for future frames.

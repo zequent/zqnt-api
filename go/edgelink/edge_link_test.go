@@ -24,7 +24,7 @@ func p[T any](v T) *T { return &v }
 func id(seq uint32) *edgelinkv3.MessageId { return &edgelinkv3.MessageId{Epoch: 3, Seq: seq} }
 
 func ack() *edgelinkv3.Ack {
-	return &edgelinkv3.Ack{Epoch: 3, CumulativeSeq: 41, SelectiveBitmap: []byte{0b0000_0101}}
+	return &edgelinkv3.Ack{Epoch: 3, CumulativeSeq: 41, SelectiveBitmap: []byte{0b0000_0101}, SelectiveBase: 57}
 }
 
 func policy() *edgelinkv3.LinkPolicy {
@@ -61,7 +61,7 @@ func topology() *edgelinkv3.TopologyReport {
 func envelope(seq uint32, lane edgelinkv3.Lane) *edgelinkv3.Envelope {
 	return &edgelinkv3.Envelope{
 		NodeId: "node-1", Id: id(seq), DeviceTime: at, Lane: lane, ClockUnsynced: true,
-		ViaPath: []string{"relay-7", "gateway-1"},
+		ViaPath: []string{"relay-7", "gateway-1"}, HeldFrom: 38,
 	}
 }
 

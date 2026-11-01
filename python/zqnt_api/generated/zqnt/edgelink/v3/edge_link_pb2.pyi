@@ -65,23 +65,26 @@ class MessageId(_message.Message):
     def __init__(self, epoch: _Optional[int] = ..., seq: _Optional[int] = ...) -> None: ...
 
 class Ack(_message.Message):
-    __slots__ = ("epoch", "cumulative_seq", "selective_bitmap")
+    __slots__ = ("epoch", "cumulative_seq", "selective_bitmap", "selective_base")
     EPOCH_FIELD_NUMBER: _ClassVar[int]
     CUMULATIVE_SEQ_FIELD_NUMBER: _ClassVar[int]
     SELECTIVE_BITMAP_FIELD_NUMBER: _ClassVar[int]
+    SELECTIVE_BASE_FIELD_NUMBER: _ClassVar[int]
     epoch: int
     cumulative_seq: int
     selective_bitmap: bytes
-    def __init__(self, epoch: _Optional[int] = ..., cumulative_seq: _Optional[int] = ..., selective_bitmap: _Optional[bytes] = ...) -> None: ...
+    selective_base: int
+    def __init__(self, epoch: _Optional[int] = ..., cumulative_seq: _Optional[int] = ..., selective_bitmap: _Optional[bytes] = ..., selective_base: _Optional[int] = ...) -> None: ...
 
 class Envelope(_message.Message):
-    __slots__ = ("node_id", "id", "device_time", "lane", "clock_unsynced", "via_path", "sample", "detections", "alert", "command_event", "capabilities", "link_report", "topology")
+    __slots__ = ("node_id", "id", "device_time", "lane", "clock_unsynced", "via_path", "held_from", "sample", "detections", "alert", "command_event", "capabilities", "link_report", "topology")
     NODE_ID_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
     DEVICE_TIME_FIELD_NUMBER: _ClassVar[int]
     LANE_FIELD_NUMBER: _ClassVar[int]
     CLOCK_UNSYNCED_FIELD_NUMBER: _ClassVar[int]
     VIA_PATH_FIELD_NUMBER: _ClassVar[int]
+    HELD_FROM_FIELD_NUMBER: _ClassVar[int]
     SAMPLE_FIELD_NUMBER: _ClassVar[int]
     DETECTIONS_FIELD_NUMBER: _ClassVar[int]
     ALERT_FIELD_NUMBER: _ClassVar[int]
@@ -95,6 +98,7 @@ class Envelope(_message.Message):
     lane: Lane
     clock_unsynced: bool
     via_path: _containers.RepeatedScalarFieldContainer[str]
+    held_from: int
     sample: _telemetry_pb2.TelemetrySample
     detections: _telemetry_pb2.DetectionBatch
     alert: _telemetry_pb2.Alert
@@ -102,7 +106,7 @@ class Envelope(_message.Message):
     capabilities: _capability_pb2.CapabilitySet
     link_report: LinkReport
     topology: TopologyReport
-    def __init__(self, node_id: _Optional[str] = ..., id: _Optional[_Union[MessageId, _Mapping]] = ..., device_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., lane: _Optional[_Union[Lane, str]] = ..., clock_unsynced: _Optional[bool] = ..., via_path: _Optional[_Iterable[str]] = ..., sample: _Optional[_Union[_telemetry_pb2.TelemetrySample, _Mapping]] = ..., detections: _Optional[_Union[_telemetry_pb2.DetectionBatch, _Mapping]] = ..., alert: _Optional[_Union[_telemetry_pb2.Alert, _Mapping]] = ..., command_event: _Optional[_Union[_command_pb2.CommandEvent, _Mapping]] = ..., capabilities: _Optional[_Union[_capability_pb2.CapabilitySet, _Mapping]] = ..., link_report: _Optional[_Union[LinkReport, _Mapping]] = ..., topology: _Optional[_Union[TopologyReport, _Mapping]] = ...) -> None: ...
+    def __init__(self, node_id: _Optional[str] = ..., id: _Optional[_Union[MessageId, _Mapping]] = ..., device_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., lane: _Optional[_Union[Lane, str]] = ..., clock_unsynced: _Optional[bool] = ..., via_path: _Optional[_Iterable[str]] = ..., held_from: _Optional[int] = ..., sample: _Optional[_Union[_telemetry_pb2.TelemetrySample, _Mapping]] = ..., detections: _Optional[_Union[_telemetry_pb2.DetectionBatch, _Mapping]] = ..., alert: _Optional[_Union[_telemetry_pb2.Alert, _Mapping]] = ..., command_event: _Optional[_Union[_command_pb2.CommandEvent, _Mapping]] = ..., capabilities: _Optional[_Union[_capability_pb2.CapabilitySet, _Mapping]] = ..., link_report: _Optional[_Union[LinkReport, _Mapping]] = ..., topology: _Optional[_Union[TopologyReport, _Mapping]] = ...) -> None: ...
 
 class UplinkFrame(_message.Message):
     __slots__ = ("hello", "envelope", "ack", "ping", "relay")
