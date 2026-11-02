@@ -11,11 +11,15 @@ syntax = "proto3";
 //
 // Frame numbering (decided once, zqnt-api#32):
 //   UplinkFrame    1 hello, 2 envelope, 3 ack, 4 ping, 5 relay; 6-15 reserved for future frames.
-//   DownlinkFrame  1 welcome, 2 ack, 3 command, 4 pong, 5 policy, 6 revocation, 7 relay_delivery;
-//                  8-15 reserved for future frames.
+//   DownlinkFrame  1 welcome, 2 ack, 3 command, 4 pong, 5 policy, 6 revocation, 7 relay_delivery,
+//                  8 hello_retry; 9-15 reserved for future frames.
 // The transport plan assigned 6 to Revocation and the mesh plan assigned 6 to relay_delivery;
 // Revocation keeps 6, relay_delivery takes 7. Envelope bodies start at 10; 17 is reserved for
 // the node's audit record, which has no public message yet.
+//
+// The handshake (Hello, HelloRetry, Welcome, PlatformKey), the crypto suites and the transcripts
+// that are signed are specified in spec/edge-link-handshake-v1.md; enrollment of a node identity is
+// in edge_enrollment.proto.
 //
 // This package is separate from zqnt.edge.v3 because the envelope carries telemetry types, and
 // zqnt.telemetry.v3 already imports zqnt.edge.v3 (Go packages must not import each other).
@@ -129,7 +133,7 @@ message UplinkFrame {
 }
 
 message DownlinkFrame {
-  reserved 8 to 15;
+  reserved 9 to 15;
 
   oneof frame {
     Welcome welcome = 1;
@@ -141,6 +145,8 @@ message DownlinkFrame {
     Revocation revocation = 6;
     // A sealed frame for a node this relay or gateway serves.
     RelayDelivery relay_delivery = 7;
+    // Asks the node to send its Hello again with a server nonce (clock untrusted or nonce required).
+    HelloRetry hello_retry = 8;
   }
 }
 
@@ -153,11 +159,21 @@ message DownlinkBatch {
   repeated DownlinkFrame frames = 1;
 }
 
-// Opens a session. Signed by the node's identity key over the handshake transcript as the crypto
-// suite defines it.
+// Constants for Hello.crypto_suite, which stays a uint32: (family << 8) | variant.
+enum CryptoSuite {
+  CRYPTO_SUITE_UNSPECIFIED = 0;
+  // S1-C: X25519, ECDSA P-256, HKDF-SHA-256, ChaCha20-Poly1305 (0x0101). The default.
+  CRYPTO_SUITE_S1_CHACHA20_POLY1305 = 257;
+  // S1-G: X25519, ECDSA P-256, HKDF-SHA-256, AES-256-GCM (0x0102).
+  CRYPTO_SUITE_S1_AES_256_GCM = 258;
+}
+
+// Opens a session. Signed by the node's identity key over T_hello
+// (spec/edge-link-handshake-v1.md §4.2); the organization and the TLS channel binding are part of
+// the transcript but never sent.
 message Hello {
   string node_id = 1;
-  // Crypto suite id from the suite registry (commercial, FIPS/CNSA, post-quantum hybrid).
+  // Crypto suite id from the suite registry (CryptoSuite).
   uint32 crypto_suite = 2;
   // The node's ephemeral key for the session key exchange.
   bytes ephemeral_pub = 3;
@@ -174,9 +190,14 @@ message Hello {
   string runtime_version = 10;
   // How far the node has received the platform's downlink, so it resumes there.
   Ack downlink_acked = 11;
+  // key_id of the identity key that signed this Hello (16 bytes).
+  bytes identity_key_id = 12;
+  // Echo of HelloRetry.server_nonce; empty unless the Hello answers a HelloRetry.
+  bytes server_nonce = 13;
 }
 
-// Answers Hello. Signed by the platform over the handshake transcript.
+// Answers Hello. Signed by the platform handshake key over T_welcome
+// (spec/edge-link-handshake-v1.md §4.2).
 message Welcome {
   bytes ephemeral_pub = 1;
   bytes signature = 2;
@@ -186,6 +207,46 @@ message Welcome {
   Ack resume_from = 4;
   string session_id = 5;
   LinkPolicy policy = 6;
+  // Certificate of the platform handshake key that signed this Welcome.
+  PlatformKey platform_key = 7;
+  // The assets of Hello.asset_sns that are bound to this node; only these are served.
+  repeated string served_asset_sns = 8;
+}
+
+// A platform handshake key, certified by the installation's anchor key over T_pkey.
+message PlatformKey {
+  string installation_id = 1;
+  bytes anchor_key_id = 2;
+  bytes key_id = 3;
+  // Signature algorithm registry: 2 = ECDSA P-256 with SHA-256.
+  uint32 key_alg = 4;
+  // SEC 1 uncompressed point.
+  bytes public_key = 5;
+  // Unix seconds.
+  int64 not_before = 6;
+  // Unix seconds.
+  int64 not_after = 7;
+  // Anchor signature over T_pkey, r || s.
+  bytes signature = 8;
+}
+
+enum HelloRetryReason {
+  HELLO_RETRY_REASON_UNSPECIFIED = 0;
+  // The Hello had no wall clock, or one outside the freshness window.
+  HELLO_RETRY_REASON_CLOCK_UNTRUSTED = 1;
+  HELLO_RETRY_REASON_NONCE_REQUIRED = 2;
+}
+
+// Asks the node for a new Hello carrying `server_nonce` and a new ephemeral key. Signed by the
+// platform handshake key over T_retry; at most one per stream.
+message HelloRetry {
+  // 32 random bytes, valid for 60 s and once.
+  bytes server_nonce = 1;
+  // The node may adopt it as trusted time once the signature verifies.
+  google.protobuf.Timestamp platform_time = 2;
+  HelloRetryReason reason = 3;
+  PlatformKey platform_key = 4;
+  bytes signature = 5;
 }
 
 message Ping {

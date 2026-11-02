@@ -15,11 +15,15 @@
 //
 // Frame numbering (decided once, zqnt-api#32):
 //   UplinkFrame    1 hello, 2 envelope, 3 ack, 4 ping, 5 relay; 6-15 reserved for future frames.
-//   DownlinkFrame  1 welcome, 2 ack, 3 command, 4 pong, 5 policy, 6 revocation, 7 relay_delivery;
-//                  8-15 reserved for future frames.
+//   DownlinkFrame  1 welcome, 2 ack, 3 command, 4 pong, 5 policy, 6 revocation, 7 relay_delivery,
+//                  8 hello_retry; 9-15 reserved for future frames.
 // The transport plan assigned 6 to Revocation and the mesh plan assigned 6 to relay_delivery;
 // Revocation keeps 6, relay_delivery takes 7. Envelope bodies start at 10; 17 is reserved for
 // the node's audit record, which has no public message yet.
+//
+// The handshake (Hello, HelloRetry, Welcome, PlatformKey), the crypto suites and the transcripts
+// that are signed are specified in spec/edge-link-handshake-v1.md; enrollment of a node identity is
+// in edge_enrollment.proto.
 //
 // This package is separate from zqnt.edge.v3 because the envelope carries telemetry types, and
 // zqnt.telemetry.v3 already imports zqnt.edge.v3 (Go packages must not import each other).

@@ -27,6 +27,25 @@ func ack() *edgelinkv3.Ack {
 	return &edgelinkv3.Ack{Epoch: 3, CumulativeSeq: 41, SelectiveBitmap: []byte{0b0000_0101}, SelectiveBase: 57}
 }
 
+func platformKey() *edgelinkv3.PlatformKey {
+	return &edgelinkv3.PlatformKey{
+		InstallationId: "3c9d0f4e-7a21-4b6c-8e15-2f0a9b8c7d61", AnchorKeyId: []byte{0xA9, 0xC6}, KeyId: []byte{0xA9, 0xB8},
+		KeyAlg: 2, PublicKey: []byte{0x04, 0x68}, NotBefore: 1_793_491_200, NotAfter: 1_793_750_400, Signature: []byte{0x28, 0x03},
+	}
+}
+
+func identityKey() *edgelinkv3.IdentityKey {
+	return &edgelinkv3.IdentityKey{
+		Alg: 2, PublicKey: []byte{0x04, 0x7A}, Protection: edgelinkv3.KeyProtection_KEY_PROTECTION_TPM,
+	}
+}
+
+func attestation() *edgelinkv3.Attestation {
+	return &edgelinkv3.Attestation{
+		Format: edgelinkv3.AttestationFormat_ATTESTATION_FORMAT_TPM2_CERTIFY, Evidence: []byte{0x30, 0x82},
+	}
+}
+
 func policy() *edgelinkv3.LinkPolicy {
 	return &edgelinkv3.LinkPolicy{Revision: "rev-7", PingInterval: durationpb.New(15e9)}
 }
@@ -113,6 +132,7 @@ func samples() []proto.Message {
 			NodeId: "node-1", CryptoSuite: 1, EphemeralPub: []byte{1, 2, 3}, Signature: []byte{4, 5, 6},
 			MonotonicMs: 123_456, Wallclock: at, Encodings: []string{"full", "lean"}, AssetSns: []string{asset.Sn},
 			LinkKind: "ip-session", RuntimeVersion: "0.1.0", DownlinkAcked: ack(),
+			IdentityKeyId: []byte{0xA5, 0xFA}, ServerNonce: []byte{0xC0, 0xC1},
 		}}},
 		{Frame: &edgelinkv3.UplinkFrame_Ack{Ack: ack()}},
 		{Frame: &edgelinkv3.UplinkFrame_Ping{Ping: &edgelinkv3.Ping{Nonce: 9, MonotonicMs: 123_999}}},
@@ -125,7 +145,7 @@ func samples() []proto.Message {
 	downlinks := []*edgelinkv3.DownlinkFrame{
 		{Frame: &edgelinkv3.DownlinkFrame_Welcome{Welcome: &edgelinkv3.Welcome{
 			EphemeralPub: []byte{7, 8}, Signature: []byte{9}, ClockOffsetMs: -1500, ResumeFrom: ack(),
-			SessionId: "session-1", Policy: policy(),
+			SessionId: "session-1", Policy: policy(), PlatformKey: platformKey(), ServedAssetSns: []string{asset.Sn},
 		}}},
 		{Frame: &edgelinkv3.DownlinkFrame_Ack{Ack: ack()}},
 		{Frame: &edgelinkv3.DownlinkFrame_Command{Command: &edgelinkv3.CommandDelivery{
@@ -144,6 +164,10 @@ func samples() []proto.Message {
 		{Frame: &edgelinkv3.DownlinkFrame_RelayDelivery{RelayDelivery: &edgelinkv3.RelayDelivery{
 			NodeTag: 0xBEEF, NodeId: "node-2", Frame: []byte{0x42, 0x02}, ExpiresAt: expires, Id: id(5),
 		}}},
+		{Frame: &edgelinkv3.DownlinkFrame_HelloRetry{HelloRetry: &edgelinkv3.HelloRetry{
+			ServerNonce: []byte{0xC0, 0xC1}, PlatformTime: at, Reason: edgelinkv3.HelloRetryReason_HELLO_RETRY_REASON_CLOCK_UNTRUSTED,
+			PlatformKey: platformKey(), Signature: []byte{0x56, 0x44},
+		}}},
 	}
 
 	msgs := []proto.Message{
@@ -156,7 +180,39 @@ func samples() []proto.Message {
 	for _, f := range downlinks {
 		msgs = append(msgs, f)
 	}
-	return msgs
+	return append(msgs, enrollment()...)
+}
+
+// One populated instance per message of edge_enrollment.proto.
+func enrollment() []proto.Message {
+	return []proto.Message{
+		&edgelinkv3.BeginEnrollmentRequest{Purpose: edgelinkv3.EnrollmentPurpose_ENROLLMENT_PURPOSE_ENROLL},
+		&edgelinkv3.BeginEnrollmentResponse{Challenge: []byte{0xA0, 0xA1}, ExpiresAt: expires},
+		&edgelinkv3.CompleteEnrollmentRequest{
+			ClaimCode: "ZQ-4K7MP-2XR9A", Challenge: []byte{0xA0, 0xA1}, IdentityKey: identityKey(),
+			CryptoSuites: []uint32{
+				uint32(edgelinkv3.CryptoSuite_CRYPTO_SUITE_S1_CHACHA20_POLY1305), uint32(edgelinkv3.CryptoSuite_CRYPTO_SUITE_S1_AES_256_GCM),
+			},
+			Attestation:    attestation(),
+			Assets:         []*edgelinkv3.EnrollingAsset{{Sn: asset.Sn, Name: "Radar 1", Vendor: "ZQNT", Type: "RADAR"}},
+			RuntimeVersion: "3.0.0", DisplayName: "Mast 3", Signature: []byte{0xB2, 0xEA},
+		},
+		&edgelinkv3.CompleteEnrollmentResponse{
+			NodeId: "0b8e4b7a-2f43-4d1e-8c55-6a9e2d7f1a30", OrganizationId: "6f1c2a0e-3b5d-4c8e-9a7f-1d2e3f405162",
+			OrganizationName: "Zequent", InstallationId: "3c9d0f4e-7a21-4b6c-8e15-2f0a9b8c7d61",
+			Anchors:    []*edgelinkv3.TrustAnchor{{KeyId: []byte{0xA9, 0xC6}, Alg: 2, PublicKey: []byte{0x04, 0xC6}}},
+			Credential: "eyJ.cred.sig", CredentialExpiresAt: expires, IdentityKeyId: []byte{0xA5, 0xFA},
+			AllowedSuites: []uint32{uint32(edgelinkv3.CryptoSuite_CRYPTO_SUITE_S1_CHACHA20_POLY1305)},
+			NodeClass:     edgelinkv3.NodeClass_NODE_CLASS_PERSONAL,
+		},
+		&edgelinkv3.RotateIdentityKeyRequest{
+			Challenge: []byte{0xA0}, OldKeyId: []byte{0xA5, 0xFA}, NewKey: identityKey(), Attestation: attestation(),
+			SignatureOld: []byte{0x6C}, SignatureNew: []byte{0x77},
+		},
+		&edgelinkv3.RotateIdentityKeyResponse{IdentityKeyId: []byte{0xC0, 0x77}},
+		&edgelinkv3.RenewCredentialRequest{Challenge: []byte{0xA0}, KeyId: []byte{0xA5, 0xFA}, Signature: []byte{0xD1}},
+		&edgelinkv3.RenewCredentialResponse{Credential: "eyJ.renewed.sig", CredentialExpiresAt: expires},
+	}
 }
 
 func TestRoundTrip(t *testing.T) {
@@ -176,14 +232,14 @@ func TestRoundTrip(t *testing.T) {
 	}
 }
 
-// Every message of the file appears with every field set, and every oneof variant is used, so a
+// Every message of both files appears with every field set, and every oneof variant is used, so a
 // new message or field without a test fails here.
 func TestSamplesCoverEveryMessageAndField(t *testing.T) {
 	seen := map[protoreflect.FullName]map[protoreflect.Name]bool{}
 	var walk func(protoreflect.Message)
 	walk = func(m protoreflect.Message) {
 		d := m.Descriptor()
-		if d.ParentFile().Path() != edgelinkv3.File_zqnt_edgelink_v3_edge_link_proto.Path() {
+		if d.ParentFile().Package() != edgelinkv3.File_zqnt_edgelink_v3_edge_link_proto.Package() {
 			return
 		}
 		if seen[d.FullName()] == nil {
@@ -206,18 +262,26 @@ func TestSamplesCoverEveryMessageAndField(t *testing.T) {
 		walk(m.ProtoReflect())
 	}
 
-	messages := edgelinkv3.File_zqnt_edgelink_v3_edge_link_proto.Messages()
-	for i := 0; i < messages.Len(); i++ {
-		d := messages.Get(i)
-		fields, ok := seen[d.FullName()]
-		if !ok {
-			t.Errorf("%s: no sample", d.FullName())
-			continue
+	for _, file := range []protoreflect.FileDescriptor{
+		edgelinkv3.File_zqnt_edgelink_v3_edge_link_proto, edgelinkv3.File_zqnt_edgelink_v3_edge_enrollment_proto,
+	} {
+		messages := file.Messages()
+		for i := 0; i < messages.Len(); i++ {
+			checkCovered(t, seen, messages.Get(i))
 		}
-		for j := 0; j < d.Fields().Len(); j++ {
-			if f := d.Fields().Get(j); !fields[f.Name()] {
-				t.Errorf("%s.%s: never set in a sample", d.FullName(), f.Name())
-			}
+	}
+}
+
+func checkCovered(t *testing.T, seen map[protoreflect.FullName]map[protoreflect.Name]bool, d protoreflect.MessageDescriptor) {
+	t.Helper()
+	fields, ok := seen[d.FullName()]
+	if !ok {
+		t.Errorf("%s: no sample", d.FullName())
+		return
+	}
+	for j := 0; j < d.Fields().Len(); j++ {
+		if f := d.Fields().Get(j); !fields[f.Name()] {
+			t.Errorf("%s.%s: never set in a sample", d.FullName(), f.Name())
 		}
 	}
 }
@@ -227,6 +291,7 @@ func TestFrameNumbering(t *testing.T) {
 		"UplinkFrame": {1: "hello", 2: "envelope", 3: "ack", 4: "ping", 5: "relay"},
 		"DownlinkFrame": {
 			1: "welcome", 2: "ack", 3: "command", 4: "pong", 5: "policy", 6: "revocation", 7: "relay_delivery",
+			8: "hello_retry",
 		},
 	}
 	for msg, fields := range want {

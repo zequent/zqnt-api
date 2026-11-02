@@ -1,0 +1,160 @@
+syntax = "proto3";
+
+// How an Edge Node gets and keeps its long-term identity: enrollment with a claim code, identity
+// key rotation and renewal of its node-bound edge credential. Every call starts with
+// BeginEnrollment and uses its challenge once; the signed transcripts (T_proof, T_rotate,
+// T_renew) and the TLS channel binding they include are specified in
+// spec/edge-link-handshake-v1.md §3.
+package zqnt.edgelink.v3;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/zequent/zqnt-api/go/v3/gen/zqnt/edgelink/v3;edgelinkv3";
+option java_multiple_files = true;
+option java_package = "com.zqnt.protos.edgelink.v3";
+
+// Implemented by the platform (edge-link), called by Edge Nodes. BeginEnrollment and
+// CompleteEnrollment are anonymous (the claim code is the credential); RotateIdentityKey and
+// RenewCredential need the node credential. Every refusal answers alike.
+service EdgeEnrollmentService {
+  rpc BeginEnrollment(BeginEnrollmentRequest) returns (BeginEnrollmentResponse);
+  rpc CompleteEnrollment(CompleteEnrollmentRequest) returns (CompleteEnrollmentResponse);
+  rpc RotateIdentityKey(RotateIdentityKeyRequest) returns (RotateIdentityKeyResponse);
+  rpc RenewCredential(RenewCredentialRequest) returns (RenewCredentialResponse);
+}
+
+enum EnrollmentPurpose {
+  ENROLLMENT_PURPOSE_UNSPECIFIED = 0;
+  ENROLLMENT_PURPOSE_ENROLL = 1;
+  ENROLLMENT_PURPOSE_ROTATE = 2;
+  ENROLLMENT_PURPOSE_RENEW = 3;
+}
+
+// Where the node holds its identity private key. Self-declared unless attested.
+enum KeyProtection {
+  KEY_PROTECTION_UNSPECIFIED = 0;
+  // Plain key file: development, simulator and CI only.
+  KEY_PROTECTION_SOFTWARE_DEV = 1;
+  // Software key encrypted at rest by a key held in a TPM or secure element of the device.
+  KEY_PROTECTION_SOFTWARE_SEALED = 2;
+  // Generated in and non-exportable from a TPM 2.0.
+  KEY_PROTECTION_TPM = 3;
+  // Generated in and non-exportable from a discrete secure element.
+  KEY_PROTECTION_SECURE_ELEMENT = 4;
+  // Android Keystore backed by the TEE.
+  KEY_PROTECTION_MOBILE_TEE = 5;
+  // Android StrongBox or Apple Secure Enclave.
+  KEY_PROTECTION_MOBILE_SECURE_HW = 6;
+}
+
+enum AttestationFormat {
+  ATTESTATION_FORMAT_UNSPECIFIED = 0;
+  ATTESTATION_FORMAT_TPM2_CERTIFY = 1;
+  ATTESTATION_FORMAT_NXP_SE050 = 2;
+  ATTESTATION_FORMAT_ANDROID_KEY_ATTESTATION = 3;
+  ATTESTATION_FORMAT_APPLE_APP_ATTEST = 4;
+}
+
+// Fixed by the claim at enrollment, never changeable.
+enum NodeClass {
+  NODE_CLASS_UNSPECIFIED = 0;
+  // Fixed or vehicle-mounted node; may serve several assets and act as relay or gateway.
+  NODE_CLASS_INFRASTRUCTURE = 1;
+  // Carried by a person: exactly one bound asset, no relay or gateway role, short-lived trust.
+  NODE_CLASS_PERSONAL = 2;
+}
+
+message BeginEnrollmentRequest {
+  EnrollmentPurpose purpose = 1;
+}
+
+message BeginEnrollmentResponse {
+  // 32 random bytes, valid once and for 5 minutes, for the purpose requested.
+  bytes challenge = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message IdentityKey {
+  // Signature algorithm registry: 2 = ECDSA P-256 with SHA-256.
+  uint32 alg = 1;
+  // SEC 1 uncompressed point.
+  bytes public_key = 2;
+  KeyProtection protection = 3;
+}
+
+// Evidence that the identity key is held by the claimed hardware. Stored, not verified, in v1.
+message Attestation {
+  AttestationFormat format = 1;
+  bytes evidence = 2;
+}
+
+// An asset the node creates and serves when it enrolls.
+message EnrollingAsset {
+  string sn = 1;
+  string name = 2;
+  string vendor = 3;
+  string type = 4;
+}
+
+message CompleteEnrollmentRequest {
+  string claim_code = 1;
+  bytes challenge = 2;
+  IdentityKey identity_key = 3;
+  // Crypto suites (CryptoSuite) the node can use.
+  repeated uint32 crypto_suites = 4;
+  Attestation attestation = 5;
+  repeated EnrollingAsset assets = 6;
+  string runtime_version = 7;
+  // Not signed; the operator can change it.
+  string display_name = 8;
+  // Identity key signature over T_proof, r || s.
+  bytes signature = 9;
+}
+
+// A platform anchor key the node pins.
+message TrustAnchor {
+  bytes key_id = 1;
+  uint32 alg = 2;
+  bytes public_key = 3;
+}
+
+message CompleteEnrollmentResponse {
+  // Assigned by the platform: a lowercase UUID, stable across rotation and re-enrollment.
+  string node_id = 1;
+  string organization_id = 2;
+  string organization_name = 3;
+  string installation_id = 4;
+  repeated TrustAnchor anchors = 5;
+  // Node-bound edge credential, shown once.
+  string credential = 6;
+  google.protobuf.Timestamp credential_expires_at = 7;
+  bytes identity_key_id = 8;
+  repeated uint32 allowed_suites = 9;
+  NodeClass node_class = 10;
+}
+
+message RotateIdentityKeyRequest {
+  bytes challenge = 1;
+  bytes old_key_id = 2;
+  IdentityKey new_key = 3;
+  Attestation attestation = 4;
+  // Signatures over T_rotate by the old and by the new key, r || s.
+  bytes signature_old = 5;
+  bytes signature_new = 6;
+}
+
+message RotateIdentityKeyResponse {
+  bytes identity_key_id = 1;
+}
+
+message RenewCredentialRequest {
+  bytes challenge = 1;
+  bytes key_id = 2;
+  // Active identity key signature over T_renew, r || s.
+  bytes signature = 3;
+}
+
+message RenewCredentialResponse {
+  string credential = 1;
+  google.protobuf.Timestamp credential_expires_at = 2;
+}
