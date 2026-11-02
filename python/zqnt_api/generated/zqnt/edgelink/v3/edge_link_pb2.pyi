@@ -24,6 +24,18 @@ class Lane(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     LANE_TELEMETRY: _ClassVar[Lane]
     LANE_BULK: _ClassVar[Lane]
 
+class CryptoSuite(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    CRYPTO_SUITE_UNSPECIFIED: _ClassVar[CryptoSuite]
+    CRYPTO_SUITE_S1_CHACHA20_POLY1305: _ClassVar[CryptoSuite]
+    CRYPTO_SUITE_S1_AES_256_GCM: _ClassVar[CryptoSuite]
+
+class HelloRetryReason(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    HELLO_RETRY_REASON_UNSPECIFIED: _ClassVar[HelloRetryReason]
+    HELLO_RETRY_REASON_CLOCK_UNTRUSTED: _ClassVar[HelloRetryReason]
+    HELLO_RETRY_REASON_NONCE_REQUIRED: _ClassVar[HelloRetryReason]
+
 class LinkState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     LINK_STATE_UNSPECIFIED: _ClassVar[LinkState]
@@ -45,6 +57,12 @@ LANE_COMMAND_REPLY: Lane
 LANE_STATUS: Lane
 LANE_TELEMETRY: Lane
 LANE_BULK: Lane
+CRYPTO_SUITE_UNSPECIFIED: CryptoSuite
+CRYPTO_SUITE_S1_CHACHA20_POLY1305: CryptoSuite
+CRYPTO_SUITE_S1_AES_256_GCM: CryptoSuite
+HELLO_RETRY_REASON_UNSPECIFIED: HelloRetryReason
+HELLO_RETRY_REASON_CLOCK_UNTRUSTED: HelloRetryReason
+HELLO_RETRY_REASON_NONCE_REQUIRED: HelloRetryReason
 LINK_STATE_UNSPECIFIED: LinkState
 LINK_STATE_UP: LinkState
 LINK_STATE_DEGRADED: LinkState
@@ -123,7 +141,7 @@ class UplinkFrame(_message.Message):
     def __init__(self, hello: _Optional[_Union[Hello, _Mapping]] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., ack: _Optional[_Union[Ack, _Mapping]] = ..., ping: _Optional[_Union[Ping, _Mapping]] = ..., relay: _Optional[_Union[RelayBatch, _Mapping]] = ...) -> None: ...
 
 class DownlinkFrame(_message.Message):
-    __slots__ = ("welcome", "ack", "command", "pong", "policy", "revocation", "relay_delivery")
+    __slots__ = ("welcome", "ack", "command", "pong", "policy", "revocation", "relay_delivery", "hello_retry")
     WELCOME_FIELD_NUMBER: _ClassVar[int]
     ACK_FIELD_NUMBER: _ClassVar[int]
     COMMAND_FIELD_NUMBER: _ClassVar[int]
@@ -131,6 +149,7 @@ class DownlinkFrame(_message.Message):
     POLICY_FIELD_NUMBER: _ClassVar[int]
     REVOCATION_FIELD_NUMBER: _ClassVar[int]
     RELAY_DELIVERY_FIELD_NUMBER: _ClassVar[int]
+    HELLO_RETRY_FIELD_NUMBER: _ClassVar[int]
     welcome: Welcome
     ack: Ack
     command: CommandDelivery
@@ -138,7 +157,8 @@ class DownlinkFrame(_message.Message):
     policy: PolicyUpdate
     revocation: Revocation
     relay_delivery: RelayDelivery
-    def __init__(self, welcome: _Optional[_Union[Welcome, _Mapping]] = ..., ack: _Optional[_Union[Ack, _Mapping]] = ..., command: _Optional[_Union[CommandDelivery, _Mapping]] = ..., pong: _Optional[_Union[Pong, _Mapping]] = ..., policy: _Optional[_Union[PolicyUpdate, _Mapping]] = ..., revocation: _Optional[_Union[Revocation, _Mapping]] = ..., relay_delivery: _Optional[_Union[RelayDelivery, _Mapping]] = ...) -> None: ...
+    hello_retry: HelloRetry
+    def __init__(self, welcome: _Optional[_Union[Welcome, _Mapping]] = ..., ack: _Optional[_Union[Ack, _Mapping]] = ..., command: _Optional[_Union[CommandDelivery, _Mapping]] = ..., pong: _Optional[_Union[Pong, _Mapping]] = ..., policy: _Optional[_Union[PolicyUpdate, _Mapping]] = ..., revocation: _Optional[_Union[Revocation, _Mapping]] = ..., relay_delivery: _Optional[_Union[RelayDelivery, _Mapping]] = ..., hello_retry: _Optional[_Union[HelloRetry, _Mapping]] = ...) -> None: ...
 
 class UplinkBatch(_message.Message):
     __slots__ = ("node_id", "frames")
@@ -155,7 +175,7 @@ class DownlinkBatch(_message.Message):
     def __init__(self, frames: _Optional[_Iterable[_Union[DownlinkFrame, _Mapping]]] = ...) -> None: ...
 
 class Hello(_message.Message):
-    __slots__ = ("node_id", "crypto_suite", "ephemeral_pub", "signature", "monotonic_ms", "wallclock", "encodings", "asset_sns", "link_kind", "runtime_version", "downlink_acked")
+    __slots__ = ("node_id", "crypto_suite", "ephemeral_pub", "signature", "monotonic_ms", "wallclock", "encodings", "asset_sns", "link_kind", "runtime_version", "downlink_acked", "identity_key_id", "server_nonce")
     NODE_ID_FIELD_NUMBER: _ClassVar[int]
     CRYPTO_SUITE_FIELD_NUMBER: _ClassVar[int]
     EPHEMERAL_PUB_FIELD_NUMBER: _ClassVar[int]
@@ -167,6 +187,8 @@ class Hello(_message.Message):
     LINK_KIND_FIELD_NUMBER: _ClassVar[int]
     RUNTIME_VERSION_FIELD_NUMBER: _ClassVar[int]
     DOWNLINK_ACKED_FIELD_NUMBER: _ClassVar[int]
+    IDENTITY_KEY_ID_FIELD_NUMBER: _ClassVar[int]
+    SERVER_NONCE_FIELD_NUMBER: _ClassVar[int]
     node_id: str
     crypto_suite: int
     ephemeral_pub: bytes
@@ -178,23 +200,63 @@ class Hello(_message.Message):
     link_kind: str
     runtime_version: str
     downlink_acked: Ack
-    def __init__(self, node_id: _Optional[str] = ..., crypto_suite: _Optional[int] = ..., ephemeral_pub: _Optional[bytes] = ..., signature: _Optional[bytes] = ..., monotonic_ms: _Optional[int] = ..., wallclock: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., encodings: _Optional[_Iterable[str]] = ..., asset_sns: _Optional[_Iterable[str]] = ..., link_kind: _Optional[str] = ..., runtime_version: _Optional[str] = ..., downlink_acked: _Optional[_Union[Ack, _Mapping]] = ...) -> None: ...
+    identity_key_id: bytes
+    server_nonce: bytes
+    def __init__(self, node_id: _Optional[str] = ..., crypto_suite: _Optional[int] = ..., ephemeral_pub: _Optional[bytes] = ..., signature: _Optional[bytes] = ..., monotonic_ms: _Optional[int] = ..., wallclock: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., encodings: _Optional[_Iterable[str]] = ..., asset_sns: _Optional[_Iterable[str]] = ..., link_kind: _Optional[str] = ..., runtime_version: _Optional[str] = ..., downlink_acked: _Optional[_Union[Ack, _Mapping]] = ..., identity_key_id: _Optional[bytes] = ..., server_nonce: _Optional[bytes] = ...) -> None: ...
 
 class Welcome(_message.Message):
-    __slots__ = ("ephemeral_pub", "signature", "clock_offset_ms", "resume_from", "session_id", "policy")
+    __slots__ = ("ephemeral_pub", "signature", "clock_offset_ms", "resume_from", "session_id", "policy", "platform_key", "served_asset_sns")
     EPHEMERAL_PUB_FIELD_NUMBER: _ClassVar[int]
     SIGNATURE_FIELD_NUMBER: _ClassVar[int]
     CLOCK_OFFSET_MS_FIELD_NUMBER: _ClassVar[int]
     RESUME_FROM_FIELD_NUMBER: _ClassVar[int]
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     POLICY_FIELD_NUMBER: _ClassVar[int]
+    PLATFORM_KEY_FIELD_NUMBER: _ClassVar[int]
+    SERVED_ASSET_SNS_FIELD_NUMBER: _ClassVar[int]
     ephemeral_pub: bytes
     signature: bytes
     clock_offset_ms: int
     resume_from: Ack
     session_id: str
     policy: LinkPolicy
-    def __init__(self, ephemeral_pub: _Optional[bytes] = ..., signature: _Optional[bytes] = ..., clock_offset_ms: _Optional[int] = ..., resume_from: _Optional[_Union[Ack, _Mapping]] = ..., session_id: _Optional[str] = ..., policy: _Optional[_Union[LinkPolicy, _Mapping]] = ...) -> None: ...
+    platform_key: PlatformKey
+    served_asset_sns: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, ephemeral_pub: _Optional[bytes] = ..., signature: _Optional[bytes] = ..., clock_offset_ms: _Optional[int] = ..., resume_from: _Optional[_Union[Ack, _Mapping]] = ..., session_id: _Optional[str] = ..., policy: _Optional[_Union[LinkPolicy, _Mapping]] = ..., platform_key: _Optional[_Union[PlatformKey, _Mapping]] = ..., served_asset_sns: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class PlatformKey(_message.Message):
+    __slots__ = ("installation_id", "anchor_key_id", "key_id", "key_alg", "public_key", "not_before", "not_after", "signature")
+    INSTALLATION_ID_FIELD_NUMBER: _ClassVar[int]
+    ANCHOR_KEY_ID_FIELD_NUMBER: _ClassVar[int]
+    KEY_ID_FIELD_NUMBER: _ClassVar[int]
+    KEY_ALG_FIELD_NUMBER: _ClassVar[int]
+    PUBLIC_KEY_FIELD_NUMBER: _ClassVar[int]
+    NOT_BEFORE_FIELD_NUMBER: _ClassVar[int]
+    NOT_AFTER_FIELD_NUMBER: _ClassVar[int]
+    SIGNATURE_FIELD_NUMBER: _ClassVar[int]
+    installation_id: str
+    anchor_key_id: bytes
+    key_id: bytes
+    key_alg: int
+    public_key: bytes
+    not_before: int
+    not_after: int
+    signature: bytes
+    def __init__(self, installation_id: _Optional[str] = ..., anchor_key_id: _Optional[bytes] = ..., key_id: _Optional[bytes] = ..., key_alg: _Optional[int] = ..., public_key: _Optional[bytes] = ..., not_before: _Optional[int] = ..., not_after: _Optional[int] = ..., signature: _Optional[bytes] = ...) -> None: ...
+
+class HelloRetry(_message.Message):
+    __slots__ = ("server_nonce", "platform_time", "reason", "platform_key", "signature")
+    SERVER_NONCE_FIELD_NUMBER: _ClassVar[int]
+    PLATFORM_TIME_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    PLATFORM_KEY_FIELD_NUMBER: _ClassVar[int]
+    SIGNATURE_FIELD_NUMBER: _ClassVar[int]
+    server_nonce: bytes
+    platform_time: _timestamp_pb2.Timestamp
+    reason: HelloRetryReason
+    platform_key: PlatformKey
+    signature: bytes
+    def __init__(self, server_nonce: _Optional[bytes] = ..., platform_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., reason: _Optional[_Union[HelloRetryReason, str]] = ..., platform_key: _Optional[_Union[PlatformKey, _Mapping]] = ..., signature: _Optional[bytes] = ...) -> None: ...
 
 class Ping(_message.Message):
     __slots__ = ("nonce", "monotonic_ms")
