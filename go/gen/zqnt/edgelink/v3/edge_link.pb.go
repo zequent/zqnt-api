@@ -15,11 +15,15 @@
 //
 // Frame numbering (decided once, zqnt-api#32):
 //   UplinkFrame    1 hello, 2 envelope, 3 ack, 4 ping, 5 relay; 6-15 reserved for future frames.
-//   DownlinkFrame  1 welcome, 2 ack, 3 command, 4 pong, 5 policy, 6 revocation, 7 relay_delivery;
-//                  8-15 reserved for future frames.
+//   DownlinkFrame  1 welcome, 2 ack, 3 command, 4 pong, 5 policy, 6 revocation, 7 relay_delivery,
+//                  8 hello_retry; 9-15 reserved for future frames.
 // The transport plan assigned 6 to Revocation and the mesh plan assigned 6 to relay_delivery;
 // Revocation keeps 6, relay_delivery takes 7. Envelope bodies start at 10; 17 is reserved for
 // the node's audit record, which has no public message yet.
+//
+// The handshake (Hello, HelloRetry, Welcome, PlatformKey), the crypto suites and the transcripts
+// that are signed are specified in spec/edge-link-handshake-v1.md; enrollment of a node identity is
+// in edge_enrollment.proto.
 //
 // This package is separate from zqnt.edge.v3 because the envelope carries telemetry types, and
 // zqnt.telemetry.v3 already imports zqnt.edge.v3 (Go packages must not import each other).
@@ -110,6 +114,108 @@ func (Lane) EnumDescriptor() ([]byte, []int) {
 	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{0}
 }
 
+// Constants for Hello.crypto_suite, which stays a uint32: (family << 8) | variant.
+type CryptoSuite int32
+
+const (
+	CryptoSuite_CRYPTO_SUITE_UNSPECIFIED CryptoSuite = 0
+	// S1-C: X25519, ECDSA P-256, HKDF-SHA-256, ChaCha20-Poly1305 (0x0101). The default.
+	CryptoSuite_CRYPTO_SUITE_S1_CHACHA20_POLY1305 CryptoSuite = 257
+	// S1-G: X25519, ECDSA P-256, HKDF-SHA-256, AES-256-GCM (0x0102).
+	CryptoSuite_CRYPTO_SUITE_S1_AES_256_GCM CryptoSuite = 258
+)
+
+// Enum value maps for CryptoSuite.
+var (
+	CryptoSuite_name = map[int32]string{
+		0:   "CRYPTO_SUITE_UNSPECIFIED",
+		257: "CRYPTO_SUITE_S1_CHACHA20_POLY1305",
+		258: "CRYPTO_SUITE_S1_AES_256_GCM",
+	}
+	CryptoSuite_value = map[string]int32{
+		"CRYPTO_SUITE_UNSPECIFIED":          0,
+		"CRYPTO_SUITE_S1_CHACHA20_POLY1305": 257,
+		"CRYPTO_SUITE_S1_AES_256_GCM":       258,
+	}
+)
+
+func (x CryptoSuite) Enum() *CryptoSuite {
+	p := new(CryptoSuite)
+	*p = x
+	return p
+}
+
+func (x CryptoSuite) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CryptoSuite) Descriptor() protoreflect.EnumDescriptor {
+	return file_zqnt_edgelink_v3_edge_link_proto_enumTypes[1].Descriptor()
+}
+
+func (CryptoSuite) Type() protoreflect.EnumType {
+	return &file_zqnt_edgelink_v3_edge_link_proto_enumTypes[1]
+}
+
+func (x CryptoSuite) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CryptoSuite.Descriptor instead.
+func (CryptoSuite) EnumDescriptor() ([]byte, []int) {
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{1}
+}
+
+type HelloRetryReason int32
+
+const (
+	HelloRetryReason_HELLO_RETRY_REASON_UNSPECIFIED HelloRetryReason = 0
+	// The Hello had no wall clock, or one outside the freshness window.
+	HelloRetryReason_HELLO_RETRY_REASON_CLOCK_UNTRUSTED HelloRetryReason = 1
+	HelloRetryReason_HELLO_RETRY_REASON_NONCE_REQUIRED  HelloRetryReason = 2
+)
+
+// Enum value maps for HelloRetryReason.
+var (
+	HelloRetryReason_name = map[int32]string{
+		0: "HELLO_RETRY_REASON_UNSPECIFIED",
+		1: "HELLO_RETRY_REASON_CLOCK_UNTRUSTED",
+		2: "HELLO_RETRY_REASON_NONCE_REQUIRED",
+	}
+	HelloRetryReason_value = map[string]int32{
+		"HELLO_RETRY_REASON_UNSPECIFIED":     0,
+		"HELLO_RETRY_REASON_CLOCK_UNTRUSTED": 1,
+		"HELLO_RETRY_REASON_NONCE_REQUIRED":  2,
+	}
+)
+
+func (x HelloRetryReason) Enum() *HelloRetryReason {
+	p := new(HelloRetryReason)
+	*p = x
+	return p
+}
+
+func (x HelloRetryReason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (HelloRetryReason) Descriptor() protoreflect.EnumDescriptor {
+	return file_zqnt_edgelink_v3_edge_link_proto_enumTypes[2].Descriptor()
+}
+
+func (HelloRetryReason) Type() protoreflect.EnumType {
+	return &file_zqnt_edgelink_v3_edge_link_proto_enumTypes[2]
+}
+
+func (x HelloRetryReason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use HelloRetryReason.Descriptor instead.
+func (HelloRetryReason) EnumDescriptor() ([]byte, []int) {
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{2}
+}
+
 type LinkState int32
 
 const (
@@ -146,11 +252,11 @@ func (x LinkState) String() string {
 }
 
 func (LinkState) Descriptor() protoreflect.EnumDescriptor {
-	return file_zqnt_edgelink_v3_edge_link_proto_enumTypes[1].Descriptor()
+	return file_zqnt_edgelink_v3_edge_link_proto_enumTypes[3].Descriptor()
 }
 
 func (LinkState) Type() protoreflect.EnumType {
-	return &file_zqnt_edgelink_v3_edge_link_proto_enumTypes[1]
+	return &file_zqnt_edgelink_v3_edge_link_proto_enumTypes[3]
 }
 
 func (x LinkState) Number() protoreflect.EnumNumber {
@@ -159,7 +265,7 @@ func (x LinkState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LinkState.Descriptor instead.
 func (LinkState) EnumDescriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{1}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{3}
 }
 
 type MeshKind int32
@@ -207,11 +313,11 @@ func (x MeshKind) String() string {
 }
 
 func (MeshKind) Descriptor() protoreflect.EnumDescriptor {
-	return file_zqnt_edgelink_v3_edge_link_proto_enumTypes[2].Descriptor()
+	return file_zqnt_edgelink_v3_edge_link_proto_enumTypes[4].Descriptor()
 }
 
 func (MeshKind) Type() protoreflect.EnumType {
-	return &file_zqnt_edgelink_v3_edge_link_proto_enumTypes[2]
+	return &file_zqnt_edgelink_v3_edge_link_proto_enumTypes[4]
 }
 
 func (x MeshKind) Number() protoreflect.EnumNumber {
@@ -220,7 +326,7 @@ func (x MeshKind) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MeshKind.Descriptor instead.
 func (MeshKind) EnumDescriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{2}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{4}
 }
 
 // Numbers one message of one sender. The node numbers its uplink, the platform its downlink to
@@ -722,6 +828,7 @@ type DownlinkFrame struct {
 	//	*DownlinkFrame_Policy
 	//	*DownlinkFrame_Revocation
 	//	*DownlinkFrame_RelayDelivery
+	//	*DownlinkFrame_HelloRetry
 	Frame         isDownlinkFrame_Frame `protobuf_oneof:"frame"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -827,6 +934,15 @@ func (x *DownlinkFrame) GetRelayDelivery() *RelayDelivery {
 	return nil
 }
 
+func (x *DownlinkFrame) GetHelloRetry() *HelloRetry {
+	if x != nil {
+		if x, ok := x.Frame.(*DownlinkFrame_HelloRetry); ok {
+			return x.HelloRetry
+		}
+	}
+	return nil
+}
+
 type isDownlinkFrame_Frame interface {
 	isDownlinkFrame_Frame()
 }
@@ -861,6 +977,11 @@ type DownlinkFrame_RelayDelivery struct {
 	RelayDelivery *RelayDelivery `protobuf:"bytes,7,opt,name=relay_delivery,json=relayDelivery,proto3,oneof"`
 }
 
+type DownlinkFrame_HelloRetry struct {
+	// Asks the node to send its Hello again with a server nonce (clock untrusted or nonce required).
+	HelloRetry *HelloRetry `protobuf:"bytes,8,opt,name=hello_retry,json=helloRetry,proto3,oneof"`
+}
+
 func (*DownlinkFrame_Welcome) isDownlinkFrame_Frame() {}
 
 func (*DownlinkFrame_Ack) isDownlinkFrame_Frame() {}
@@ -874,6 +995,8 @@ func (*DownlinkFrame_Policy) isDownlinkFrame_Frame() {}
 func (*DownlinkFrame_Revocation) isDownlinkFrame_Frame() {}
 
 func (*DownlinkFrame_RelayDelivery) isDownlinkFrame_Frame() {}
+
+func (*DownlinkFrame_HelloRetry) isDownlinkFrame_Frame() {}
 
 type UplinkBatch struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -971,12 +1094,13 @@ func (x *DownlinkBatch) GetFrames() []*DownlinkFrame {
 	return nil
 }
 
-// Opens a session. Signed by the node's identity key over the handshake transcript as the crypto
-// suite defines it.
+// Opens a session. Signed by the node's identity key over T_hello
+// (spec/edge-link-handshake-v1.md §4.2); the organization and the TLS channel binding are part of
+// the transcript but never sent.
 type Hello struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	NodeId string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
-	// Crypto suite id from the suite registry (commercial, FIPS/CNSA, post-quantum hybrid).
+	// Crypto suite id from the suite registry (CryptoSuite).
 	CryptoSuite uint32 `protobuf:"varint,2,opt,name=crypto_suite,json=cryptoSuite,proto3" json:"crypto_suite,omitempty"`
 	// The node's ephemeral key for the session key exchange.
 	EphemeralPub []byte `protobuf:"bytes,3,opt,name=ephemeral_pub,json=ephemeralPub,proto3" json:"ephemeral_pub,omitempty"`
@@ -993,6 +1117,10 @@ type Hello struct {
 	RuntimeVersion string `protobuf:"bytes,10,opt,name=runtime_version,json=runtimeVersion,proto3" json:"runtime_version,omitempty"`
 	// How far the node has received the platform's downlink, so it resumes there.
 	DownlinkAcked *Ack `protobuf:"bytes,11,opt,name=downlink_acked,json=downlinkAcked,proto3" json:"downlink_acked,omitempty"`
+	// key_id of the identity key that signed this Hello (16 bytes).
+	IdentityKeyId []byte `protobuf:"bytes,12,opt,name=identity_key_id,json=identityKeyId,proto3" json:"identity_key_id,omitempty"`
+	// Echo of HelloRetry.server_nonce; empty unless the Hello answers a HelloRetry.
+	ServerNonce   []byte `protobuf:"bytes,13,opt,name=server_nonce,json=serverNonce,proto3" json:"server_nonce,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1104,7 +1232,22 @@ func (x *Hello) GetDownlinkAcked() *Ack {
 	return nil
 }
 
-// Answers Hello. Signed by the platform over the handshake transcript.
+func (x *Hello) GetIdentityKeyId() []byte {
+	if x != nil {
+		return x.IdentityKeyId
+	}
+	return nil
+}
+
+func (x *Hello) GetServerNonce() []byte {
+	if x != nil {
+		return x.ServerNonce
+	}
+	return nil
+}
+
+// Answers Hello. Signed by the platform handshake key over T_welcome
+// (spec/edge-link-handshake-v1.md §4.2).
 type Welcome struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	EphemeralPub []byte                 `protobuf:"bytes,1,opt,name=ephemeral_pub,json=ephemeralPub,proto3" json:"ephemeral_pub,omitempty"`
@@ -1112,11 +1255,15 @@ type Welcome struct {
 	// Platform time minus node wall clock at Hello.
 	ClockOffsetMs int64 `protobuf:"zigzag64,3,opt,name=clock_offset_ms,json=clockOffsetMs,proto3" json:"clock_offset_ms,omitempty"`
 	// How far the platform has received the node's envelopes; the node resends from there.
-	ResumeFrom    *Ack        `protobuf:"bytes,4,opt,name=resume_from,json=resumeFrom,proto3" json:"resume_from,omitempty"`
-	SessionId     string      `protobuf:"bytes,5,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Policy        *LinkPolicy `protobuf:"bytes,6,opt,name=policy,proto3" json:"policy,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ResumeFrom *Ack        `protobuf:"bytes,4,opt,name=resume_from,json=resumeFrom,proto3" json:"resume_from,omitempty"`
+	SessionId  string      `protobuf:"bytes,5,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	Policy     *LinkPolicy `protobuf:"bytes,6,opt,name=policy,proto3" json:"policy,omitempty"`
+	// Certificate of the platform handshake key that signed this Welcome.
+	PlatformKey *PlatformKey `protobuf:"bytes,7,opt,name=platform_key,json=platformKey,proto3" json:"platform_key,omitempty"`
+	// The assets of Hello.asset_sns that are bound to this node; only these are served.
+	ServedAssetSns []string `protobuf:"bytes,8,rep,name=served_asset_sns,json=servedAssetSns,proto3" json:"served_asset_sns,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Welcome) Reset() {
@@ -1191,6 +1338,206 @@ func (x *Welcome) GetPolicy() *LinkPolicy {
 	return nil
 }
 
+func (x *Welcome) GetPlatformKey() *PlatformKey {
+	if x != nil {
+		return x.PlatformKey
+	}
+	return nil
+}
+
+func (x *Welcome) GetServedAssetSns() []string {
+	if x != nil {
+		return x.ServedAssetSns
+	}
+	return nil
+}
+
+// A platform handshake key, certified by the installation's anchor key over T_pkey.
+type PlatformKey struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	InstallationId string                 `protobuf:"bytes,1,opt,name=installation_id,json=installationId,proto3" json:"installation_id,omitempty"`
+	AnchorKeyId    []byte                 `protobuf:"bytes,2,opt,name=anchor_key_id,json=anchorKeyId,proto3" json:"anchor_key_id,omitempty"`
+	KeyId          []byte                 `protobuf:"bytes,3,opt,name=key_id,json=keyId,proto3" json:"key_id,omitempty"`
+	// Signature algorithm registry: 2 = ECDSA P-256 with SHA-256.
+	KeyAlg uint32 `protobuf:"varint,4,opt,name=key_alg,json=keyAlg,proto3" json:"key_alg,omitempty"`
+	// SEC 1 uncompressed point.
+	PublicKey []byte `protobuf:"bytes,5,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	// Unix seconds.
+	NotBefore int64 `protobuf:"varint,6,opt,name=not_before,json=notBefore,proto3" json:"not_before,omitempty"`
+	// Unix seconds.
+	NotAfter int64 `protobuf:"varint,7,opt,name=not_after,json=notAfter,proto3" json:"not_after,omitempty"`
+	// Anchor signature over T_pkey, r || s.
+	Signature     []byte `protobuf:"bytes,8,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PlatformKey) Reset() {
+	*x = PlatformKey{}
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PlatformKey) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlatformKey) ProtoMessage() {}
+
+func (x *PlatformKey) ProtoReflect() protoreflect.Message {
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlatformKey.ProtoReflect.Descriptor instead.
+func (*PlatformKey) Descriptor() ([]byte, []int) {
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *PlatformKey) GetInstallationId() string {
+	if x != nil {
+		return x.InstallationId
+	}
+	return ""
+}
+
+func (x *PlatformKey) GetAnchorKeyId() []byte {
+	if x != nil {
+		return x.AnchorKeyId
+	}
+	return nil
+}
+
+func (x *PlatformKey) GetKeyId() []byte {
+	if x != nil {
+		return x.KeyId
+	}
+	return nil
+}
+
+func (x *PlatformKey) GetKeyAlg() uint32 {
+	if x != nil {
+		return x.KeyAlg
+	}
+	return 0
+}
+
+func (x *PlatformKey) GetPublicKey() []byte {
+	if x != nil {
+		return x.PublicKey
+	}
+	return nil
+}
+
+func (x *PlatformKey) GetNotBefore() int64 {
+	if x != nil {
+		return x.NotBefore
+	}
+	return 0
+}
+
+func (x *PlatformKey) GetNotAfter() int64 {
+	if x != nil {
+		return x.NotAfter
+	}
+	return 0
+}
+
+func (x *PlatformKey) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
+	}
+	return nil
+}
+
+// Asks the node for a new Hello carrying `server_nonce` and a new ephemeral key. Signed by the
+// platform handshake key over T_retry; at most one per stream.
+type HelloRetry struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 32 random bytes, valid for 60 s and once.
+	ServerNonce []byte `protobuf:"bytes,1,opt,name=server_nonce,json=serverNonce,proto3" json:"server_nonce,omitempty"`
+	// The node may adopt it as trusted time once the signature verifies.
+	PlatformTime  *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=platform_time,json=platformTime,proto3" json:"platform_time,omitempty"`
+	Reason        HelloRetryReason       `protobuf:"varint,3,opt,name=reason,proto3,enum=zqnt.edgelink.v3.HelloRetryReason" json:"reason,omitempty"`
+	PlatformKey   *PlatformKey           `protobuf:"bytes,4,opt,name=platform_key,json=platformKey,proto3" json:"platform_key,omitempty"`
+	Signature     []byte                 `protobuf:"bytes,5,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HelloRetry) Reset() {
+	*x = HelloRetry{}
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HelloRetry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HelloRetry) ProtoMessage() {}
+
+func (x *HelloRetry) ProtoReflect() protoreflect.Message {
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HelloRetry.ProtoReflect.Descriptor instead.
+func (*HelloRetry) Descriptor() ([]byte, []int) {
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *HelloRetry) GetServerNonce() []byte {
+	if x != nil {
+		return x.ServerNonce
+	}
+	return nil
+}
+
+func (x *HelloRetry) GetPlatformTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PlatformTime
+	}
+	return nil
+}
+
+func (x *HelloRetry) GetReason() HelloRetryReason {
+	if x != nil {
+		return x.Reason
+	}
+	return HelloRetryReason_HELLO_RETRY_REASON_UNSPECIFIED
+}
+
+func (x *HelloRetry) GetPlatformKey() *PlatformKey {
+	if x != nil {
+		return x.PlatformKey
+	}
+	return nil
+}
+
+func (x *HelloRetry) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
+	}
+	return nil
+}
+
 type Ping struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Nonce         uint32                 `protobuf:"varint,1,opt,name=nonce,proto3" json:"nonce,omitempty"`
@@ -1201,7 +1548,7 @@ type Ping struct {
 
 func (x *Ping) Reset() {
 	*x = Ping{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[9]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1213,7 +1560,7 @@ func (x *Ping) String() string {
 func (*Ping) ProtoMessage() {}
 
 func (x *Ping) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[9]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1226,7 +1573,7 @@ func (x *Ping) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ping.ProtoReflect.Descriptor instead.
 func (*Ping) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{9}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Ping) GetNonce() uint32 {
@@ -1255,7 +1602,7 @@ type Pong struct {
 
 func (x *Pong) Reset() {
 	*x = Pong{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[10]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1267,7 +1614,7 @@ func (x *Pong) String() string {
 func (*Pong) ProtoMessage() {}
 
 func (x *Pong) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[10]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1280,7 +1627,7 @@ func (x *Pong) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Pong.ProtoReflect.Descriptor instead.
 func (*Pong) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{10}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Pong) GetNonce() uint32 {
@@ -1318,7 +1665,7 @@ type LinkPolicy struct {
 
 func (x *LinkPolicy) Reset() {
 	*x = LinkPolicy{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[11]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1330,7 +1677,7 @@ func (x *LinkPolicy) String() string {
 func (*LinkPolicy) ProtoMessage() {}
 
 func (x *LinkPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[11]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1343,7 +1690,7 @@ func (x *LinkPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkPolicy.ProtoReflect.Descriptor instead.
 func (*LinkPolicy) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{11}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *LinkPolicy) GetRevision() string {
@@ -1370,7 +1717,7 @@ type PolicyUpdate struct {
 
 func (x *PolicyUpdate) Reset() {
 	*x = PolicyUpdate{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[12]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1382,7 +1729,7 @@ func (x *PolicyUpdate) String() string {
 func (*PolicyUpdate) ProtoMessage() {}
 
 func (x *PolicyUpdate) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[12]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1395,7 +1742,7 @@ func (x *PolicyUpdate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyUpdate.ProtoReflect.Descriptor instead.
 func (*PolicyUpdate) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{12}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PolicyUpdate) GetId() *MessageId {
@@ -1431,7 +1778,7 @@ type CommandDelivery struct {
 
 func (x *CommandDelivery) Reset() {
 	*x = CommandDelivery{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[13]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1443,7 +1790,7 @@ func (x *CommandDelivery) String() string {
 func (*CommandDelivery) ProtoMessage() {}
 
 func (x *CommandDelivery) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[13]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1456,7 +1803,7 @@ func (x *CommandDelivery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommandDelivery.ProtoReflect.Descriptor instead.
 func (*CommandDelivery) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{13}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CommandDelivery) GetId() *MessageId {
@@ -1530,7 +1877,7 @@ type CommandCancel struct {
 
 func (x *CommandCancel) Reset() {
 	*x = CommandCancel{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[14]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1542,7 +1889,7 @@ func (x *CommandCancel) String() string {
 func (*CommandCancel) ProtoMessage() {}
 
 func (x *CommandCancel) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[14]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1555,7 +1902,7 @@ func (x *CommandCancel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommandCancel.ProtoReflect.Descriptor instead.
 func (*CommandCancel) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{14}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CommandCancel) GetReason() string {
@@ -1579,7 +1926,7 @@ type Revocation struct {
 
 func (x *Revocation) Reset() {
 	*x = Revocation{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[15]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1591,7 +1938,7 @@ func (x *Revocation) String() string {
 func (*Revocation) ProtoMessage() {}
 
 func (x *Revocation) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[15]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1604,7 +1951,7 @@ func (x *Revocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Revocation.ProtoReflect.Descriptor instead.
 func (*Revocation) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{15}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *Revocation) GetId() *MessageId {
@@ -1654,7 +2001,7 @@ type RelayItem struct {
 
 func (x *RelayItem) Reset() {
 	*x = RelayItem{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[16]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1666,7 +2013,7 @@ func (x *RelayItem) String() string {
 func (*RelayItem) ProtoMessage() {}
 
 func (x *RelayItem) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[16]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1679,7 +2026,7 @@ func (x *RelayItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelayItem.ProtoReflect.Descriptor instead.
 func (*RelayItem) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{16}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *RelayItem) GetFrame() []byte {
@@ -1740,7 +2087,7 @@ type RelayBatch struct {
 
 func (x *RelayBatch) Reset() {
 	*x = RelayBatch{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[17]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1752,7 +2099,7 @@ func (x *RelayBatch) String() string {
 func (*RelayBatch) ProtoMessage() {}
 
 func (x *RelayBatch) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[17]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1765,7 +2112,7 @@ func (x *RelayBatch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelayBatch.ProtoReflect.Descriptor instead.
 func (*RelayBatch) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{17}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *RelayBatch) GetItems() []*RelayItem {
@@ -1791,7 +2138,7 @@ type RelayDelivery struct {
 
 func (x *RelayDelivery) Reset() {
 	*x = RelayDelivery{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[18]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1803,7 +2150,7 @@ func (x *RelayDelivery) String() string {
 func (*RelayDelivery) ProtoMessage() {}
 
 func (x *RelayDelivery) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[18]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1816,7 +2163,7 @@ func (x *RelayDelivery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelayDelivery.ProtoReflect.Descriptor instead.
 func (*RelayDelivery) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{18}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *RelayDelivery) GetNodeTag() uint32 {
@@ -1878,7 +2225,7 @@ type LinkStatus struct {
 
 func (x *LinkStatus) Reset() {
 	*x = LinkStatus{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[19]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1890,7 +2237,7 @@ func (x *LinkStatus) String() string {
 func (*LinkStatus) ProtoMessage() {}
 
 func (x *LinkStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[19]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1903,7 +2250,7 @@ func (x *LinkStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkStatus.ProtoReflect.Descriptor instead.
 func (*LinkStatus) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{19}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *LinkStatus) GetLinkId() string {
@@ -1989,7 +2336,7 @@ type LaneBacklog struct {
 
 func (x *LaneBacklog) Reset() {
 	*x = LaneBacklog{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[20]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2001,7 +2348,7 @@ func (x *LaneBacklog) String() string {
 func (*LaneBacklog) ProtoMessage() {}
 
 func (x *LaneBacklog) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[20]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2014,7 +2361,7 @@ func (x *LaneBacklog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LaneBacklog.ProtoReflect.Descriptor instead.
 func (*LaneBacklog) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{20}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *LaneBacklog) GetLane() Lane {
@@ -2058,7 +2405,7 @@ type LinkReport struct {
 
 func (x *LinkReport) Reset() {
 	*x = LinkReport{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[21]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2070,7 +2417,7 @@ func (x *LinkReport) String() string {
 func (*LinkReport) ProtoMessage() {}
 
 func (x *LinkReport) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[21]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2083,7 +2430,7 @@ func (x *LinkReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkReport.ProtoReflect.Descriptor instead.
 func (*LinkReport) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{21}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *LinkReport) GetLinks() []*LinkStatus {
@@ -2120,7 +2467,7 @@ type MeshInfo struct {
 
 func (x *MeshInfo) Reset() {
 	*x = MeshInfo{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[22]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2132,7 +2479,7 @@ func (x *MeshInfo) String() string {
 func (*MeshInfo) ProtoMessage() {}
 
 func (x *MeshInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[22]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2145,7 +2492,7 @@ func (x *MeshInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeshInfo.ProtoReflect.Descriptor instead.
 func (*MeshInfo) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{22}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *MeshInfo) GetKind() MeshKind {
@@ -2188,7 +2535,7 @@ type Neighbor struct {
 
 func (x *Neighbor) Reset() {
 	*x = Neighbor{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[23]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2200,7 +2547,7 @@ func (x *Neighbor) String() string {
 func (*Neighbor) ProtoMessage() {}
 
 func (x *Neighbor) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[23]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2213,7 +2560,7 @@ func (x *Neighbor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Neighbor.ProtoReflect.Descriptor instead.
 func (*Neighbor) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{23}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *Neighbor) GetPeerId() string {
@@ -2276,7 +2623,7 @@ type LinkTopology struct {
 
 func (x *LinkTopology) Reset() {
 	*x = LinkTopology{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[24]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2288,7 +2635,7 @@ func (x *LinkTopology) String() string {
 func (*LinkTopology) ProtoMessage() {}
 
 func (x *LinkTopology) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[24]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2301,7 +2648,7 @@ func (x *LinkTopology) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkTopology.ProtoReflect.Descriptor instead.
 func (*LinkTopology) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{24}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *LinkTopology) GetLinkId() string {
@@ -2336,7 +2683,7 @@ type TopologyReport struct {
 
 func (x *TopologyReport) Reset() {
 	*x = TopologyReport{}
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[25]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2348,7 +2695,7 @@ func (x *TopologyReport) String() string {
 func (*TopologyReport) ProtoMessage() {}
 
 func (x *TopologyReport) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[25]
+	mi := &file_zqnt_edgelink_v3_edge_link_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2361,7 +2708,7 @@ func (x *TopologyReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyReport.ProtoReflect.Descriptor instead.
 func (*TopologyReport) Descriptor() ([]byte, []int) {
-	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{25}
+	return file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *TopologyReport) GetLinks() []*LinkTopology {
@@ -2411,7 +2758,7 @@ const file_zqnt_edgelink_v3_edge_link_proto_rawDesc = "" +
 	"\x03ack\x18\x03 \x01(\v2\x15.zqnt.edgelink.v3.AckH\x00R\x03ack\x12,\n" +
 	"\x04ping\x18\x04 \x01(\v2\x16.zqnt.edgelink.v3.PingH\x00R\x04ping\x124\n" +
 	"\x05relay\x18\x05 \x01(\v2\x1c.zqnt.edgelink.v3.RelayBatchH\x00R\x05relayB\a\n" +
-	"\x05frameJ\x04\b\x06\x10\x10\"\xb1\x03\n" +
+	"\x05frameJ\x04\b\x06\x10\x10\"\xf2\x03\n" +
 	"\rDownlinkFrame\x125\n" +
 	"\awelcome\x18\x01 \x01(\v2\x19.zqnt.edgelink.v3.WelcomeH\x00R\awelcome\x12)\n" +
 	"\x03ack\x18\x02 \x01(\v2\x15.zqnt.edgelink.v3.AckH\x00R\x03ack\x12=\n" +
@@ -2421,13 +2768,15 @@ const file_zqnt_edgelink_v3_edge_link_proto_rawDesc = "" +
 	"\n" +
 	"revocation\x18\x06 \x01(\v2\x1c.zqnt.edgelink.v3.RevocationH\x00R\n" +
 	"revocation\x12H\n" +
-	"\x0erelay_delivery\x18\a \x01(\v2\x1f.zqnt.edgelink.v3.RelayDeliveryH\x00R\rrelayDeliveryB\a\n" +
-	"\x05frameJ\x04\b\b\x10\x10\"]\n" +
+	"\x0erelay_delivery\x18\a \x01(\v2\x1f.zqnt.edgelink.v3.RelayDeliveryH\x00R\rrelayDelivery\x12?\n" +
+	"\vhello_retry\x18\b \x01(\v2\x1c.zqnt.edgelink.v3.HelloRetryH\x00R\n" +
+	"helloRetryB\a\n" +
+	"\x05frameJ\x04\b\t\x10\x10\"]\n" +
 	"\vUplinkBatch\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x125\n" +
 	"\x06frames\x18\x02 \x03(\v2\x1d.zqnt.edgelink.v3.UplinkFrameR\x06frames\"H\n" +
 	"\rDownlinkBatch\x127\n" +
-	"\x06frames\x18\x01 \x03(\v2\x1f.zqnt.edgelink.v3.DownlinkFrameR\x06frames\"\xa2\x03\n" +
+	"\x06frames\x18\x01 \x03(\v2\x1f.zqnt.edgelink.v3.DownlinkFrameR\x06frames\"\xed\x03\n" +
 	"\x05Hello\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12!\n" +
 	"\fcrypto_suite\x18\x02 \x01(\rR\vcryptoSuite\x12#\n" +
@@ -2440,7 +2789,9 @@ const file_zqnt_edgelink_v3_edge_link_proto_rawDesc = "" +
 	"\tlink_kind\x18\t \x01(\tR\blinkKind\x12'\n" +
 	"\x0fruntime_version\x18\n" +
 	" \x01(\tR\x0eruntimeVersion\x12<\n" +
-	"\x0edownlink_acked\x18\v \x01(\v2\x15.zqnt.edgelink.v3.AckR\rdownlinkAcked\"\x81\x02\n" +
+	"\x0edownlink_acked\x18\v \x01(\v2\x15.zqnt.edgelink.v3.AckR\rdownlinkAcked\x12&\n" +
+	"\x0fidentity_key_id\x18\f \x01(\fR\ridentityKeyId\x12!\n" +
+	"\fserver_nonce\x18\r \x01(\fR\vserverNonce\"\xed\x02\n" +
 	"\aWelcome\x12#\n" +
 	"\rephemeral_pub\x18\x01 \x01(\fR\fephemeralPub\x12\x1c\n" +
 	"\tsignature\x18\x02 \x01(\fR\tsignature\x12&\n" +
@@ -2449,7 +2800,27 @@ const file_zqnt_edgelink_v3_edge_link_proto_rawDesc = "" +
 	"resumeFrom\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x05 \x01(\tR\tsessionId\x124\n" +
-	"\x06policy\x18\x06 \x01(\v2\x1c.zqnt.edgelink.v3.LinkPolicyR\x06policy\"?\n" +
+	"\x06policy\x18\x06 \x01(\v2\x1c.zqnt.edgelink.v3.LinkPolicyR\x06policy\x12@\n" +
+	"\fplatform_key\x18\a \x01(\v2\x1d.zqnt.edgelink.v3.PlatformKeyR\vplatformKey\x12(\n" +
+	"\x10served_asset_sns\x18\b \x03(\tR\x0eservedAssetSns\"\x83\x02\n" +
+	"\vPlatformKey\x12'\n" +
+	"\x0finstallation_id\x18\x01 \x01(\tR\x0einstallationId\x12\"\n" +
+	"\ranchor_key_id\x18\x02 \x01(\fR\vanchorKeyId\x12\x15\n" +
+	"\x06key_id\x18\x03 \x01(\fR\x05keyId\x12\x17\n" +
+	"\akey_alg\x18\x04 \x01(\rR\x06keyAlg\x12\x1d\n" +
+	"\n" +
+	"public_key\x18\x05 \x01(\fR\tpublicKey\x12\x1d\n" +
+	"\n" +
+	"not_before\x18\x06 \x01(\x03R\tnotBefore\x12\x1b\n" +
+	"\tnot_after\x18\a \x01(\x03R\bnotAfter\x12\x1c\n" +
+	"\tsignature\x18\b \x01(\fR\tsignature\"\x8c\x02\n" +
+	"\n" +
+	"HelloRetry\x12!\n" +
+	"\fserver_nonce\x18\x01 \x01(\fR\vserverNonce\x12?\n" +
+	"\rplatform_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\fplatformTime\x12:\n" +
+	"\x06reason\x18\x03 \x01(\x0e2\".zqnt.edgelink.v3.HelloRetryReasonR\x06reason\x12@\n" +
+	"\fplatform_key\x18\x04 \x01(\v2\x1d.zqnt.edgelink.v3.PlatformKeyR\vplatformKey\x12\x1c\n" +
+	"\tsignature\x18\x05 \x01(\fR\tsignature\"?\n" +
 	"\x04Ping\x12\x14\n" +
 	"\x05nonce\x18\x01 \x01(\rR\x05nonce\x12!\n" +
 	"\fmonotonic_ms\x18\x02 \x01(\x04R\vmonotonicMs\"\x80\x01\n" +
@@ -2553,7 +2924,15 @@ const file_zqnt_edgelink_v3_edge_link_proto_rawDesc = "" +
 	"\x12LANE_COMMAND_REPLY\x10\x02\x12\x0f\n" +
 	"\vLANE_STATUS\x10\x03\x12\x12\n" +
 	"\x0eLANE_TELEMETRY\x10\x04\x12\r\n" +
-	"\tLANE_BULK\x10\x05*h\n" +
+	"\tLANE_BULK\x10\x05*u\n" +
+	"\vCryptoSuite\x12\x1c\n" +
+	"\x18CRYPTO_SUITE_UNSPECIFIED\x10\x00\x12&\n" +
+	"!CRYPTO_SUITE_S1_CHACHA20_POLY1305\x10\x81\x02\x12 \n" +
+	"\x1bCRYPTO_SUITE_S1_AES_256_GCM\x10\x82\x02*\x85\x01\n" +
+	"\x10HelloRetryReason\x12\"\n" +
+	"\x1eHELLO_RETRY_REASON_UNSPECIFIED\x10\x00\x12&\n" +
+	"\"HELLO_RETRY_REASON_CLOCK_UNTRUSTED\x10\x01\x12%\n" +
+	"!HELLO_RETRY_REASON_NONCE_REQUIRED\x10\x02*h\n" +
 	"\tLinkState\x12\x1a\n" +
 	"\x16LINK_STATE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rLINK_STATE_UP\x10\x01\x12\x17\n" +
@@ -2583,111 +2962,120 @@ func file_zqnt_edgelink_v3_edge_link_proto_rawDescGZIP() []byte {
 	return file_zqnt_edgelink_v3_edge_link_proto_rawDescData
 }
 
-var file_zqnt_edgelink_v3_edge_link_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_zqnt_edgelink_v3_edge_link_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_zqnt_edgelink_v3_edge_link_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_zqnt_edgelink_v3_edge_link_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_zqnt_edgelink_v3_edge_link_proto_goTypes = []any{
 	(Lane)(0),                     // 0: zqnt.edgelink.v3.Lane
-	(LinkState)(0),                // 1: zqnt.edgelink.v3.LinkState
-	(MeshKind)(0),                 // 2: zqnt.edgelink.v3.MeshKind
-	(*MessageId)(nil),             // 3: zqnt.edgelink.v3.MessageId
-	(*Ack)(nil),                   // 4: zqnt.edgelink.v3.Ack
-	(*Envelope)(nil),              // 5: zqnt.edgelink.v3.Envelope
-	(*UplinkFrame)(nil),           // 6: zqnt.edgelink.v3.UplinkFrame
-	(*DownlinkFrame)(nil),         // 7: zqnt.edgelink.v3.DownlinkFrame
-	(*UplinkBatch)(nil),           // 8: zqnt.edgelink.v3.UplinkBatch
-	(*DownlinkBatch)(nil),         // 9: zqnt.edgelink.v3.DownlinkBatch
-	(*Hello)(nil),                 // 10: zqnt.edgelink.v3.Hello
-	(*Welcome)(nil),               // 11: zqnt.edgelink.v3.Welcome
-	(*Ping)(nil),                  // 12: zqnt.edgelink.v3.Ping
-	(*Pong)(nil),                  // 13: zqnt.edgelink.v3.Pong
-	(*LinkPolicy)(nil),            // 14: zqnt.edgelink.v3.LinkPolicy
-	(*PolicyUpdate)(nil),          // 15: zqnt.edgelink.v3.PolicyUpdate
-	(*CommandDelivery)(nil),       // 16: zqnt.edgelink.v3.CommandDelivery
-	(*CommandCancel)(nil),         // 17: zqnt.edgelink.v3.CommandCancel
-	(*Revocation)(nil),            // 18: zqnt.edgelink.v3.Revocation
-	(*RelayItem)(nil),             // 19: zqnt.edgelink.v3.RelayItem
-	(*RelayBatch)(nil),            // 20: zqnt.edgelink.v3.RelayBatch
-	(*RelayDelivery)(nil),         // 21: zqnt.edgelink.v3.RelayDelivery
-	(*LinkStatus)(nil),            // 22: zqnt.edgelink.v3.LinkStatus
-	(*LaneBacklog)(nil),           // 23: zqnt.edgelink.v3.LaneBacklog
-	(*LinkReport)(nil),            // 24: zqnt.edgelink.v3.LinkReport
-	(*MeshInfo)(nil),              // 25: zqnt.edgelink.v3.MeshInfo
-	(*Neighbor)(nil),              // 26: zqnt.edgelink.v3.Neighbor
-	(*LinkTopology)(nil),          // 27: zqnt.edgelink.v3.LinkTopology
-	(*TopologyReport)(nil),        // 28: zqnt.edgelink.v3.TopologyReport
-	(*timestamppb.Timestamp)(nil), // 29: google.protobuf.Timestamp
-	(*v3.TelemetrySample)(nil),    // 30: zqnt.telemetry.v3.TelemetrySample
-	(*v3.DetectionBatch)(nil),     // 31: zqnt.telemetry.v3.DetectionBatch
-	(*v3.Alert)(nil),              // 32: zqnt.telemetry.v3.Alert
-	(*v31.CommandEvent)(nil),      // 33: zqnt.capability.v3.CommandEvent
-	(*v31.CapabilitySet)(nil),     // 34: zqnt.capability.v3.CapabilitySet
-	(*durationpb.Duration)(nil),   // 35: google.protobuf.Duration
-	(*v32.RequestContext)(nil),    // 36: zqnt.common.v3.RequestContext
-	(*v31.Command)(nil),           // 37: zqnt.capability.v3.Command
+	(CryptoSuite)(0),              // 1: zqnt.edgelink.v3.CryptoSuite
+	(HelloRetryReason)(0),         // 2: zqnt.edgelink.v3.HelloRetryReason
+	(LinkState)(0),                // 3: zqnt.edgelink.v3.LinkState
+	(MeshKind)(0),                 // 4: zqnt.edgelink.v3.MeshKind
+	(*MessageId)(nil),             // 5: zqnt.edgelink.v3.MessageId
+	(*Ack)(nil),                   // 6: zqnt.edgelink.v3.Ack
+	(*Envelope)(nil),              // 7: zqnt.edgelink.v3.Envelope
+	(*UplinkFrame)(nil),           // 8: zqnt.edgelink.v3.UplinkFrame
+	(*DownlinkFrame)(nil),         // 9: zqnt.edgelink.v3.DownlinkFrame
+	(*UplinkBatch)(nil),           // 10: zqnt.edgelink.v3.UplinkBatch
+	(*DownlinkBatch)(nil),         // 11: zqnt.edgelink.v3.DownlinkBatch
+	(*Hello)(nil),                 // 12: zqnt.edgelink.v3.Hello
+	(*Welcome)(nil),               // 13: zqnt.edgelink.v3.Welcome
+	(*PlatformKey)(nil),           // 14: zqnt.edgelink.v3.PlatformKey
+	(*HelloRetry)(nil),            // 15: zqnt.edgelink.v3.HelloRetry
+	(*Ping)(nil),                  // 16: zqnt.edgelink.v3.Ping
+	(*Pong)(nil),                  // 17: zqnt.edgelink.v3.Pong
+	(*LinkPolicy)(nil),            // 18: zqnt.edgelink.v3.LinkPolicy
+	(*PolicyUpdate)(nil),          // 19: zqnt.edgelink.v3.PolicyUpdate
+	(*CommandDelivery)(nil),       // 20: zqnt.edgelink.v3.CommandDelivery
+	(*CommandCancel)(nil),         // 21: zqnt.edgelink.v3.CommandCancel
+	(*Revocation)(nil),            // 22: zqnt.edgelink.v3.Revocation
+	(*RelayItem)(nil),             // 23: zqnt.edgelink.v3.RelayItem
+	(*RelayBatch)(nil),            // 24: zqnt.edgelink.v3.RelayBatch
+	(*RelayDelivery)(nil),         // 25: zqnt.edgelink.v3.RelayDelivery
+	(*LinkStatus)(nil),            // 26: zqnt.edgelink.v3.LinkStatus
+	(*LaneBacklog)(nil),           // 27: zqnt.edgelink.v3.LaneBacklog
+	(*LinkReport)(nil),            // 28: zqnt.edgelink.v3.LinkReport
+	(*MeshInfo)(nil),              // 29: zqnt.edgelink.v3.MeshInfo
+	(*Neighbor)(nil),              // 30: zqnt.edgelink.v3.Neighbor
+	(*LinkTopology)(nil),          // 31: zqnt.edgelink.v3.LinkTopology
+	(*TopologyReport)(nil),        // 32: zqnt.edgelink.v3.TopologyReport
+	(*timestamppb.Timestamp)(nil), // 33: google.protobuf.Timestamp
+	(*v3.TelemetrySample)(nil),    // 34: zqnt.telemetry.v3.TelemetrySample
+	(*v3.DetectionBatch)(nil),     // 35: zqnt.telemetry.v3.DetectionBatch
+	(*v3.Alert)(nil),              // 36: zqnt.telemetry.v3.Alert
+	(*v31.CommandEvent)(nil),      // 37: zqnt.capability.v3.CommandEvent
+	(*v31.CapabilitySet)(nil),     // 38: zqnt.capability.v3.CapabilitySet
+	(*durationpb.Duration)(nil),   // 39: google.protobuf.Duration
+	(*v32.RequestContext)(nil),    // 40: zqnt.common.v3.RequestContext
+	(*v31.Command)(nil),           // 41: zqnt.capability.v3.Command
 }
 var file_zqnt_edgelink_v3_edge_link_proto_depIdxs = []int32{
-	3,  // 0: zqnt.edgelink.v3.Envelope.id:type_name -> zqnt.edgelink.v3.MessageId
-	29, // 1: zqnt.edgelink.v3.Envelope.device_time:type_name -> google.protobuf.Timestamp
+	5,  // 0: zqnt.edgelink.v3.Envelope.id:type_name -> zqnt.edgelink.v3.MessageId
+	33, // 1: zqnt.edgelink.v3.Envelope.device_time:type_name -> google.protobuf.Timestamp
 	0,  // 2: zqnt.edgelink.v3.Envelope.lane:type_name -> zqnt.edgelink.v3.Lane
-	30, // 3: zqnt.edgelink.v3.Envelope.sample:type_name -> zqnt.telemetry.v3.TelemetrySample
-	31, // 4: zqnt.edgelink.v3.Envelope.detections:type_name -> zqnt.telemetry.v3.DetectionBatch
-	32, // 5: zqnt.edgelink.v3.Envelope.alert:type_name -> zqnt.telemetry.v3.Alert
-	33, // 6: zqnt.edgelink.v3.Envelope.command_event:type_name -> zqnt.capability.v3.CommandEvent
-	34, // 7: zqnt.edgelink.v3.Envelope.capabilities:type_name -> zqnt.capability.v3.CapabilitySet
-	24, // 8: zqnt.edgelink.v3.Envelope.link_report:type_name -> zqnt.edgelink.v3.LinkReport
-	28, // 9: zqnt.edgelink.v3.Envelope.topology:type_name -> zqnt.edgelink.v3.TopologyReport
-	10, // 10: zqnt.edgelink.v3.UplinkFrame.hello:type_name -> zqnt.edgelink.v3.Hello
-	5,  // 11: zqnt.edgelink.v3.UplinkFrame.envelope:type_name -> zqnt.edgelink.v3.Envelope
-	4,  // 12: zqnt.edgelink.v3.UplinkFrame.ack:type_name -> zqnt.edgelink.v3.Ack
-	12, // 13: zqnt.edgelink.v3.UplinkFrame.ping:type_name -> zqnt.edgelink.v3.Ping
-	20, // 14: zqnt.edgelink.v3.UplinkFrame.relay:type_name -> zqnt.edgelink.v3.RelayBatch
-	11, // 15: zqnt.edgelink.v3.DownlinkFrame.welcome:type_name -> zqnt.edgelink.v3.Welcome
-	4,  // 16: zqnt.edgelink.v3.DownlinkFrame.ack:type_name -> zqnt.edgelink.v3.Ack
-	16, // 17: zqnt.edgelink.v3.DownlinkFrame.command:type_name -> zqnt.edgelink.v3.CommandDelivery
-	13, // 18: zqnt.edgelink.v3.DownlinkFrame.pong:type_name -> zqnt.edgelink.v3.Pong
-	15, // 19: zqnt.edgelink.v3.DownlinkFrame.policy:type_name -> zqnt.edgelink.v3.PolicyUpdate
-	18, // 20: zqnt.edgelink.v3.DownlinkFrame.revocation:type_name -> zqnt.edgelink.v3.Revocation
-	21, // 21: zqnt.edgelink.v3.DownlinkFrame.relay_delivery:type_name -> zqnt.edgelink.v3.RelayDelivery
-	6,  // 22: zqnt.edgelink.v3.UplinkBatch.frames:type_name -> zqnt.edgelink.v3.UplinkFrame
-	7,  // 23: zqnt.edgelink.v3.DownlinkBatch.frames:type_name -> zqnt.edgelink.v3.DownlinkFrame
-	29, // 24: zqnt.edgelink.v3.Hello.wallclock:type_name -> google.protobuf.Timestamp
-	4,  // 25: zqnt.edgelink.v3.Hello.downlink_acked:type_name -> zqnt.edgelink.v3.Ack
-	4,  // 26: zqnt.edgelink.v3.Welcome.resume_from:type_name -> zqnt.edgelink.v3.Ack
-	14, // 27: zqnt.edgelink.v3.Welcome.policy:type_name -> zqnt.edgelink.v3.LinkPolicy
-	29, // 28: zqnt.edgelink.v3.Pong.platform_time:type_name -> google.protobuf.Timestamp
-	35, // 29: zqnt.edgelink.v3.LinkPolicy.ping_interval:type_name -> google.protobuf.Duration
-	3,  // 30: zqnt.edgelink.v3.PolicyUpdate.id:type_name -> zqnt.edgelink.v3.MessageId
-	14, // 31: zqnt.edgelink.v3.PolicyUpdate.policy:type_name -> zqnt.edgelink.v3.LinkPolicy
-	3,  // 32: zqnt.edgelink.v3.CommandDelivery.id:type_name -> zqnt.edgelink.v3.MessageId
-	36, // 33: zqnt.edgelink.v3.CommandDelivery.context:type_name -> zqnt.common.v3.RequestContext
-	37, // 34: zqnt.edgelink.v3.CommandDelivery.execute:type_name -> zqnt.capability.v3.Command
-	17, // 35: zqnt.edgelink.v3.CommandDelivery.cancel:type_name -> zqnt.edgelink.v3.CommandCancel
-	3,  // 36: zqnt.edgelink.v3.Revocation.id:type_name -> zqnt.edgelink.v3.MessageId
-	29, // 37: zqnt.edgelink.v3.Revocation.revoked_at:type_name -> google.protobuf.Timestamp
-	29, // 38: zqnt.edgelink.v3.RelayItem.rx_time:type_name -> google.protobuf.Timestamp
-	19, // 39: zqnt.edgelink.v3.RelayBatch.items:type_name -> zqnt.edgelink.v3.RelayItem
-	29, // 40: zqnt.edgelink.v3.RelayDelivery.expires_at:type_name -> google.protobuf.Timestamp
-	3,  // 41: zqnt.edgelink.v3.RelayDelivery.id:type_name -> zqnt.edgelink.v3.MessageId
-	1,  // 42: zqnt.edgelink.v3.LinkStatus.state:type_name -> zqnt.edgelink.v3.LinkState
-	29, // 43: zqnt.edgelink.v3.LinkStatus.last_rx:type_name -> google.protobuf.Timestamp
-	0,  // 44: zqnt.edgelink.v3.LaneBacklog.lane:type_name -> zqnt.edgelink.v3.Lane
-	29, // 45: zqnt.edgelink.v3.LaneBacklog.oldest:type_name -> google.protobuf.Timestamp
-	22, // 46: zqnt.edgelink.v3.LinkReport.links:type_name -> zqnt.edgelink.v3.LinkStatus
-	23, // 47: zqnt.edgelink.v3.LinkReport.backlog:type_name -> zqnt.edgelink.v3.LaneBacklog
-	2,  // 48: zqnt.edgelink.v3.MeshInfo.kind:type_name -> zqnt.edgelink.v3.MeshKind
-	29, // 49: zqnt.edgelink.v3.Neighbor.last_heard:type_name -> google.protobuf.Timestamp
-	25, // 50: zqnt.edgelink.v3.LinkTopology.mesh:type_name -> zqnt.edgelink.v3.MeshInfo
-	26, // 51: zqnt.edgelink.v3.LinkTopology.neighbors:type_name -> zqnt.edgelink.v3.Neighbor
-	27, // 52: zqnt.edgelink.v3.TopologyReport.links:type_name -> zqnt.edgelink.v3.LinkTopology
-	6,  // 53: zqnt.edgelink.v3.EdgeLinkService.Connect:input_type -> zqnt.edgelink.v3.UplinkFrame
-	8,  // 54: zqnt.edgelink.v3.EdgeLinkService.PostBatch:input_type -> zqnt.edgelink.v3.UplinkBatch
-	7,  // 55: zqnt.edgelink.v3.EdgeLinkService.Connect:output_type -> zqnt.edgelink.v3.DownlinkFrame
-	9,  // 56: zqnt.edgelink.v3.EdgeLinkService.PostBatch:output_type -> zqnt.edgelink.v3.DownlinkBatch
-	55, // [55:57] is the sub-list for method output_type
-	53, // [53:55] is the sub-list for method input_type
-	53, // [53:53] is the sub-list for extension type_name
-	53, // [53:53] is the sub-list for extension extendee
-	0,  // [0:53] is the sub-list for field type_name
+	34, // 3: zqnt.edgelink.v3.Envelope.sample:type_name -> zqnt.telemetry.v3.TelemetrySample
+	35, // 4: zqnt.edgelink.v3.Envelope.detections:type_name -> zqnt.telemetry.v3.DetectionBatch
+	36, // 5: zqnt.edgelink.v3.Envelope.alert:type_name -> zqnt.telemetry.v3.Alert
+	37, // 6: zqnt.edgelink.v3.Envelope.command_event:type_name -> zqnt.capability.v3.CommandEvent
+	38, // 7: zqnt.edgelink.v3.Envelope.capabilities:type_name -> zqnt.capability.v3.CapabilitySet
+	28, // 8: zqnt.edgelink.v3.Envelope.link_report:type_name -> zqnt.edgelink.v3.LinkReport
+	32, // 9: zqnt.edgelink.v3.Envelope.topology:type_name -> zqnt.edgelink.v3.TopologyReport
+	12, // 10: zqnt.edgelink.v3.UplinkFrame.hello:type_name -> zqnt.edgelink.v3.Hello
+	7,  // 11: zqnt.edgelink.v3.UplinkFrame.envelope:type_name -> zqnt.edgelink.v3.Envelope
+	6,  // 12: zqnt.edgelink.v3.UplinkFrame.ack:type_name -> zqnt.edgelink.v3.Ack
+	16, // 13: zqnt.edgelink.v3.UplinkFrame.ping:type_name -> zqnt.edgelink.v3.Ping
+	24, // 14: zqnt.edgelink.v3.UplinkFrame.relay:type_name -> zqnt.edgelink.v3.RelayBatch
+	13, // 15: zqnt.edgelink.v3.DownlinkFrame.welcome:type_name -> zqnt.edgelink.v3.Welcome
+	6,  // 16: zqnt.edgelink.v3.DownlinkFrame.ack:type_name -> zqnt.edgelink.v3.Ack
+	20, // 17: zqnt.edgelink.v3.DownlinkFrame.command:type_name -> zqnt.edgelink.v3.CommandDelivery
+	17, // 18: zqnt.edgelink.v3.DownlinkFrame.pong:type_name -> zqnt.edgelink.v3.Pong
+	19, // 19: zqnt.edgelink.v3.DownlinkFrame.policy:type_name -> zqnt.edgelink.v3.PolicyUpdate
+	22, // 20: zqnt.edgelink.v3.DownlinkFrame.revocation:type_name -> zqnt.edgelink.v3.Revocation
+	25, // 21: zqnt.edgelink.v3.DownlinkFrame.relay_delivery:type_name -> zqnt.edgelink.v3.RelayDelivery
+	15, // 22: zqnt.edgelink.v3.DownlinkFrame.hello_retry:type_name -> zqnt.edgelink.v3.HelloRetry
+	8,  // 23: zqnt.edgelink.v3.UplinkBatch.frames:type_name -> zqnt.edgelink.v3.UplinkFrame
+	9,  // 24: zqnt.edgelink.v3.DownlinkBatch.frames:type_name -> zqnt.edgelink.v3.DownlinkFrame
+	33, // 25: zqnt.edgelink.v3.Hello.wallclock:type_name -> google.protobuf.Timestamp
+	6,  // 26: zqnt.edgelink.v3.Hello.downlink_acked:type_name -> zqnt.edgelink.v3.Ack
+	6,  // 27: zqnt.edgelink.v3.Welcome.resume_from:type_name -> zqnt.edgelink.v3.Ack
+	18, // 28: zqnt.edgelink.v3.Welcome.policy:type_name -> zqnt.edgelink.v3.LinkPolicy
+	14, // 29: zqnt.edgelink.v3.Welcome.platform_key:type_name -> zqnt.edgelink.v3.PlatformKey
+	33, // 30: zqnt.edgelink.v3.HelloRetry.platform_time:type_name -> google.protobuf.Timestamp
+	2,  // 31: zqnt.edgelink.v3.HelloRetry.reason:type_name -> zqnt.edgelink.v3.HelloRetryReason
+	14, // 32: zqnt.edgelink.v3.HelloRetry.platform_key:type_name -> zqnt.edgelink.v3.PlatformKey
+	33, // 33: zqnt.edgelink.v3.Pong.platform_time:type_name -> google.protobuf.Timestamp
+	39, // 34: zqnt.edgelink.v3.LinkPolicy.ping_interval:type_name -> google.protobuf.Duration
+	5,  // 35: zqnt.edgelink.v3.PolicyUpdate.id:type_name -> zqnt.edgelink.v3.MessageId
+	18, // 36: zqnt.edgelink.v3.PolicyUpdate.policy:type_name -> zqnt.edgelink.v3.LinkPolicy
+	5,  // 37: zqnt.edgelink.v3.CommandDelivery.id:type_name -> zqnt.edgelink.v3.MessageId
+	40, // 38: zqnt.edgelink.v3.CommandDelivery.context:type_name -> zqnt.common.v3.RequestContext
+	41, // 39: zqnt.edgelink.v3.CommandDelivery.execute:type_name -> zqnt.capability.v3.Command
+	21, // 40: zqnt.edgelink.v3.CommandDelivery.cancel:type_name -> zqnt.edgelink.v3.CommandCancel
+	5,  // 41: zqnt.edgelink.v3.Revocation.id:type_name -> zqnt.edgelink.v3.MessageId
+	33, // 42: zqnt.edgelink.v3.Revocation.revoked_at:type_name -> google.protobuf.Timestamp
+	33, // 43: zqnt.edgelink.v3.RelayItem.rx_time:type_name -> google.protobuf.Timestamp
+	23, // 44: zqnt.edgelink.v3.RelayBatch.items:type_name -> zqnt.edgelink.v3.RelayItem
+	33, // 45: zqnt.edgelink.v3.RelayDelivery.expires_at:type_name -> google.protobuf.Timestamp
+	5,  // 46: zqnt.edgelink.v3.RelayDelivery.id:type_name -> zqnt.edgelink.v3.MessageId
+	3,  // 47: zqnt.edgelink.v3.LinkStatus.state:type_name -> zqnt.edgelink.v3.LinkState
+	33, // 48: zqnt.edgelink.v3.LinkStatus.last_rx:type_name -> google.protobuf.Timestamp
+	0,  // 49: zqnt.edgelink.v3.LaneBacklog.lane:type_name -> zqnt.edgelink.v3.Lane
+	33, // 50: zqnt.edgelink.v3.LaneBacklog.oldest:type_name -> google.protobuf.Timestamp
+	26, // 51: zqnt.edgelink.v3.LinkReport.links:type_name -> zqnt.edgelink.v3.LinkStatus
+	27, // 52: zqnt.edgelink.v3.LinkReport.backlog:type_name -> zqnt.edgelink.v3.LaneBacklog
+	4,  // 53: zqnt.edgelink.v3.MeshInfo.kind:type_name -> zqnt.edgelink.v3.MeshKind
+	33, // 54: zqnt.edgelink.v3.Neighbor.last_heard:type_name -> google.protobuf.Timestamp
+	29, // 55: zqnt.edgelink.v3.LinkTopology.mesh:type_name -> zqnt.edgelink.v3.MeshInfo
+	30, // 56: zqnt.edgelink.v3.LinkTopology.neighbors:type_name -> zqnt.edgelink.v3.Neighbor
+	31, // 57: zqnt.edgelink.v3.TopologyReport.links:type_name -> zqnt.edgelink.v3.LinkTopology
+	8,  // 58: zqnt.edgelink.v3.EdgeLinkService.Connect:input_type -> zqnt.edgelink.v3.UplinkFrame
+	10, // 59: zqnt.edgelink.v3.EdgeLinkService.PostBatch:input_type -> zqnt.edgelink.v3.UplinkBatch
+	9,  // 60: zqnt.edgelink.v3.EdgeLinkService.Connect:output_type -> zqnt.edgelink.v3.DownlinkFrame
+	11, // 61: zqnt.edgelink.v3.EdgeLinkService.PostBatch:output_type -> zqnt.edgelink.v3.DownlinkBatch
+	60, // [60:62] is the sub-list for method output_type
+	58, // [58:60] is the sub-list for method input_type
+	58, // [58:58] is the sub-list for extension type_name
+	58, // [58:58] is the sub-list for extension extendee
+	0,  // [0:58] is the sub-list for field type_name
 }
 
 func init() { file_zqnt_edgelink_v3_edge_link_proto_init() }
@@ -2719,19 +3107,20 @@ func file_zqnt_edgelink_v3_edge_link_proto_init() {
 		(*DownlinkFrame_Policy)(nil),
 		(*DownlinkFrame_Revocation)(nil),
 		(*DownlinkFrame_RelayDelivery)(nil),
+		(*DownlinkFrame_HelloRetry)(nil),
 	}
-	file_zqnt_edgelink_v3_edge_link_proto_msgTypes[13].OneofWrappers = []any{
+	file_zqnt_edgelink_v3_edge_link_proto_msgTypes[15].OneofWrappers = []any{
 		(*CommandDelivery_Execute)(nil),
 		(*CommandDelivery_Cancel)(nil),
 	}
-	file_zqnt_edgelink_v3_edge_link_proto_msgTypes[23].OneofWrappers = []any{}
+	file_zqnt_edgelink_v3_edge_link_proto_msgTypes[25].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_zqnt_edgelink_v3_edge_link_proto_rawDesc), len(file_zqnt_edgelink_v3_edge_link_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   26,
+			NumEnums:      5,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
