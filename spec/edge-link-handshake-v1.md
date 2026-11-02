@@ -713,12 +713,12 @@ verifying their own output, since ECDSA signatures need not be deterministic. No
 edge cases (invalid points, `r` or `s` out of range); add a set such as Wycheproof's P-256 cases when
 the verifiers are built.
 
-## 9. Recommendations awaiting CTO confirmation, and open decisions
+## 9. Decisions
 
-These map to the last task box of zequent/zqnt-core#370. Each needs an answer or an explicit deferral
-with a date.
+Decided by the CTO on 2026-11-02 (zequent/zqnt-core#370): all recommendations R-1 to R-5 and the
+recommended answers to OD-1 to OD-11 are accepted, with OD-10 as recorded below.
 
-### 9.1 Recommendations (written into this spec, awaiting confirmation)
+### 9.1 Recommendations (accepted)
 
 | # | Recommendation | Where |
 |---|---|---|
@@ -728,7 +728,7 @@ with a date.
 | R-4 | TLS exporter channel binding (RFC 9266) in every node-signed transcript; TLS terminates in edge-link (ingress passthrough) | §4.2 |
 | R-5 | Attestation optional in v1 (stored, not verified); an organization policy can require it later | §3.5 |
 
-### 9.2 Open decisions
+### 9.2 Decisions
 
 | # | Decision | Recommendation | Needed before |
 |---|---|---|---|
@@ -741,7 +741,7 @@ with a date.
 | OD-7 | Dual control for revoke and zeroize (plan §14) | No dual control for revoke or "report lost" (speed after loss matters); dual control for zeroize | console |
 | OD-8 | Freshness window | 120 s; nodes outside it use HelloRetry | core edge-link |
 | OD-9 | First customer and classification level (plan §14 Q3: police VS-NfD, Bundeswehr, NATO partner) | Decide before promising anything for classified traffic: S1 is commercial crypto without approval; classified traffic needs approved crypto underneath | sales commitments |
-| OD-10 | Retention and visibility of person positions (personal data) | Compliance decision (CEO), before personal nodes ship | phone app release |
+| OD-10 | Retention and visibility of person positions (personal data) | **Decided:** person position history is kept 7 days by default (configurable per organization); visibility rules and the full data-protection concept stay a compliance item before personal nodes ship (zequent/zqnt-core#373). Note: asset telemetry in general is kept 180 days today (`asset_telemetry` retention policy); person positions get their own, shorter limit | phone app release |
 | OD-11 | Identity key rotation cadence | No forced cadence; rotate on re-enrollment and hardware change | Go runtime |
 
 ## 10. Contract changes
