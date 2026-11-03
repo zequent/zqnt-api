@@ -549,7 +549,10 @@ type CompleteEnrollmentRequest struct {
 	// Not signed; the operator can change it.
 	DisplayName string `protobuf:"bytes,8,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Identity key signature over T_proof, r || s.
-	Signature     []byte `protobuf:"bytes,9,opt,name=signature,proto3" json:"signature,omitempty"`
+	Signature []byte `protobuf:"bytes,9,opt,name=signature,proto3" json:"signature,omitempty"`
+	// The class the node is configured for; not signed. When set, a claim of another class is refused
+	// before anything is created or a redemption is spent.
+	NodeClass     NodeClass `protobuf:"varint,10,opt,name=node_class,json=nodeClass,proto3,enum=zqnt.edgelink.v3.NodeClass" json:"node_class,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -645,6 +648,13 @@ func (x *CompleteEnrollmentRequest) GetSignature() []byte {
 		return x.Signature
 	}
 	return nil
+}
+
+func (x *CompleteEnrollmentRequest) GetNodeClass() NodeClass {
+	if x != nil {
+		return x.NodeClass
+	}
+	return NodeClass_NODE_CLASS_UNSPECIFIED
 }
 
 // A platform anchor key the node pins.
@@ -1093,7 +1103,7 @@ const file_zqnt_edgelink_v3_edge_enrollment_proto_rawDesc = "" +
 	"\x02sn\x18\x01 \x01(\tR\x02sn\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
 	"\x06vendor\x18\x03 \x01(\tR\x06vendor\x12\x12\n" +
-	"\x04type\x18\x04 \x01(\tR\x04type\"\xa4\x03\n" +
+	"\x04type\x18\x04 \x01(\tR\x04type\"\xe0\x03\n" +
 	"\x19CompleteEnrollmentRequest\x12\x1d\n" +
 	"\n" +
 	"claim_code\x18\x01 \x01(\tR\tclaimCode\x12\x1c\n" +
@@ -1104,7 +1114,10 @@ const file_zqnt_edgelink_v3_edge_enrollment_proto_rawDesc = "" +
 	"\x06assets\x18\x06 \x03(\v2 .zqnt.edgelink.v3.EnrollingAssetR\x06assets\x12'\n" +
 	"\x0fruntime_version\x18\a \x01(\tR\x0eruntimeVersion\x12!\n" +
 	"\fdisplay_name\x18\b \x01(\tR\vdisplayName\x12\x1c\n" +
-	"\tsignature\x18\t \x01(\fR\tsignature\"U\n" +
+	"\tsignature\x18\t \x01(\fR\tsignature\x12:\n" +
+	"\n" +
+	"node_class\x18\n" +
+	" \x01(\x0e2\x1b.zqnt.edgelink.v3.NodeClassR\tnodeClass\"U\n" +
 	"\vTrustAnchor\x12\x15\n" +
 	"\x06key_id\x18\x01 \x01(\fR\x05keyId\x12\x10\n" +
 	"\x03alg\x18\x02 \x01(\rR\x03alg\x12\x1d\n" +
@@ -1215,25 +1228,26 @@ var file_zqnt_edgelink_v3_edge_enrollment_proto_depIdxs = []int32{
 	6,  // 4: zqnt.edgelink.v3.CompleteEnrollmentRequest.identity_key:type_name -> zqnt.edgelink.v3.IdentityKey
 	7,  // 5: zqnt.edgelink.v3.CompleteEnrollmentRequest.attestation:type_name -> zqnt.edgelink.v3.Attestation
 	8,  // 6: zqnt.edgelink.v3.CompleteEnrollmentRequest.assets:type_name -> zqnt.edgelink.v3.EnrollingAsset
-	10, // 7: zqnt.edgelink.v3.CompleteEnrollmentResponse.anchors:type_name -> zqnt.edgelink.v3.TrustAnchor
-	16, // 8: zqnt.edgelink.v3.CompleteEnrollmentResponse.credential_expires_at:type_name -> google.protobuf.Timestamp
-	3,  // 9: zqnt.edgelink.v3.CompleteEnrollmentResponse.node_class:type_name -> zqnt.edgelink.v3.NodeClass
-	6,  // 10: zqnt.edgelink.v3.RotateIdentityKeyRequest.new_key:type_name -> zqnt.edgelink.v3.IdentityKey
-	7,  // 11: zqnt.edgelink.v3.RotateIdentityKeyRequest.attestation:type_name -> zqnt.edgelink.v3.Attestation
-	16, // 12: zqnt.edgelink.v3.RenewCredentialResponse.credential_expires_at:type_name -> google.protobuf.Timestamp
-	4,  // 13: zqnt.edgelink.v3.EdgeEnrollmentService.BeginEnrollment:input_type -> zqnt.edgelink.v3.BeginEnrollmentRequest
-	9,  // 14: zqnt.edgelink.v3.EdgeEnrollmentService.CompleteEnrollment:input_type -> zqnt.edgelink.v3.CompleteEnrollmentRequest
-	12, // 15: zqnt.edgelink.v3.EdgeEnrollmentService.RotateIdentityKey:input_type -> zqnt.edgelink.v3.RotateIdentityKeyRequest
-	14, // 16: zqnt.edgelink.v3.EdgeEnrollmentService.RenewCredential:input_type -> zqnt.edgelink.v3.RenewCredentialRequest
-	5,  // 17: zqnt.edgelink.v3.EdgeEnrollmentService.BeginEnrollment:output_type -> zqnt.edgelink.v3.BeginEnrollmentResponse
-	11, // 18: zqnt.edgelink.v3.EdgeEnrollmentService.CompleteEnrollment:output_type -> zqnt.edgelink.v3.CompleteEnrollmentResponse
-	13, // 19: zqnt.edgelink.v3.EdgeEnrollmentService.RotateIdentityKey:output_type -> zqnt.edgelink.v3.RotateIdentityKeyResponse
-	15, // 20: zqnt.edgelink.v3.EdgeEnrollmentService.RenewCredential:output_type -> zqnt.edgelink.v3.RenewCredentialResponse
-	17, // [17:21] is the sub-list for method output_type
-	13, // [13:17] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	3,  // 7: zqnt.edgelink.v3.CompleteEnrollmentRequest.node_class:type_name -> zqnt.edgelink.v3.NodeClass
+	10, // 8: zqnt.edgelink.v3.CompleteEnrollmentResponse.anchors:type_name -> zqnt.edgelink.v3.TrustAnchor
+	16, // 9: zqnt.edgelink.v3.CompleteEnrollmentResponse.credential_expires_at:type_name -> google.protobuf.Timestamp
+	3,  // 10: zqnt.edgelink.v3.CompleteEnrollmentResponse.node_class:type_name -> zqnt.edgelink.v3.NodeClass
+	6,  // 11: zqnt.edgelink.v3.RotateIdentityKeyRequest.new_key:type_name -> zqnt.edgelink.v3.IdentityKey
+	7,  // 12: zqnt.edgelink.v3.RotateIdentityKeyRequest.attestation:type_name -> zqnt.edgelink.v3.Attestation
+	16, // 13: zqnt.edgelink.v3.RenewCredentialResponse.credential_expires_at:type_name -> google.protobuf.Timestamp
+	4,  // 14: zqnt.edgelink.v3.EdgeEnrollmentService.BeginEnrollment:input_type -> zqnt.edgelink.v3.BeginEnrollmentRequest
+	9,  // 15: zqnt.edgelink.v3.EdgeEnrollmentService.CompleteEnrollment:input_type -> zqnt.edgelink.v3.CompleteEnrollmentRequest
+	12, // 16: zqnt.edgelink.v3.EdgeEnrollmentService.RotateIdentityKey:input_type -> zqnt.edgelink.v3.RotateIdentityKeyRequest
+	14, // 17: zqnt.edgelink.v3.EdgeEnrollmentService.RenewCredential:input_type -> zqnt.edgelink.v3.RenewCredentialRequest
+	5,  // 18: zqnt.edgelink.v3.EdgeEnrollmentService.BeginEnrollment:output_type -> zqnt.edgelink.v3.BeginEnrollmentResponse
+	11, // 19: zqnt.edgelink.v3.EdgeEnrollmentService.CompleteEnrollment:output_type -> zqnt.edgelink.v3.CompleteEnrollmentResponse
+	13, // 20: zqnt.edgelink.v3.EdgeEnrollmentService.RotateIdentityKey:output_type -> zqnt.edgelink.v3.RotateIdentityKeyResponse
+	15, // 21: zqnt.edgelink.v3.EdgeEnrollmentService.RenewCredential:output_type -> zqnt.edgelink.v3.RenewCredentialResponse
+	18, // [18:22] is the sub-list for method output_type
+	14, // [14:18] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_zqnt_edgelink_v3_edge_enrollment_proto_init() }

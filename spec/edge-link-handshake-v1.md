@@ -193,16 +193,22 @@ Connector MUST, in one transaction:
 2. Reject a public key that does not decode or is not on the curve.
 3. Reject a `key_id` that was ever enrolled before (active or historical).
 4. Check the organization's `minimum_key_protection`, the allowed suites and the claim's `node_class`
-   rules (§6.3).
-5. Consume one redemption of the claim (`consumeRedemption`; unknown, expired, revoked, exhausted and
+   rules (§6.3). When the request names a `node_class`, refuse a claim of another class.
+5. Check every listed asset: a serial that does not exist yet is created in the claim's organization
+   as `RedeemClaim` does; an existing asset of the claim's organization that the claim's vendor/type
+   allows and that no other active node serves is bound as it is; any other existing serial is refused.
+6. Consume one redemption of the claim (`consumeRedemption`; unknown, expired, revoked, exhausted and
    vendor/type mismatch all fail alike). **One enrollment consumes one redemption**, however many
-   assets it brings.
-6. Create the node record (§3.3) and key record, create each listed asset in the claim's organization
-   as `RedeemClaim` does (refuse an existing serial before consuming), and bind them to the node (§3.4).
-7. Write an audit record (`AuditService`): node enrolled, claim id, key id, protection class, class.
+   assets it brings. Nothing is consumed or created when a check above refuses.
+7. Create the node record (§3.3) and key record, create the new assets and bind all listed assets to
+   the node (§3.4).
+8. Write an audit record (`AuditService`): node enrolled, claim id, key id, protection class, class.
 
-Every refusal returns the same `UNAUTHENTICATED` "enrollment refused" (no oracle). Enrollment calls
-MUST be rate limited per source address and per claim.
+Every refusal before the claim is found redeemable and the proof verifies returns the same
+`UNAUTHENTICATED` "enrollment refused" (no oracle). A class mismatch or an asset that cannot be bound
+returns `FAILED_PRECONDITION` naming the class or the serial: the caller has already proven a
+redeemable code, so the answer is no oracle for guessing codes. Enrollment calls MUST be rate limited
+per source address and per claim.
 
 Residual risk: a TLS man-in-the-middle during enrollment sees the claim code and can enroll **its own**
 key with it (it cannot reuse the node's proof). The real node's enrollment then fails, and the console
@@ -847,6 +853,7 @@ message CompleteEnrollmentRequest {
   string runtime_version = 7;
   string display_name = 8;             // not signed; the operator can change it
   bytes signature = 9;                 // over T_proof
+  NodeClass node_class = 10;           // not signed; the class the node is configured for
 }
 
 message TrustAnchor { bytes key_id = 1; uint32 alg = 2; bytes public_key = 3; }
@@ -930,6 +937,7 @@ message EnrollNodeRequest {
   zqnt.edgelink.v3.IdentityKey identity_key = 5; repeated uint32 crypto_suites = 6;
   zqnt.edgelink.v3.Attestation attestation = 7; repeated zqnt.edgelink.v3.EnrollingAsset assets = 8;
   string runtime_version = 9; string display_name = 10; bytes signature = 11;
+  zqnt.edgelink.v3.NodeClass node_class = 12;
 }
 message EnrollNodeResponse { EdgeNode node = 1; }
 // The remaining request/response messages carry context + node_id plus their obvious fields;

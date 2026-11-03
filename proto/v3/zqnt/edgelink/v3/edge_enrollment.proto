@@ -109,6 +109,9 @@ message CompleteEnrollmentRequest {
   string display_name = 8;
   // Identity key signature over T_proof, r || s.
   bytes signature = 9;
+  // The class the node is configured for; not signed. When set, a claim of another class is refused
+  // before anything is created or a redemption is spent.
+  NodeClass node_class = 10;
 }
 
 // A platform anchor key the node pins.

@@ -105,7 +105,7 @@ class EnrollingAsset(_message.Message):
     def __init__(self, sn: _Optional[str] = ..., name: _Optional[str] = ..., vendor: _Optional[str] = ..., type: _Optional[str] = ...) -> None: ...
 
 class CompleteEnrollmentRequest(_message.Message):
-    __slots__ = ("claim_code", "challenge", "identity_key", "crypto_suites", "attestation", "assets", "runtime_version", "display_name", "signature")
+    __slots__ = ("claim_code", "challenge", "identity_key", "crypto_suites", "attestation", "assets", "runtime_version", "display_name", "signature", "node_class")
     CLAIM_CODE_FIELD_NUMBER: _ClassVar[int]
     CHALLENGE_FIELD_NUMBER: _ClassVar[int]
     IDENTITY_KEY_FIELD_NUMBER: _ClassVar[int]
@@ -115,6 +115,7 @@ class CompleteEnrollmentRequest(_message.Message):
     RUNTIME_VERSION_FIELD_NUMBER: _ClassVar[int]
     DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     SIGNATURE_FIELD_NUMBER: _ClassVar[int]
+    NODE_CLASS_FIELD_NUMBER: _ClassVar[int]
     claim_code: str
     challenge: bytes
     identity_key: IdentityKey
@@ -124,7 +125,8 @@ class CompleteEnrollmentRequest(_message.Message):
     runtime_version: str
     display_name: str
     signature: bytes
-    def __init__(self, claim_code: _Optional[str] = ..., challenge: _Optional[bytes] = ..., identity_key: _Optional[_Union[IdentityKey, _Mapping]] = ..., crypto_suites: _Optional[_Iterable[int]] = ..., attestation: _Optional[_Union[Attestation, _Mapping]] = ..., assets: _Optional[_Iterable[_Union[EnrollingAsset, _Mapping]]] = ..., runtime_version: _Optional[str] = ..., display_name: _Optional[str] = ..., signature: _Optional[bytes] = ...) -> None: ...
+    node_class: NodeClass
+    def __init__(self, claim_code: _Optional[str] = ..., challenge: _Optional[bytes] = ..., identity_key: _Optional[_Union[IdentityKey, _Mapping]] = ..., crypto_suites: _Optional[_Iterable[int]] = ..., attestation: _Optional[_Union[Attestation, _Mapping]] = ..., assets: _Optional[_Iterable[_Union[EnrollingAsset, _Mapping]]] = ..., runtime_version: _Optional[str] = ..., display_name: _Optional[str] = ..., signature: _Optional[bytes] = ..., node_class: _Optional[_Union[NodeClass, str]] = ...) -> None: ...
 
 class TrustAnchor(_message.Message):
     __slots__ = ("key_id", "alg", "public_key")
