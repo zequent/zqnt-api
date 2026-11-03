@@ -85,6 +85,9 @@ message Alert {
   string code = 4;
   string message = 5;
   google.protobuf.Struct details = 6;
+  // The asset's site, otherwise the organization's smallest site whose area holds the asset's
+  // latest position. Set on ingest; empty when neither names one. An adapter leaves it empty.
+  string site_id = 7;
 }
 
 message WatchTelemetryRequest {

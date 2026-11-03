@@ -83,20 +83,22 @@ class DetectionBatch(_message.Message):
     def __init__(self, asset: _Optional[_Union[_common_pb2.AssetRef, _Mapping]] = ..., observed_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., stream_url: _Optional[str] = ..., detections: _Optional[_Iterable[_Union[_edge_adapter_service_pb2.Detection, _Mapping]]] = ...) -> None: ...
 
 class Alert(_message.Message):
-    __slots__ = ("asset", "occurred_at", "severity", "code", "message", "details")
+    __slots__ = ("asset", "occurred_at", "severity", "code", "message", "details", "site_id")
     ASSET_FIELD_NUMBER: _ClassVar[int]
     OCCURRED_AT_FIELD_NUMBER: _ClassVar[int]
     SEVERITY_FIELD_NUMBER: _ClassVar[int]
     CODE_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     DETAILS_FIELD_NUMBER: _ClassVar[int]
+    SITE_ID_FIELD_NUMBER: _ClassVar[int]
     asset: _common_pb2.AssetRef
     occurred_at: _timestamp_pb2.Timestamp
     severity: AlertSeverity
     code: str
     message: str
     details: _struct_pb2.Struct
-    def __init__(self, asset: _Optional[_Union[_common_pb2.AssetRef, _Mapping]] = ..., occurred_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., severity: _Optional[_Union[AlertSeverity, str]] = ..., code: _Optional[str] = ..., message: _Optional[str] = ..., details: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
+    site_id: str
+    def __init__(self, asset: _Optional[_Union[_common_pb2.AssetRef, _Mapping]] = ..., occurred_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., severity: _Optional[_Union[AlertSeverity, str]] = ..., code: _Optional[str] = ..., message: _Optional[str] = ..., details: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., site_id: _Optional[str] = ...) -> None: ...
 
 class WatchTelemetryRequest(_message.Message):
     __slots__ = ("context", "assets", "min_interval", "organization_id")
