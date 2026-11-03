@@ -96,8 +96,9 @@ message WatchTelemetryRequest {
   repeated zqnt.common.v3.AssetRef assets = 2;
   // At most one sample per asset per interval; unset = every sample.
   google.protobuf.Duration min_interval = 3;
-  // The organization whose assets to watch. Required for an `integration` credential, which serves
-  // several organizations; a client credential always watches its own and leaves it empty.
+  // The organization whose assets to watch. Required for an `integration` credential that serves
+  // several organizations; one bound to an organization watches only that one and may leave it
+  // empty. A client credential always watches its own and leaves it empty.
   string organization_id = 4;
 }
 
@@ -114,6 +115,8 @@ message WatchDetectionsRequest {
   zqnt.common.v3.RequestContext context = 1;
   // Empty = every asset of the caller's organization.
   repeated zqnt.common.v3.AssetRef assets = 2;
+  // The organization whose detections to watch, as in WatchTelemetryRequest.organization_id.
+  string organization_id = 3;
 }
 
 message WatchDetectionsResponse {
@@ -129,6 +132,8 @@ message WatchAlertsRequest {
   repeated zqnt.common.v3.AssetRef assets = 2;
   // Unset = every severity.
   AlertSeverity min_severity = 3;
+  // The organization whose alerts to watch, as in WatchTelemetryRequest.organization_id.
+  string organization_id = 4;
 }
 
 message WatchAlertsResponse {
