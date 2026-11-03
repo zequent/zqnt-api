@@ -196,6 +196,7 @@ func enrollment() []proto.Message {
 			Attestation:    attestation(),
 			Assets:         []*edgelinkv3.EnrollingAsset{{Sn: asset.Sn, Name: "Radar 1", Vendor: "ZQNT", Type: "RADAR"}},
 			RuntimeVersion: "3.0.0", DisplayName: "Mast 3", Signature: []byte{0xB2, 0xEA},
+			NodeClass: edgelinkv3.NodeClass_NODE_CLASS_INFRASTRUCTURE,
 		},
 		&edgelinkv3.CompleteEnrollmentResponse{
 			NodeId: "0b8e4b7a-2f43-4d1e-8c55-6a9e2d7f1a30", OrganizationId: "6f1c2a0e-3b5d-4c8e-9a7f-1d2e3f405162",
