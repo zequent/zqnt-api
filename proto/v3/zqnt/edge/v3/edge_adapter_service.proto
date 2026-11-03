@@ -141,6 +141,36 @@ message Detection {
   // whose area holds the position. Set on ingest; empty when neither names one. An adapter leaves
   // it empty.
   string site_id = 17;
+  // What the object broadcasts about itself, on a report of a Remote ID or ADS-B receiver: the
+  // receiver is the sensor, the position is the broadcast one.
+  Broadcast broadcast = 18;
+}
+
+enum BroadcastKind {
+  BROADCAST_KIND_UNSPECIFIED = 0;
+  // Drone Remote ID (ASTM F3411, ASD-STAN EN 4709-002), heard over Bluetooth or Wi-Fi.
+  BROADCAST_KIND_REMOTE_ID = 1;
+  // ADS-B (1090 MHz extended squitter), e.g. from a dump1090/readsb receiver.
+  BROADCAST_KIND_ADSB = 2;
+}
+
+message Broadcast {
+  BroadcastKind kind = 1;
+  // REMOTE_ID: the UAS serial number (ANSI/CTA-2063) or session id. ADSB: the 24-bit ICAO
+  // address in upper-case hex.
+  string id = 2;
+  // ADSB: the flight number or registration the aircraft transmits.
+  string callsign = 3;
+  // REMOTE_ID: the operator's registration number.
+  string operator_id = 4;
+  // REMOTE_ID: where the operator (the remote pilot) is, when broadcast.
+  zqnt.common.v3.GeoPoint operator_position = 5;
+  // REMOTE_ID: the free text of the self-ID message.
+  string description = 6;
+  // ADSB: the transponder code.
+  string squawk = 7;
+  // REMOTE_ID: the UA type, e.g. HELICOPTER_OR_MULTIROTOR. ADSB: the emitter category, e.g. A3.
+  string category = 8;
 }
 
 // Standard identity after NATO APP-6.
@@ -174,20 +204,39 @@ enum IdentitySourceKind {
   // Earlier reports of the same track were matched to the own asset named in asset_sn; the track
   // keeps that link until a report contradicts it.
   IDENTITY_SOURCE_KIND_TRACK = 4;
+  // The object was in the planned corridor of a running Application of the organization, at about
+  // the planned time: execution_id names the run, asset_sn the asset flying it. Supports
+  // ASSUMED_FRIEND, never FRIEND, and only while that asset's own position is not known.
+  IDENTITY_SOURCE_KIND_ROUTE = 5;
+  // A Remote ID broadcast: the report's own, or one heard at the object's position.
+  IDENTITY_SOURCE_KIND_REMOTE_ID = 6;
+  // An ADS-B broadcast: the report's own, or one heard at the object's position.
+  IDENTITY_SOURCE_KIND_ADSB = 7;
+  // The broadcast is on the site's allow-list of cooperative traffic (partners, police).
+  IDENTITY_SOURCE_KIND_ALLOW_LIST = 8;
 }
 
 message IdentitySource {
   IdentitySourceKind kind = 1;
   // What this source says.
   Identity identity = 2;
-  // POSITION: the own asset matched or, when none matched, the nearest one compared.
+  // POSITION: the own asset matched or, when none matched, the nearest one compared. ROUTE: the
+  // asset flying the run. REMOTE_ID, ADSB, ALLOW_LIST: the own asset the broadcast stands for.
   string asset_sn = 3;
-  // POSITION: metres between the object and that asset's latest position.
+  // POSITION: metres between the object and that asset's latest position. ROUTE: metres from the
+  // planned route. REMOTE_ID, ADSB: metres from the broadcast position.
   optional double distance_meters = 4;
-  // POSITION: seconds between the detection and that asset's latest telemetry.
+  // POSITION: seconds between the detection and that asset's latest telemetry. ROUTE: seconds off
+  // the planned time. REMOTE_ID, ADSB: seconds between the detection and the broadcast.
   optional double age_seconds = 5;
   // 0..1.
   float confidence = 6;
+  // REMOTE_ID, ADSB, ALLOW_LIST: the broadcast the source rests on.
+  Broadcast broadcast = 7;
+  // ROUTE: the run whose corridor the object was in.
+  string execution_id = 8;
+  // ALLOW_LIST: the entry's name, e.g. "Police helicopter Christoph 1".
+  string label = 9;
 }
 
 message StreamDetectionsResponse {
