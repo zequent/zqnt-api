@@ -394,9 +394,12 @@ type Alert struct {
 	OccurredAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=occurred_at,json=occurredAt,proto3" json:"occurred_at,omitempty"`
 	Severity   AlertSeverity          `protobuf:"varint,3,opt,name=severity,proto3,enum=zqnt.telemetry.v3.AlertSeverity" json:"severity,omitempty"`
 	// Stable, machine-readable, e.g. "dock.rain" or "vendor.dji.hms.0x16100083".
-	Code          string           `protobuf:"bytes,4,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string           `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
-	Details       *structpb.Struct `protobuf:"bytes,6,opt,name=details,proto3" json:"details,omitempty"`
+	Code    string           `protobuf:"bytes,4,opt,name=code,proto3" json:"code,omitempty"`
+	Message string           `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
+	Details *structpb.Struct `protobuf:"bytes,6,opt,name=details,proto3" json:"details,omitempty"`
+	// The asset's site, otherwise the organization's smallest site whose area holds the asset's
+	// latest position. Set on ingest; empty when neither names one. An adapter leaves it empty.
+	SiteId        string `protobuf:"bytes,7,opt,name=site_id,json=siteId,proto3" json:"site_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -471,6 +474,13 @@ func (x *Alert) GetDetails() *structpb.Struct {
 		return x.Details
 	}
 	return nil
+}
+
+func (x *Alert) GetSiteId() string {
+	if x != nil {
+		return x.SiteId
+	}
+	return ""
 }
 
 type WatchTelemetryRequest struct {
@@ -1246,7 +1256,7 @@ const file_zqnt_telemetry_v3_telemetry_proto_rawDesc = "" +
 	"stream_url\x18\x03 \x01(\tR\tstreamUrl\x127\n" +
 	"\n" +
 	"detections\x18\x04 \x03(\v2\x17.zqnt.edge.v3.DetectionR\n" +
-	"detections\"\x93\x02\n" +
+	"detections\"\xac\x02\n" +
 	"\x05Alert\x12.\n" +
 	"\x05asset\x18\x01 \x01(\v2\x18.zqnt.common.v3.AssetRefR\x05asset\x12;\n" +
 	"\voccurred_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -1254,7 +1264,8 @@ const file_zqnt_telemetry_v3_telemetry_proto_rawDesc = "" +
 	"\bseverity\x18\x03 \x01(\x0e2 .zqnt.telemetry.v3.AlertSeverityR\bseverity\x12\x12\n" +
 	"\x04code\x18\x04 \x01(\tR\x04code\x12\x18\n" +
 	"\amessage\x18\x05 \x01(\tR\amessage\x121\n" +
-	"\adetails\x18\x06 \x01(\v2\x17.google.protobuf.StructR\adetails\"\xea\x01\n" +
+	"\adetails\x18\x06 \x01(\v2\x17.google.protobuf.StructR\adetails\x12\x17\n" +
+	"\asite_id\x18\a \x01(\tR\x06siteId\"\xea\x01\n" +
 	"\x15WatchTelemetryRequest\x128\n" +
 	"\acontext\x18\x01 \x01(\v2\x1e.zqnt.common.v3.RequestContextR\acontext\x120\n" +
 	"\x06assets\x18\x02 \x03(\v2\x18.zqnt.common.v3.AssetRefR\x06assets\x12<\n" +
