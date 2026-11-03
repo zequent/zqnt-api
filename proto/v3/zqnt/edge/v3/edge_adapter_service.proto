@@ -134,6 +134,9 @@ message Detection {
   // The object could be more than one own asset, another object claims the same own asset, or the
   // sources contradict each other. Position alone never makes such an object friendly.
   bool identity_ambiguous = 15;
+  // The track the platform put this report in: one object over time, across the sensors that saw
+  // it. Set on ingest; empty for a report that was not tracked. An adapter leaves it empty.
+  string track_id = 16;
 }
 
 // Standard identity after NATO APP-6.
@@ -164,6 +167,9 @@ enum IdentitySourceKind {
   // The sensor said so: a FRIENDLY_* class, or an identity the adapter set.
   IDENTITY_SOURCE_KIND_SENSOR = 2;
   IDENTITY_SOURCE_KIND_OPERATOR = 3;
+  // Earlier reports of the same track were matched to the own asset named in asset_sn; the track
+  // keeps that link until a report contradicts it.
+  IDENTITY_SOURCE_KIND_TRACK = 4;
 }
 
 message IdentitySource {

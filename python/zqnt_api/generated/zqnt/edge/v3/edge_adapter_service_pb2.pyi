@@ -36,6 +36,7 @@ class IdentitySourceKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     IDENTITY_SOURCE_KIND_POSITION: _ClassVar[IdentitySourceKind]
     IDENTITY_SOURCE_KIND_SENSOR: _ClassVar[IdentitySourceKind]
     IDENTITY_SOURCE_KIND_OPERATOR: _ClassVar[IdentitySourceKind]
+    IDENTITY_SOURCE_KIND_TRACK: _ClassVar[IdentitySourceKind]
 IDENTITY_UNSPECIFIED: Identity
 IDENTITY_PENDING: Identity
 IDENTITY_UNKNOWN: Identity
@@ -51,6 +52,7 @@ IDENTITY_SOURCE_KIND_UNSPECIFIED: IdentitySourceKind
 IDENTITY_SOURCE_KIND_POSITION: IdentitySourceKind
 IDENTITY_SOURCE_KIND_SENSOR: IdentitySourceKind
 IDENTITY_SOURCE_KIND_OPERATOR: IdentitySourceKind
+IDENTITY_SOURCE_KIND_TRACK: IdentitySourceKind
 
 class GetCapabilitiesRequest(_message.Message):
     __slots__ = ("context", "asset", "target")
@@ -153,7 +155,7 @@ class BoundingBox(_message.Message):
     def __init__(self, x: _Optional[float] = ..., y: _Optional[float] = ..., width: _Optional[float] = ..., height: _Optional[float] = ...) -> None: ...
 
 class Detection(_message.Message):
-    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees", "identity", "identity_sources", "identity_set_by", "friendly_asset_sn", "identity_ambiguous")
+    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees", "identity", "identity_sources", "identity_set_by", "friendly_asset_sn", "identity_ambiguous", "track_id")
     OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     OBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
     CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
@@ -169,6 +171,7 @@ class Detection(_message.Message):
     IDENTITY_SET_BY_FIELD_NUMBER: _ClassVar[int]
     FRIENDLY_ASSET_SN_FIELD_NUMBER: _ClassVar[int]
     IDENTITY_AMBIGUOUS_FIELD_NUMBER: _ClassVar[int]
+    TRACK_ID_FIELD_NUMBER: _ClassVar[int]
     object_id: str
     object_type: str
     confidence: float
@@ -184,7 +187,8 @@ class Detection(_message.Message):
     identity_set_by: IdentitySetBy
     friendly_asset_sn: str
     identity_ambiguous: bool
-    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ..., identity: _Optional[_Union[Identity, str]] = ..., identity_sources: _Optional[_Iterable[_Union[IdentitySource, _Mapping]]] = ..., identity_set_by: _Optional[_Union[IdentitySetBy, str]] = ..., friendly_asset_sn: _Optional[str] = ..., identity_ambiguous: _Optional[bool] = ...) -> None: ...
+    track_id: str
+    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ..., identity: _Optional[_Union[Identity, str]] = ..., identity_sources: _Optional[_Iterable[_Union[IdentitySource, _Mapping]]] = ..., identity_set_by: _Optional[_Union[IdentitySetBy, str]] = ..., friendly_asset_sn: _Optional[str] = ..., identity_ambiguous: _Optional[bool] = ..., track_id: _Optional[str] = ...) -> None: ...
 
 class IdentitySource(_message.Message):
     __slots__ = ("kind", "identity", "asset_sn", "distance_meters", "age_seconds", "confidence")

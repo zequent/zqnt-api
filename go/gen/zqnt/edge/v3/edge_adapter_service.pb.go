@@ -159,6 +159,9 @@ const (
 	// The sensor said so: a FRIENDLY_* class, or an identity the adapter set.
 	IdentitySourceKind_IDENTITY_SOURCE_KIND_SENSOR   IdentitySourceKind = 2
 	IdentitySourceKind_IDENTITY_SOURCE_KIND_OPERATOR IdentitySourceKind = 3
+	// Earlier reports of the same track were matched to the own asset named in asset_sn; the track
+	// keeps that link until a report contradicts it.
+	IdentitySourceKind_IDENTITY_SOURCE_KIND_TRACK IdentitySourceKind = 4
 )
 
 // Enum value maps for IdentitySourceKind.
@@ -168,12 +171,14 @@ var (
 		1: "IDENTITY_SOURCE_KIND_POSITION",
 		2: "IDENTITY_SOURCE_KIND_SENSOR",
 		3: "IDENTITY_SOURCE_KIND_OPERATOR",
+		4: "IDENTITY_SOURCE_KIND_TRACK",
 	}
 	IdentitySourceKind_value = map[string]int32{
 		"IDENTITY_SOURCE_KIND_UNSPECIFIED": 0,
 		"IDENTITY_SOURCE_KIND_POSITION":    1,
 		"IDENTITY_SOURCE_KIND_SENSOR":      2,
 		"IDENTITY_SOURCE_KIND_OPERATOR":    3,
+		"IDENTITY_SOURCE_KIND_TRACK":       4,
 	}
 )
 
@@ -859,8 +864,11 @@ type Detection struct {
 	// The object could be more than one own asset, another object claims the same own asset, or the
 	// sources contradict each other. Position alone never makes such an object friendly.
 	IdentityAmbiguous bool `protobuf:"varint,15,opt,name=identity_ambiguous,json=identityAmbiguous,proto3" json:"identity_ambiguous,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// The track the platform put this report in: one object over time, across the sensors that saw
+	// it. Set on ingest; empty for a report that was not tracked. An adapter leaves it empty.
+	TrackId       string `protobuf:"bytes,16,opt,name=track_id,json=trackId,proto3" json:"track_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Detection) Reset() {
@@ -996,6 +1004,13 @@ func (x *Detection) GetIdentityAmbiguous() bool {
 		return x.IdentityAmbiguous
 	}
 	return false
+}
+
+func (x *Detection) GetTrackId() string {
+	if x != nil {
+		return x.TrackId
+	}
+	return ""
 }
 
 type IdentitySource struct {
@@ -1368,7 +1383,7 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x01x\x18\x01 \x01(\x02R\x01x\x12\f\n" +
 	"\x01y\x18\x02 \x01(\x02R\x01y\x12\x14\n" +
 	"\x05width\x18\x03 \x01(\x02R\x05width\x12\x16\n" +
-	"\x06height\x18\x04 \x01(\x02R\x06height\"\xa4\x06\n" +
+	"\x06height\x18\x04 \x01(\x02R\x06height\"\xbf\x06\n" +
 	"\tDetection\x12\x1b\n" +
 	"\tobject_id\x18\x01 \x01(\tR\bobjectId\x12\x1f\n" +
 	"\vobject_type\x18\x02 \x01(\tR\n" +
@@ -1388,7 +1403,8 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x10identity_sources\x18\f \x03(\v2\x1c.zqnt.edge.v3.IdentitySourceR\x0fidentitySources\x12C\n" +
 	"\x0fidentity_set_by\x18\r \x01(\x0e2\x1b.zqnt.edge.v3.IdentitySetByR\ridentitySetBy\x12*\n" +
 	"\x11friendly_asset_sn\x18\x0e \x01(\tR\x0ffriendlyAssetSn\x12-\n" +
-	"\x12identity_ambiguous\x18\x0f \x01(\bR\x11identityAmbiguousB\x0f\n" +
+	"\x12identity_ambiguous\x18\x0f \x01(\bR\x11identityAmbiguous\x12\x19\n" +
+	"\btrack_id\x18\x10 \x01(\tR\atrackIdB\x0f\n" +
 	"\r_range_metersB\x12\n" +
 	"\x10_bearing_degreesB\x14\n" +
 	"\x12_elevation_degreesB\b\n" +
@@ -1434,12 +1450,13 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\rIdentitySetBy\x12\x1f\n" +
 	"\x1bIDENTITY_SET_BY_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18IDENTITY_SET_BY_PLATFORM\x10\x01\x12\x1c\n" +
-	"\x18IDENTITY_SET_BY_OPERATOR\x10\x02*\xa1\x01\n" +
+	"\x18IDENTITY_SET_BY_OPERATOR\x10\x02*\xc1\x01\n" +
 	"\x12IdentitySourceKind\x12$\n" +
 	" IDENTITY_SOURCE_KIND_UNSPECIFIED\x10\x00\x12!\n" +
 	"\x1dIDENTITY_SOURCE_KIND_POSITION\x10\x01\x12\x1f\n" +
 	"\x1bIDENTITY_SOURCE_KIND_SENSOR\x10\x02\x12!\n" +
-	"\x1dIDENTITY_SOURCE_KIND_OPERATOR\x10\x032\xfe\x03\n" +
+	"\x1dIDENTITY_SOURCE_KIND_OPERATOR\x10\x03\x12\x1e\n" +
+	"\x1aIDENTITY_SOURCE_KIND_TRACK\x10\x042\xfe\x03\n" +
 	"\x12EdgeAdapterService\x12^\n" +
 	"\x0fGetCapabilities\x12$.zqnt.edge.v3.GetCapabilitiesRequest\x1a%.zqnt.edge.v3.GetCapabilitiesResponse\x12[\n" +
 	"\x0eExecuteCommand\x12#.zqnt.edge.v3.ExecuteCommandRequest\x1a$.zqnt.edge.v3.ExecuteCommandResponse\x12X\n" +
