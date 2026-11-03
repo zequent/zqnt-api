@@ -122,6 +122,62 @@ message Detection {
   optional double speed = 9;
   // Degrees clockwise from true north, the direction the object moves.
   optional double heading_degrees = 10;
+  // Whose the object is, apart from what it is (object_type). The platform sets it on ingest; an
+  // adapter whose sensor knows (IFF, a simulator's own drones) may set it, and the platform keeps
+  // that as a SENSOR source.
+  Identity identity = 11;
+  // What the identity rests on.
+  repeated IdentitySource identity_sources = 12;
+  IdentitySetBy identity_set_by = 13;
+  // The own asset the object is taken for, when the identity is ASSUMED_FRIEND or FRIEND.
+  string friendly_asset_sn = 14;
+  // The object could be more than one own asset, another object claims the same own asset, or the
+  // sources contradict each other. Position alone never makes such an object friendly.
+  bool identity_ambiguous = 15;
+}
+
+// Standard identity after NATO APP-6.
+enum Identity {
+  IDENTITY_UNSPECIFIED = 0;
+  // Not evaluated yet.
+  IDENTITY_PENDING = 1;
+  // Evaluated; nothing says whose it is.
+  IDENTITY_UNKNOWN = 2;
+  IDENTITY_ASSUMED_FRIEND = 3;
+  IDENTITY_FRIEND = 4;
+  // Neither friend nor foe, e.g. civil traffic broadcasting Remote ID.
+  IDENTITY_NEUTRAL = 5;
+  IDENTITY_SUSPECT = 6;
+  IDENTITY_HOSTILE = 7;
+}
+
+enum IdentitySetBy {
+  IDENTITY_SET_BY_UNSPECIFIED = 0;
+  IDENTITY_SET_BY_PLATFORM = 1;
+  IDENTITY_SET_BY_OPERATOR = 2;
+}
+
+enum IdentitySourceKind {
+  IDENTITY_SOURCE_KIND_UNSPECIFIED = 0;
+  // Position and time compared with the latest telemetry of the organization's own assets.
+  IDENTITY_SOURCE_KIND_POSITION = 1;
+  // The sensor said so: a FRIENDLY_* class, or an identity the adapter set.
+  IDENTITY_SOURCE_KIND_SENSOR = 2;
+  IDENTITY_SOURCE_KIND_OPERATOR = 3;
+}
+
+message IdentitySource {
+  IdentitySourceKind kind = 1;
+  // What this source says.
+  Identity identity = 2;
+  // POSITION: the own asset matched or, when none matched, the nearest one compared.
+  string asset_sn = 3;
+  // POSITION: metres between the object and that asset's latest position.
+  optional double distance_meters = 4;
+  // POSITION: seconds between the detection and that asset's latest telemetry.
+  optional double age_seconds = 5;
+  // 0..1.
+  float confidence = 6;
 }
 
 message StreamDetectionsResponse {

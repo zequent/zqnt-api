@@ -5,12 +5,52 @@ from zqnt_api.generated.zqnt.capability.v3 import capability_pb2 as _capability_
 from zqnt_api.generated.zqnt.capability.v3 import command_pb2 as _command_pb2
 from zqnt_api.generated.zqnt.common.v3 import common_pb2 as _common_pb2
 from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from collections.abc import Iterable as _Iterable, Mapping as _Mapping
 from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
+
+class Identity(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    IDENTITY_UNSPECIFIED: _ClassVar[Identity]
+    IDENTITY_PENDING: _ClassVar[Identity]
+    IDENTITY_UNKNOWN: _ClassVar[Identity]
+    IDENTITY_ASSUMED_FRIEND: _ClassVar[Identity]
+    IDENTITY_FRIEND: _ClassVar[Identity]
+    IDENTITY_NEUTRAL: _ClassVar[Identity]
+    IDENTITY_SUSPECT: _ClassVar[Identity]
+    IDENTITY_HOSTILE: _ClassVar[Identity]
+
+class IdentitySetBy(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    IDENTITY_SET_BY_UNSPECIFIED: _ClassVar[IdentitySetBy]
+    IDENTITY_SET_BY_PLATFORM: _ClassVar[IdentitySetBy]
+    IDENTITY_SET_BY_OPERATOR: _ClassVar[IdentitySetBy]
+
+class IdentitySourceKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    IDENTITY_SOURCE_KIND_UNSPECIFIED: _ClassVar[IdentitySourceKind]
+    IDENTITY_SOURCE_KIND_POSITION: _ClassVar[IdentitySourceKind]
+    IDENTITY_SOURCE_KIND_SENSOR: _ClassVar[IdentitySourceKind]
+    IDENTITY_SOURCE_KIND_OPERATOR: _ClassVar[IdentitySourceKind]
+IDENTITY_UNSPECIFIED: Identity
+IDENTITY_PENDING: Identity
+IDENTITY_UNKNOWN: Identity
+IDENTITY_ASSUMED_FRIEND: Identity
+IDENTITY_FRIEND: Identity
+IDENTITY_NEUTRAL: Identity
+IDENTITY_SUSPECT: Identity
+IDENTITY_HOSTILE: Identity
+IDENTITY_SET_BY_UNSPECIFIED: IdentitySetBy
+IDENTITY_SET_BY_PLATFORM: IdentitySetBy
+IDENTITY_SET_BY_OPERATOR: IdentitySetBy
+IDENTITY_SOURCE_KIND_UNSPECIFIED: IdentitySourceKind
+IDENTITY_SOURCE_KIND_POSITION: IdentitySourceKind
+IDENTITY_SOURCE_KIND_SENSOR: IdentitySourceKind
+IDENTITY_SOURCE_KIND_OPERATOR: IdentitySourceKind
 
 class GetCapabilitiesRequest(_message.Message):
     __slots__ = ("context", "asset", "target")
@@ -113,7 +153,7 @@ class BoundingBox(_message.Message):
     def __init__(self, x: _Optional[float] = ..., y: _Optional[float] = ..., width: _Optional[float] = ..., height: _Optional[float] = ...) -> None: ...
 
 class Detection(_message.Message):
-    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees")
+    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees", "identity", "identity_sources", "identity_set_by", "friendly_asset_sn", "identity_ambiguous")
     OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     OBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
     CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
@@ -124,6 +164,11 @@ class Detection(_message.Message):
     ELEVATION_DEGREES_FIELD_NUMBER: _ClassVar[int]
     SPEED_FIELD_NUMBER: _ClassVar[int]
     HEADING_DEGREES_FIELD_NUMBER: _ClassVar[int]
+    IDENTITY_FIELD_NUMBER: _ClassVar[int]
+    IDENTITY_SOURCES_FIELD_NUMBER: _ClassVar[int]
+    IDENTITY_SET_BY_FIELD_NUMBER: _ClassVar[int]
+    FRIENDLY_ASSET_SN_FIELD_NUMBER: _ClassVar[int]
+    IDENTITY_AMBIGUOUS_FIELD_NUMBER: _ClassVar[int]
     object_id: str
     object_type: str
     confidence: float
@@ -134,7 +179,28 @@ class Detection(_message.Message):
     elevation_degrees: float
     speed: float
     heading_degrees: float
-    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ...) -> None: ...
+    identity: Identity
+    identity_sources: _containers.RepeatedCompositeFieldContainer[IdentitySource]
+    identity_set_by: IdentitySetBy
+    friendly_asset_sn: str
+    identity_ambiguous: bool
+    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ..., identity: _Optional[_Union[Identity, str]] = ..., identity_sources: _Optional[_Iterable[_Union[IdentitySource, _Mapping]]] = ..., identity_set_by: _Optional[_Union[IdentitySetBy, str]] = ..., friendly_asset_sn: _Optional[str] = ..., identity_ambiguous: _Optional[bool] = ...) -> None: ...
+
+class IdentitySource(_message.Message):
+    __slots__ = ("kind", "identity", "asset_sn", "distance_meters", "age_seconds", "confidence")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    IDENTITY_FIELD_NUMBER: _ClassVar[int]
+    ASSET_SN_FIELD_NUMBER: _ClassVar[int]
+    DISTANCE_METERS_FIELD_NUMBER: _ClassVar[int]
+    AGE_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
+    kind: IdentitySourceKind
+    identity: Identity
+    asset_sn: str
+    distance_meters: float
+    age_seconds: float
+    confidence: float
+    def __init__(self, kind: _Optional[_Union[IdentitySourceKind, str]] = ..., identity: _Optional[_Union[Identity, str]] = ..., asset_sn: _Optional[str] = ..., distance_meters: _Optional[float] = ..., age_seconds: _Optional[float] = ..., confidence: _Optional[float] = ...) -> None: ...
 
 class StreamDetectionsResponse(_message.Message):
     __slots__ = ("asset", "detections", "stream_url", "observed_at")
