@@ -123,12 +123,14 @@ class WatchTelemetryResponse(_message.Message):
     def __init__(self, sample: _Optional[_Union[TelemetrySample, _Mapping]] = ..., source_status: _Optional[_Union[SourceStatus, _Mapping]] = ..., heartbeat: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class WatchDetectionsRequest(_message.Message):
-    __slots__ = ("context", "assets")
+    __slots__ = ("context", "assets", "organization_id")
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
     ASSETS_FIELD_NUMBER: _ClassVar[int]
+    ORGANIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     context: _common_pb2.RequestContext
     assets: _containers.RepeatedCompositeFieldContainer[_common_pb2.AssetRef]
-    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ..., assets: _Optional[_Iterable[_Union[_common_pb2.AssetRef, _Mapping]]] = ...) -> None: ...
+    organization_id: str
+    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ..., assets: _Optional[_Iterable[_Union[_common_pb2.AssetRef, _Mapping]]] = ..., organization_id: _Optional[str] = ...) -> None: ...
 
 class WatchDetectionsResponse(_message.Message):
     __slots__ = ("batch", "heartbeat")
@@ -139,14 +141,16 @@ class WatchDetectionsResponse(_message.Message):
     def __init__(self, batch: _Optional[_Union[DetectionBatch, _Mapping]] = ..., heartbeat: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class WatchAlertsRequest(_message.Message):
-    __slots__ = ("context", "assets", "min_severity")
+    __slots__ = ("context", "assets", "min_severity", "organization_id")
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
     ASSETS_FIELD_NUMBER: _ClassVar[int]
     MIN_SEVERITY_FIELD_NUMBER: _ClassVar[int]
+    ORGANIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     context: _common_pb2.RequestContext
     assets: _containers.RepeatedCompositeFieldContainer[_common_pb2.AssetRef]
     min_severity: AlertSeverity
-    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ..., assets: _Optional[_Iterable[_Union[_common_pb2.AssetRef, _Mapping]]] = ..., min_severity: _Optional[_Union[AlertSeverity, str]] = ...) -> None: ...
+    organization_id: str
+    def __init__(self, context: _Optional[_Union[_common_pb2.RequestContext, _Mapping]] = ..., assets: _Optional[_Iterable[_Union[_common_pb2.AssetRef, _Mapping]]] = ..., min_severity: _Optional[_Union[AlertSeverity, str]] = ..., organization_id: _Optional[str] = ...) -> None: ...
 
 class WatchAlertsResponse(_message.Message):
     __slots__ = ("alert", "heartbeat")
