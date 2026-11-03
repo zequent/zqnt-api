@@ -137,6 +137,10 @@ message Detection {
   // The track the platform put this report in: one object over time, across the sensors that saw
   // it. Set on ingest; empty for a report that was not tracked. An adapter leaves it empty.
   string track_id = 16;
+  // The site the object was seen at: the sensor's site, otherwise the organization's smallest site
+  // whose area holds the position. Set on ingest; empty when neither names one. An adapter leaves
+  // it empty.
+  string site_id = 17;
 }
 
 // Standard identity after NATO APP-6.

@@ -866,7 +866,11 @@ type Detection struct {
 	IdentityAmbiguous bool `protobuf:"varint,15,opt,name=identity_ambiguous,json=identityAmbiguous,proto3" json:"identity_ambiguous,omitempty"`
 	// The track the platform put this report in: one object over time, across the sensors that saw
 	// it. Set on ingest; empty for a report that was not tracked. An adapter leaves it empty.
-	TrackId       string `protobuf:"bytes,16,opt,name=track_id,json=trackId,proto3" json:"track_id,omitempty"`
+	TrackId string `protobuf:"bytes,16,opt,name=track_id,json=trackId,proto3" json:"track_id,omitempty"`
+	// The site the object was seen at: the sensor's site, otherwise the organization's smallest site
+	// whose area holds the position. Set on ingest; empty when neither names one. An adapter leaves
+	// it empty.
+	SiteId        string `protobuf:"bytes,17,opt,name=site_id,json=siteId,proto3" json:"site_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1009,6 +1013,13 @@ func (x *Detection) GetIdentityAmbiguous() bool {
 func (x *Detection) GetTrackId() string {
 	if x != nil {
 		return x.TrackId
+	}
+	return ""
+}
+
+func (x *Detection) GetSiteId() string {
+	if x != nil {
+		return x.SiteId
 	}
 	return ""
 }
@@ -1383,7 +1394,7 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x01x\x18\x01 \x01(\x02R\x01x\x12\f\n" +
 	"\x01y\x18\x02 \x01(\x02R\x01y\x12\x14\n" +
 	"\x05width\x18\x03 \x01(\x02R\x05width\x12\x16\n" +
-	"\x06height\x18\x04 \x01(\x02R\x06height\"\xbf\x06\n" +
+	"\x06height\x18\x04 \x01(\x02R\x06height\"\xd8\x06\n" +
 	"\tDetection\x12\x1b\n" +
 	"\tobject_id\x18\x01 \x01(\tR\bobjectId\x12\x1f\n" +
 	"\vobject_type\x18\x02 \x01(\tR\n" +
@@ -1404,7 +1415,8 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x0fidentity_set_by\x18\r \x01(\x0e2\x1b.zqnt.edge.v3.IdentitySetByR\ridentitySetBy\x12*\n" +
 	"\x11friendly_asset_sn\x18\x0e \x01(\tR\x0ffriendlyAssetSn\x12-\n" +
 	"\x12identity_ambiguous\x18\x0f \x01(\bR\x11identityAmbiguous\x12\x19\n" +
-	"\btrack_id\x18\x10 \x01(\tR\atrackIdB\x0f\n" +
+	"\btrack_id\x18\x10 \x01(\tR\atrackId\x12\x17\n" +
+	"\asite_id\x18\x11 \x01(\tR\x06siteIdB\x0f\n" +
 	"\r_range_metersB\x12\n" +
 	"\x10_bearing_degreesB\x14\n" +
 	"\x12_elevation_degreesB\b\n" +
