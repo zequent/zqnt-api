@@ -33,6 +33,57 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type BroadcastKind int32
+
+const (
+	BroadcastKind_BROADCAST_KIND_UNSPECIFIED BroadcastKind = 0
+	// Drone Remote ID (ASTM F3411, ASD-STAN EN 4709-002), heard over Bluetooth or Wi-Fi.
+	BroadcastKind_BROADCAST_KIND_REMOTE_ID BroadcastKind = 1
+	// ADS-B (1090 MHz extended squitter), e.g. from a dump1090/readsb receiver.
+	BroadcastKind_BROADCAST_KIND_ADSB BroadcastKind = 2
+)
+
+// Enum value maps for BroadcastKind.
+var (
+	BroadcastKind_name = map[int32]string{
+		0: "BROADCAST_KIND_UNSPECIFIED",
+		1: "BROADCAST_KIND_REMOTE_ID",
+		2: "BROADCAST_KIND_ADSB",
+	}
+	BroadcastKind_value = map[string]int32{
+		"BROADCAST_KIND_UNSPECIFIED": 0,
+		"BROADCAST_KIND_REMOTE_ID":   1,
+		"BROADCAST_KIND_ADSB":        2,
+	}
+)
+
+func (x BroadcastKind) Enum() *BroadcastKind {
+	p := new(BroadcastKind)
+	*p = x
+	return p
+}
+
+func (x BroadcastKind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BroadcastKind) Descriptor() protoreflect.EnumDescriptor {
+	return file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[0].Descriptor()
+}
+
+func (BroadcastKind) Type() protoreflect.EnumType {
+	return &file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[0]
+}
+
+func (x BroadcastKind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BroadcastKind.Descriptor instead.
+func (BroadcastKind) EnumDescriptor() ([]byte, []int) {
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{0}
+}
+
 // Standard identity after NATO APP-6.
 type Identity int32
 
@@ -85,11 +136,11 @@ func (x Identity) String() string {
 }
 
 func (Identity) Descriptor() protoreflect.EnumDescriptor {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[0].Descriptor()
+	return file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[1].Descriptor()
 }
 
 func (Identity) Type() protoreflect.EnumType {
-	return &file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[0]
+	return &file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[1]
 }
 
 func (x Identity) Number() protoreflect.EnumNumber {
@@ -98,7 +149,7 @@ func (x Identity) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Identity.Descriptor instead.
 func (Identity) EnumDescriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{0}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{1}
 }
 
 type IdentitySetBy int32
@@ -134,11 +185,11 @@ func (x IdentitySetBy) String() string {
 }
 
 func (IdentitySetBy) Descriptor() protoreflect.EnumDescriptor {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[1].Descriptor()
+	return file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[2].Descriptor()
 }
 
 func (IdentitySetBy) Type() protoreflect.EnumType {
-	return &file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[1]
+	return &file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[2]
 }
 
 func (x IdentitySetBy) Number() protoreflect.EnumNumber {
@@ -147,7 +198,7 @@ func (x IdentitySetBy) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use IdentitySetBy.Descriptor instead.
 func (IdentitySetBy) EnumDescriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{1}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{2}
 }
 
 type IdentitySourceKind int32
@@ -162,6 +213,16 @@ const (
 	// Earlier reports of the same track were matched to the own asset named in asset_sn; the track
 	// keeps that link until a report contradicts it.
 	IdentitySourceKind_IDENTITY_SOURCE_KIND_TRACK IdentitySourceKind = 4
+	// The object was in the planned corridor of a running Application of the organization, at about
+	// the planned time: execution_id names the run, asset_sn the asset flying it. Supports
+	// ASSUMED_FRIEND, never FRIEND, and only while that asset's own position is not known.
+	IdentitySourceKind_IDENTITY_SOURCE_KIND_ROUTE IdentitySourceKind = 5
+	// A Remote ID broadcast: the report's own, or one heard at the object's position.
+	IdentitySourceKind_IDENTITY_SOURCE_KIND_REMOTE_ID IdentitySourceKind = 6
+	// An ADS-B broadcast: the report's own, or one heard at the object's position.
+	IdentitySourceKind_IDENTITY_SOURCE_KIND_ADSB IdentitySourceKind = 7
+	// The broadcast is on the site's allow-list of cooperative traffic (partners, police).
+	IdentitySourceKind_IDENTITY_SOURCE_KIND_ALLOW_LIST IdentitySourceKind = 8
 )
 
 // Enum value maps for IdentitySourceKind.
@@ -172,6 +233,10 @@ var (
 		2: "IDENTITY_SOURCE_KIND_SENSOR",
 		3: "IDENTITY_SOURCE_KIND_OPERATOR",
 		4: "IDENTITY_SOURCE_KIND_TRACK",
+		5: "IDENTITY_SOURCE_KIND_ROUTE",
+		6: "IDENTITY_SOURCE_KIND_REMOTE_ID",
+		7: "IDENTITY_SOURCE_KIND_ADSB",
+		8: "IDENTITY_SOURCE_KIND_ALLOW_LIST",
 	}
 	IdentitySourceKind_value = map[string]int32{
 		"IDENTITY_SOURCE_KIND_UNSPECIFIED": 0,
@@ -179,6 +244,10 @@ var (
 		"IDENTITY_SOURCE_KIND_SENSOR":      2,
 		"IDENTITY_SOURCE_KIND_OPERATOR":    3,
 		"IDENTITY_SOURCE_KIND_TRACK":       4,
+		"IDENTITY_SOURCE_KIND_ROUTE":       5,
+		"IDENTITY_SOURCE_KIND_REMOTE_ID":   6,
+		"IDENTITY_SOURCE_KIND_ADSB":        7,
+		"IDENTITY_SOURCE_KIND_ALLOW_LIST":  8,
 	}
 )
 
@@ -193,11 +262,11 @@ func (x IdentitySourceKind) String() string {
 }
 
 func (IdentitySourceKind) Descriptor() protoreflect.EnumDescriptor {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[2].Descriptor()
+	return file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[3].Descriptor()
 }
 
 func (IdentitySourceKind) Type() protoreflect.EnumType {
-	return &file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[2]
+	return &file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes[3]
 }
 
 func (x IdentitySourceKind) Number() protoreflect.EnumNumber {
@@ -206,7 +275,7 @@ func (x IdentitySourceKind) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use IdentitySourceKind.Descriptor instead.
 func (IdentitySourceKind) EnumDescriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{2}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{3}
 }
 
 type GetCapabilitiesRequest struct {
@@ -870,7 +939,10 @@ type Detection struct {
 	// The site the object was seen at: the sensor's site, otherwise the organization's smallest site
 	// whose area holds the position. Set on ingest; empty when neither names one. An adapter leaves
 	// it empty.
-	SiteId        string `protobuf:"bytes,17,opt,name=site_id,json=siteId,proto3" json:"site_id,omitempty"`
+	SiteId string `protobuf:"bytes,17,opt,name=site_id,json=siteId,proto3" json:"site_id,omitempty"`
+	// What the object broadcasts about itself, on a report of a Remote ID or ADS-B receiver: the
+	// receiver is the sensor, the position is the broadcast one.
+	Broadcast     *Broadcast `protobuf:"bytes,18,opt,name=broadcast,proto3" json:"broadcast,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1024,26 +1096,150 @@ func (x *Detection) GetSiteId() string {
 	return ""
 }
 
+func (x *Detection) GetBroadcast() *Broadcast {
+	if x != nil {
+		return x.Broadcast
+	}
+	return nil
+}
+
+type Broadcast struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Kind  BroadcastKind          `protobuf:"varint,1,opt,name=kind,proto3,enum=zqnt.edge.v3.BroadcastKind" json:"kind,omitempty"`
+	// REMOTE_ID: the UAS serial number (ANSI/CTA-2063) or session id. ADSB: the 24-bit ICAO
+	// address in upper-case hex.
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// ADSB: the flight number or registration the aircraft transmits.
+	Callsign string `protobuf:"bytes,3,opt,name=callsign,proto3" json:"callsign,omitempty"`
+	// REMOTE_ID: the operator's registration number.
+	OperatorId string `protobuf:"bytes,4,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
+	// REMOTE_ID: where the operator (the remote pilot) is, when broadcast.
+	OperatorPosition *v3.GeoPoint `protobuf:"bytes,5,opt,name=operator_position,json=operatorPosition,proto3" json:"operator_position,omitempty"`
+	// REMOTE_ID: the free text of the self-ID message.
+	Description string `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	// ADSB: the transponder code.
+	Squawk string `protobuf:"bytes,7,opt,name=squawk,proto3" json:"squawk,omitempty"`
+	// REMOTE_ID: the UA type, e.g. HELICOPTER_OR_MULTIROTOR. ADSB: the emitter category, e.g. A3.
+	Category      string `protobuf:"bytes,8,opt,name=category,proto3" json:"category,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Broadcast) Reset() {
+	*x = Broadcast{}
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Broadcast) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Broadcast) ProtoMessage() {}
+
+func (x *Broadcast) ProtoReflect() protoreflect.Message {
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Broadcast.ProtoReflect.Descriptor instead.
+func (*Broadcast) Descriptor() ([]byte, []int) {
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *Broadcast) GetKind() BroadcastKind {
+	if x != nil {
+		return x.Kind
+	}
+	return BroadcastKind_BROADCAST_KIND_UNSPECIFIED
+}
+
+func (x *Broadcast) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Broadcast) GetCallsign() string {
+	if x != nil {
+		return x.Callsign
+	}
+	return ""
+}
+
+func (x *Broadcast) GetOperatorId() string {
+	if x != nil {
+		return x.OperatorId
+	}
+	return ""
+}
+
+func (x *Broadcast) GetOperatorPosition() *v3.GeoPoint {
+	if x != nil {
+		return x.OperatorPosition
+	}
+	return nil
+}
+
+func (x *Broadcast) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Broadcast) GetSquawk() string {
+	if x != nil {
+		return x.Squawk
+	}
+	return ""
+}
+
+func (x *Broadcast) GetCategory() string {
+	if x != nil {
+		return x.Category
+	}
+	return ""
+}
+
 type IdentitySource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Kind  IdentitySourceKind     `protobuf:"varint,1,opt,name=kind,proto3,enum=zqnt.edge.v3.IdentitySourceKind" json:"kind,omitempty"`
 	// What this source says.
 	Identity Identity `protobuf:"varint,2,opt,name=identity,proto3,enum=zqnt.edge.v3.Identity" json:"identity,omitempty"`
-	// POSITION: the own asset matched or, when none matched, the nearest one compared.
+	// POSITION: the own asset matched or, when none matched, the nearest one compared. ROUTE: the
+	// asset flying the run. REMOTE_ID, ADSB, ALLOW_LIST: the own asset the broadcast stands for.
 	AssetSn string `protobuf:"bytes,3,opt,name=asset_sn,json=assetSn,proto3" json:"asset_sn,omitempty"`
-	// POSITION: metres between the object and that asset's latest position.
+	// POSITION: metres between the object and that asset's latest position. ROUTE: metres from the
+	// planned route. REMOTE_ID, ADSB: metres from the broadcast position.
 	DistanceMeters *float64 `protobuf:"fixed64,4,opt,name=distance_meters,json=distanceMeters,proto3,oneof" json:"distance_meters,omitempty"`
-	// POSITION: seconds between the detection and that asset's latest telemetry.
+	// POSITION: seconds between the detection and that asset's latest telemetry. ROUTE: seconds off
+	// the planned time. REMOTE_ID, ADSB: seconds between the detection and the broadcast.
 	AgeSeconds *float64 `protobuf:"fixed64,5,opt,name=age_seconds,json=ageSeconds,proto3,oneof" json:"age_seconds,omitempty"`
 	// 0..1.
-	Confidence    float32 `protobuf:"fixed32,6,opt,name=confidence,proto3" json:"confidence,omitempty"`
+	Confidence float32 `protobuf:"fixed32,6,opt,name=confidence,proto3" json:"confidence,omitempty"`
+	// REMOTE_ID, ADSB, ALLOW_LIST: the broadcast the source rests on.
+	Broadcast *Broadcast `protobuf:"bytes,7,opt,name=broadcast,proto3" json:"broadcast,omitempty"`
+	// ROUTE: the run whose corridor the object was in.
+	ExecutionId string `protobuf:"bytes,8,opt,name=execution_id,json=executionId,proto3" json:"execution_id,omitempty"`
+	// ALLOW_LIST: the entry's name, e.g. "Police helicopter Christoph 1".
+	Label         string `protobuf:"bytes,9,opt,name=label,proto3" json:"label,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *IdentitySource) Reset() {
 	*x = IdentitySource{}
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[12]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1055,7 +1251,7 @@ func (x *IdentitySource) String() string {
 func (*IdentitySource) ProtoMessage() {}
 
 func (x *IdentitySource) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[12]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1068,7 +1264,7 @@ func (x *IdentitySource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdentitySource.ProtoReflect.Descriptor instead.
 func (*IdentitySource) Descriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{12}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *IdentitySource) GetKind() IdentitySourceKind {
@@ -1113,6 +1309,27 @@ func (x *IdentitySource) GetConfidence() float32 {
 	return 0
 }
 
+func (x *IdentitySource) GetBroadcast() *Broadcast {
+	if x != nil {
+		return x.Broadcast
+	}
+	return nil
+}
+
+func (x *IdentitySource) GetExecutionId() string {
+	if x != nil {
+		return x.ExecutionId
+	}
+	return ""
+}
+
+func (x *IdentitySource) GetLabel() string {
+	if x != nil {
+		return x.Label
+	}
+	return ""
+}
+
 type StreamDetectionsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Asset         *v3.AssetRef           `protobuf:"bytes,1,opt,name=asset,proto3" json:"asset,omitempty"`
@@ -1125,7 +1342,7 @@ type StreamDetectionsResponse struct {
 
 func (x *StreamDetectionsResponse) Reset() {
 	*x = StreamDetectionsResponse{}
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[13]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1137,7 +1354,7 @@ func (x *StreamDetectionsResponse) String() string {
 func (*StreamDetectionsResponse) ProtoMessage() {}
 
 func (x *StreamDetectionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[13]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1150,7 +1367,7 @@ func (x *StreamDetectionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamDetectionsResponse.ProtoReflect.Descriptor instead.
 func (*StreamDetectionsResponse) Descriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{13}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *StreamDetectionsResponse) GetAsset() *v3.AssetRef {
@@ -1190,7 +1407,7 @@ type ReportCapabilitiesRequest struct {
 
 func (x *ReportCapabilitiesRequest) Reset() {
 	*x = ReportCapabilitiesRequest{}
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[14]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1202,7 +1419,7 @@ func (x *ReportCapabilitiesRequest) String() string {
 func (*ReportCapabilitiesRequest) ProtoMessage() {}
 
 func (x *ReportCapabilitiesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[14]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1215,7 +1432,7 @@ func (x *ReportCapabilitiesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportCapabilitiesRequest.ProtoReflect.Descriptor instead.
 func (*ReportCapabilitiesRequest) Descriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{14}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ReportCapabilitiesRequest) GetCapabilities() *v31.CapabilitySet {
@@ -1234,7 +1451,7 @@ type ReportCapabilitiesResponse struct {
 
 func (x *ReportCapabilitiesResponse) Reset() {
 	*x = ReportCapabilitiesResponse{}
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[15]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1246,7 +1463,7 @@ func (x *ReportCapabilitiesResponse) String() string {
 func (*ReportCapabilitiesResponse) ProtoMessage() {}
 
 func (x *ReportCapabilitiesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[15]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1259,7 +1476,7 @@ func (x *ReportCapabilitiesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportCapabilitiesResponse.ProtoReflect.Descriptor instead.
 func (*ReportCapabilitiesResponse) Descriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{15}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ReportCapabilitiesResponse) GetAcceptedRevision() string {
@@ -1278,7 +1495,7 @@ type PublishCommandEventRequest struct {
 
 func (x *PublishCommandEventRequest) Reset() {
 	*x = PublishCommandEventRequest{}
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[16]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1290,7 +1507,7 @@ func (x *PublishCommandEventRequest) String() string {
 func (*PublishCommandEventRequest) ProtoMessage() {}
 
 func (x *PublishCommandEventRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[16]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1303,7 +1520,7 @@ func (x *PublishCommandEventRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishCommandEventRequest.ProtoReflect.Descriptor instead.
 func (*PublishCommandEventRequest) Descriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{16}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PublishCommandEventRequest) GetEvent() *v31.CommandEvent {
@@ -1321,7 +1538,7 @@ type PublishCommandEventResponse struct {
 
 func (x *PublishCommandEventResponse) Reset() {
 	*x = PublishCommandEventResponse{}
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[17]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1333,7 +1550,7 @@ func (x *PublishCommandEventResponse) String() string {
 func (*PublishCommandEventResponse) ProtoMessage() {}
 
 func (x *PublishCommandEventResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[17]
+	mi := &file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1346,7 +1563,7 @@ func (x *PublishCommandEventResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishCommandEventResponse.ProtoReflect.Descriptor instead.
 func (*PublishCommandEventResponse) Descriptor() ([]byte, []int) {
-	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{17}
+	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP(), []int{18}
 }
 
 var File_zqnt_edge_v3_edge_adapter_service_proto protoreflect.FileDescriptor
@@ -1394,7 +1611,7 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x01x\x18\x01 \x01(\x02R\x01x\x12\f\n" +
 	"\x01y\x18\x02 \x01(\x02R\x01y\x12\x14\n" +
 	"\x05width\x18\x03 \x01(\x02R\x05width\x12\x16\n" +
-	"\x06height\x18\x04 \x01(\x02R\x06height\"\xd8\x06\n" +
+	"\x06height\x18\x04 \x01(\x02R\x06height\"\x8f\a\n" +
 	"\tDetection\x12\x1b\n" +
 	"\tobject_id\x18\x01 \x01(\tR\bobjectId\x12\x1f\n" +
 	"\vobject_type\x18\x02 \x01(\tR\n" +
@@ -1416,12 +1633,23 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x11friendly_asset_sn\x18\x0e \x01(\tR\x0ffriendlyAssetSn\x12-\n" +
 	"\x12identity_ambiguous\x18\x0f \x01(\bR\x11identityAmbiguous\x12\x19\n" +
 	"\btrack_id\x18\x10 \x01(\tR\atrackId\x12\x17\n" +
-	"\asite_id\x18\x11 \x01(\tR\x06siteIdB\x0f\n" +
+	"\asite_id\x18\x11 \x01(\tR\x06siteId\x125\n" +
+	"\tbroadcast\x18\x12 \x01(\v2\x17.zqnt.edge.v3.BroadcastR\tbroadcastB\x0f\n" +
 	"\r_range_metersB\x12\n" +
 	"\x10_bearing_degreesB\x14\n" +
 	"\x12_elevation_degreesB\b\n" +
 	"\x06_speedB\x12\n" +
-	"\x10_heading_degrees\"\xad\x02\n" +
+	"\x10_heading_degrees\"\xa6\x02\n" +
+	"\tBroadcast\x12/\n" +
+	"\x04kind\x18\x01 \x01(\x0e2\x1b.zqnt.edge.v3.BroadcastKindR\x04kind\x12\x0e\n" +
+	"\x02id\x18\x02 \x01(\tR\x02id\x12\x1a\n" +
+	"\bcallsign\x18\x03 \x01(\tR\bcallsign\x12\x1f\n" +
+	"\voperator_id\x18\x04 \x01(\tR\n" +
+	"operatorId\x12E\n" +
+	"\x11operator_position\x18\x05 \x01(\v2\x18.zqnt.common.v3.GeoPointR\x10operatorPosition\x12 \n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription\x12\x16\n" +
+	"\x06squawk\x18\a \x01(\tR\x06squawk\x12\x1a\n" +
+	"\bcategory\x18\b \x01(\tR\bcategory\"\x9d\x03\n" +
 	"\x0eIdentitySource\x124\n" +
 	"\x04kind\x18\x01 \x01(\x0e2 .zqnt.edge.v3.IdentitySourceKindR\x04kind\x122\n" +
 	"\bidentity\x18\x02 \x01(\x0e2\x16.zqnt.edge.v3.IdentityR\bidentity\x12\x19\n" +
@@ -1431,7 +1659,10 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"ageSeconds\x88\x01\x01\x12\x1e\n" +
 	"\n" +
 	"confidence\x18\x06 \x01(\x02R\n" +
-	"confidenceB\x12\n" +
+	"confidence\x125\n" +
+	"\tbroadcast\x18\a \x01(\v2\x17.zqnt.edge.v3.BroadcastR\tbroadcast\x12!\n" +
+	"\fexecution_id\x18\b \x01(\tR\vexecutionId\x12\x14\n" +
+	"\x05label\x18\t \x01(\tR\x05labelB\x12\n" +
 	"\x10_distance_metersB\x0e\n" +
 	"\f_age_seconds\"\xdf\x01\n" +
 	"\x18StreamDetectionsResponse\x12.\n" +
@@ -1449,7 +1680,11 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x11accepted_revision\x18\x01 \x01(\tR\x10acceptedRevision\"T\n" +
 	"\x1aPublishCommandEventRequest\x126\n" +
 	"\x05event\x18\x01 \x01(\v2 .zqnt.capability.v3.CommandEventR\x05event\"\x1d\n" +
-	"\x1bPublishCommandEventResponse*\xc4\x01\n" +
+	"\x1bPublishCommandEventResponse*f\n" +
+	"\rBroadcastKind\x12\x1e\n" +
+	"\x1aBROADCAST_KIND_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18BROADCAST_KIND_REMOTE_ID\x10\x01\x12\x17\n" +
+	"\x13BROADCAST_KIND_ADSB\x10\x02*\xc4\x01\n" +
 	"\bIdentity\x12\x18\n" +
 	"\x14IDENTITY_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10IDENTITY_PENDING\x10\x01\x12\x14\n" +
@@ -1462,13 +1697,17 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\rIdentitySetBy\x12\x1f\n" +
 	"\x1bIDENTITY_SET_BY_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18IDENTITY_SET_BY_PLATFORM\x10\x01\x12\x1c\n" +
-	"\x18IDENTITY_SET_BY_OPERATOR\x10\x02*\xc1\x01\n" +
+	"\x18IDENTITY_SET_BY_OPERATOR\x10\x02*\xc9\x02\n" +
 	"\x12IdentitySourceKind\x12$\n" +
 	" IDENTITY_SOURCE_KIND_UNSPECIFIED\x10\x00\x12!\n" +
 	"\x1dIDENTITY_SOURCE_KIND_POSITION\x10\x01\x12\x1f\n" +
 	"\x1bIDENTITY_SOURCE_KIND_SENSOR\x10\x02\x12!\n" +
 	"\x1dIDENTITY_SOURCE_KIND_OPERATOR\x10\x03\x12\x1e\n" +
-	"\x1aIDENTITY_SOURCE_KIND_TRACK\x10\x042\xfe\x03\n" +
+	"\x1aIDENTITY_SOURCE_KIND_TRACK\x10\x04\x12\x1e\n" +
+	"\x1aIDENTITY_SOURCE_KIND_ROUTE\x10\x05\x12\"\n" +
+	"\x1eIDENTITY_SOURCE_KIND_REMOTE_ID\x10\x06\x12\x1d\n" +
+	"\x19IDENTITY_SOURCE_KIND_ADSB\x10\a\x12#\n" +
+	"\x1fIDENTITY_SOURCE_KIND_ALLOW_LIST\x10\b2\xfe\x03\n" +
 	"\x12EdgeAdapterService\x12^\n" +
 	"\x0fGetCapabilities\x12$.zqnt.edge.v3.GetCapabilitiesRequest\x1a%.zqnt.edge.v3.GetCapabilitiesResponse\x12[\n" +
 	"\x0eExecuteCommand\x12#.zqnt.edge.v3.ExecuteCommandRequest\x1a$.zqnt.edge.v3.ExecuteCommandResponse\x12X\n" +
@@ -1492,87 +1731,93 @@ func file_zqnt_edge_v3_edge_adapter_service_proto_rawDescGZIP() []byte {
 	return file_zqnt_edge_v3_edge_adapter_service_proto_rawDescData
 }
 
-var file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_zqnt_edge_v3_edge_adapter_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_zqnt_edge_v3_edge_adapter_service_proto_goTypes = []any{
-	(Identity)(0),                       // 0: zqnt.edge.v3.Identity
-	(IdentitySetBy)(0),                  // 1: zqnt.edge.v3.IdentitySetBy
-	(IdentitySourceKind)(0),             // 2: zqnt.edge.v3.IdentitySourceKind
-	(*GetCapabilitiesRequest)(nil),      // 3: zqnt.edge.v3.GetCapabilitiesRequest
-	(*GetCapabilitiesResponse)(nil),     // 4: zqnt.edge.v3.GetCapabilitiesResponse
-	(*ExecuteCommandRequest)(nil),       // 5: zqnt.edge.v3.ExecuteCommandRequest
-	(*ExecuteCommandResponse)(nil),      // 6: zqnt.edge.v3.ExecuteCommandResponse
-	(*CancelCommandRequest)(nil),        // 7: zqnt.edge.v3.CancelCommandRequest
-	(*CancelCommandResponse)(nil),       // 8: zqnt.edge.v3.CancelCommandResponse
-	(*ManualControlInput)(nil),          // 9: zqnt.edge.v3.ManualControlInput
-	(*StreamManualControlRequest)(nil),  // 10: zqnt.edge.v3.StreamManualControlRequest
-	(*StreamManualControlResponse)(nil), // 11: zqnt.edge.v3.StreamManualControlResponse
-	(*StreamDetectionsRequest)(nil),     // 12: zqnt.edge.v3.StreamDetectionsRequest
-	(*BoundingBox)(nil),                 // 13: zqnt.edge.v3.BoundingBox
-	(*Detection)(nil),                   // 14: zqnt.edge.v3.Detection
-	(*IdentitySource)(nil),              // 15: zqnt.edge.v3.IdentitySource
-	(*StreamDetectionsResponse)(nil),    // 16: zqnt.edge.v3.StreamDetectionsResponse
-	(*ReportCapabilitiesRequest)(nil),   // 17: zqnt.edge.v3.ReportCapabilitiesRequest
-	(*ReportCapabilitiesResponse)(nil),  // 18: zqnt.edge.v3.ReportCapabilitiesResponse
-	(*PublishCommandEventRequest)(nil),  // 19: zqnt.edge.v3.PublishCommandEventRequest
-	(*PublishCommandEventResponse)(nil), // 20: zqnt.edge.v3.PublishCommandEventResponse
-	(*v3.RequestContext)(nil),           // 21: zqnt.common.v3.RequestContext
-	(*v3.AssetRef)(nil),                 // 22: zqnt.common.v3.AssetRef
-	(*v31.Target)(nil),                  // 23: zqnt.capability.v3.Target
-	(*v31.CapabilitySet)(nil),           // 24: zqnt.capability.v3.CapabilitySet
-	(*v31.Command)(nil),                 // 25: zqnt.capability.v3.Command
-	(*v31.CommandResult)(nil),           // 26: zqnt.capability.v3.CommandResult
-	(*timestamppb.Timestamp)(nil),       // 27: google.protobuf.Timestamp
-	(*v3.Error)(nil),                    // 28: zqnt.common.v3.Error
-	(*v3.GeoPoint)(nil),                 // 29: zqnt.common.v3.GeoPoint
-	(*v31.CommandEvent)(nil),            // 30: zqnt.capability.v3.CommandEvent
+	(BroadcastKind)(0),                  // 0: zqnt.edge.v3.BroadcastKind
+	(Identity)(0),                       // 1: zqnt.edge.v3.Identity
+	(IdentitySetBy)(0),                  // 2: zqnt.edge.v3.IdentitySetBy
+	(IdentitySourceKind)(0),             // 3: zqnt.edge.v3.IdentitySourceKind
+	(*GetCapabilitiesRequest)(nil),      // 4: zqnt.edge.v3.GetCapabilitiesRequest
+	(*GetCapabilitiesResponse)(nil),     // 5: zqnt.edge.v3.GetCapabilitiesResponse
+	(*ExecuteCommandRequest)(nil),       // 6: zqnt.edge.v3.ExecuteCommandRequest
+	(*ExecuteCommandResponse)(nil),      // 7: zqnt.edge.v3.ExecuteCommandResponse
+	(*CancelCommandRequest)(nil),        // 8: zqnt.edge.v3.CancelCommandRequest
+	(*CancelCommandResponse)(nil),       // 9: zqnt.edge.v3.CancelCommandResponse
+	(*ManualControlInput)(nil),          // 10: zqnt.edge.v3.ManualControlInput
+	(*StreamManualControlRequest)(nil),  // 11: zqnt.edge.v3.StreamManualControlRequest
+	(*StreamManualControlResponse)(nil), // 12: zqnt.edge.v3.StreamManualControlResponse
+	(*StreamDetectionsRequest)(nil),     // 13: zqnt.edge.v3.StreamDetectionsRequest
+	(*BoundingBox)(nil),                 // 14: zqnt.edge.v3.BoundingBox
+	(*Detection)(nil),                   // 15: zqnt.edge.v3.Detection
+	(*Broadcast)(nil),                   // 16: zqnt.edge.v3.Broadcast
+	(*IdentitySource)(nil),              // 17: zqnt.edge.v3.IdentitySource
+	(*StreamDetectionsResponse)(nil),    // 18: zqnt.edge.v3.StreamDetectionsResponse
+	(*ReportCapabilitiesRequest)(nil),   // 19: zqnt.edge.v3.ReportCapabilitiesRequest
+	(*ReportCapabilitiesResponse)(nil),  // 20: zqnt.edge.v3.ReportCapabilitiesResponse
+	(*PublishCommandEventRequest)(nil),  // 21: zqnt.edge.v3.PublishCommandEventRequest
+	(*PublishCommandEventResponse)(nil), // 22: zqnt.edge.v3.PublishCommandEventResponse
+	(*v3.RequestContext)(nil),           // 23: zqnt.common.v3.RequestContext
+	(*v3.AssetRef)(nil),                 // 24: zqnt.common.v3.AssetRef
+	(*v31.Target)(nil),                  // 25: zqnt.capability.v3.Target
+	(*v31.CapabilitySet)(nil),           // 26: zqnt.capability.v3.CapabilitySet
+	(*v31.Command)(nil),                 // 27: zqnt.capability.v3.Command
+	(*v31.CommandResult)(nil),           // 28: zqnt.capability.v3.CommandResult
+	(*timestamppb.Timestamp)(nil),       // 29: google.protobuf.Timestamp
+	(*v3.Error)(nil),                    // 30: zqnt.common.v3.Error
+	(*v3.GeoPoint)(nil),                 // 31: zqnt.common.v3.GeoPoint
+	(*v31.CommandEvent)(nil),            // 32: zqnt.capability.v3.CommandEvent
 }
 var file_zqnt_edge_v3_edge_adapter_service_proto_depIdxs = []int32{
-	21, // 0: zqnt.edge.v3.GetCapabilitiesRequest.context:type_name -> zqnt.common.v3.RequestContext
-	22, // 1: zqnt.edge.v3.GetCapabilitiesRequest.asset:type_name -> zqnt.common.v3.AssetRef
-	23, // 2: zqnt.edge.v3.GetCapabilitiesRequest.target:type_name -> zqnt.capability.v3.Target
-	24, // 3: zqnt.edge.v3.GetCapabilitiesResponse.capabilities:type_name -> zqnt.capability.v3.CapabilitySet
-	21, // 4: zqnt.edge.v3.ExecuteCommandRequest.context:type_name -> zqnt.common.v3.RequestContext
-	25, // 5: zqnt.edge.v3.ExecuteCommandRequest.command:type_name -> zqnt.capability.v3.Command
-	26, // 6: zqnt.edge.v3.ExecuteCommandResponse.result:type_name -> zqnt.capability.v3.CommandResult
-	21, // 7: zqnt.edge.v3.CancelCommandRequest.context:type_name -> zqnt.common.v3.RequestContext
-	26, // 8: zqnt.edge.v3.CancelCommandResponse.result:type_name -> zqnt.capability.v3.CommandResult
-	22, // 9: zqnt.edge.v3.StreamManualControlRequest.asset:type_name -> zqnt.common.v3.AssetRef
-	9,  // 10: zqnt.edge.v3.StreamManualControlRequest.input:type_name -> zqnt.edge.v3.ManualControlInput
-	27, // 11: zqnt.edge.v3.StreamManualControlRequest.sent_at:type_name -> google.protobuf.Timestamp
-	28, // 12: zqnt.edge.v3.StreamManualControlResponse.error:type_name -> zqnt.common.v3.Error
-	22, // 13: zqnt.edge.v3.StreamDetectionsRequest.asset:type_name -> zqnt.common.v3.AssetRef
-	13, // 14: zqnt.edge.v3.Detection.bounding_box:type_name -> zqnt.edge.v3.BoundingBox
-	29, // 15: zqnt.edge.v3.Detection.position:type_name -> zqnt.common.v3.GeoPoint
-	0,  // 16: zqnt.edge.v3.Detection.identity:type_name -> zqnt.edge.v3.Identity
-	15, // 17: zqnt.edge.v3.Detection.identity_sources:type_name -> zqnt.edge.v3.IdentitySource
-	1,  // 18: zqnt.edge.v3.Detection.identity_set_by:type_name -> zqnt.edge.v3.IdentitySetBy
-	2,  // 19: zqnt.edge.v3.IdentitySource.kind:type_name -> zqnt.edge.v3.IdentitySourceKind
-	0,  // 20: zqnt.edge.v3.IdentitySource.identity:type_name -> zqnt.edge.v3.Identity
-	22, // 21: zqnt.edge.v3.StreamDetectionsResponse.asset:type_name -> zqnt.common.v3.AssetRef
-	14, // 22: zqnt.edge.v3.StreamDetectionsResponse.detections:type_name -> zqnt.edge.v3.Detection
-	27, // 23: zqnt.edge.v3.StreamDetectionsResponse.observed_at:type_name -> google.protobuf.Timestamp
-	24, // 24: zqnt.edge.v3.ReportCapabilitiesRequest.capabilities:type_name -> zqnt.capability.v3.CapabilitySet
-	30, // 25: zqnt.edge.v3.PublishCommandEventRequest.event:type_name -> zqnt.capability.v3.CommandEvent
-	3,  // 26: zqnt.edge.v3.EdgeAdapterService.GetCapabilities:input_type -> zqnt.edge.v3.GetCapabilitiesRequest
-	5,  // 27: zqnt.edge.v3.EdgeAdapterService.ExecuteCommand:input_type -> zqnt.edge.v3.ExecuteCommandRequest
-	7,  // 28: zqnt.edge.v3.EdgeAdapterService.CancelCommand:input_type -> zqnt.edge.v3.CancelCommandRequest
-	10, // 29: zqnt.edge.v3.EdgeAdapterService.StreamManualControl:input_type -> zqnt.edge.v3.StreamManualControlRequest
-	12, // 30: zqnt.edge.v3.EdgeAdapterService.StreamDetections:input_type -> zqnt.edge.v3.StreamDetectionsRequest
-	17, // 31: zqnt.edge.v3.EdgeGatewayService.ReportCapabilities:input_type -> zqnt.edge.v3.ReportCapabilitiesRequest
-	19, // 32: zqnt.edge.v3.EdgeGatewayService.PublishCommandEvent:input_type -> zqnt.edge.v3.PublishCommandEventRequest
-	4,  // 33: zqnt.edge.v3.EdgeAdapterService.GetCapabilities:output_type -> zqnt.edge.v3.GetCapabilitiesResponse
-	6,  // 34: zqnt.edge.v3.EdgeAdapterService.ExecuteCommand:output_type -> zqnt.edge.v3.ExecuteCommandResponse
-	8,  // 35: zqnt.edge.v3.EdgeAdapterService.CancelCommand:output_type -> zqnt.edge.v3.CancelCommandResponse
-	11, // 36: zqnt.edge.v3.EdgeAdapterService.StreamManualControl:output_type -> zqnt.edge.v3.StreamManualControlResponse
-	16, // 37: zqnt.edge.v3.EdgeAdapterService.StreamDetections:output_type -> zqnt.edge.v3.StreamDetectionsResponse
-	18, // 38: zqnt.edge.v3.EdgeGatewayService.ReportCapabilities:output_type -> zqnt.edge.v3.ReportCapabilitiesResponse
-	20, // 39: zqnt.edge.v3.EdgeGatewayService.PublishCommandEvent:output_type -> zqnt.edge.v3.PublishCommandEventResponse
-	33, // [33:40] is the sub-list for method output_type
-	26, // [26:33] is the sub-list for method input_type
-	26, // [26:26] is the sub-list for extension type_name
-	26, // [26:26] is the sub-list for extension extendee
-	0,  // [0:26] is the sub-list for field type_name
+	23, // 0: zqnt.edge.v3.GetCapabilitiesRequest.context:type_name -> zqnt.common.v3.RequestContext
+	24, // 1: zqnt.edge.v3.GetCapabilitiesRequest.asset:type_name -> zqnt.common.v3.AssetRef
+	25, // 2: zqnt.edge.v3.GetCapabilitiesRequest.target:type_name -> zqnt.capability.v3.Target
+	26, // 3: zqnt.edge.v3.GetCapabilitiesResponse.capabilities:type_name -> zqnt.capability.v3.CapabilitySet
+	23, // 4: zqnt.edge.v3.ExecuteCommandRequest.context:type_name -> zqnt.common.v3.RequestContext
+	27, // 5: zqnt.edge.v3.ExecuteCommandRequest.command:type_name -> zqnt.capability.v3.Command
+	28, // 6: zqnt.edge.v3.ExecuteCommandResponse.result:type_name -> zqnt.capability.v3.CommandResult
+	23, // 7: zqnt.edge.v3.CancelCommandRequest.context:type_name -> zqnt.common.v3.RequestContext
+	28, // 8: zqnt.edge.v3.CancelCommandResponse.result:type_name -> zqnt.capability.v3.CommandResult
+	24, // 9: zqnt.edge.v3.StreamManualControlRequest.asset:type_name -> zqnt.common.v3.AssetRef
+	10, // 10: zqnt.edge.v3.StreamManualControlRequest.input:type_name -> zqnt.edge.v3.ManualControlInput
+	29, // 11: zqnt.edge.v3.StreamManualControlRequest.sent_at:type_name -> google.protobuf.Timestamp
+	30, // 12: zqnt.edge.v3.StreamManualControlResponse.error:type_name -> zqnt.common.v3.Error
+	24, // 13: zqnt.edge.v3.StreamDetectionsRequest.asset:type_name -> zqnt.common.v3.AssetRef
+	14, // 14: zqnt.edge.v3.Detection.bounding_box:type_name -> zqnt.edge.v3.BoundingBox
+	31, // 15: zqnt.edge.v3.Detection.position:type_name -> zqnt.common.v3.GeoPoint
+	1,  // 16: zqnt.edge.v3.Detection.identity:type_name -> zqnt.edge.v3.Identity
+	17, // 17: zqnt.edge.v3.Detection.identity_sources:type_name -> zqnt.edge.v3.IdentitySource
+	2,  // 18: zqnt.edge.v3.Detection.identity_set_by:type_name -> zqnt.edge.v3.IdentitySetBy
+	16, // 19: zqnt.edge.v3.Detection.broadcast:type_name -> zqnt.edge.v3.Broadcast
+	0,  // 20: zqnt.edge.v3.Broadcast.kind:type_name -> zqnt.edge.v3.BroadcastKind
+	31, // 21: zqnt.edge.v3.Broadcast.operator_position:type_name -> zqnt.common.v3.GeoPoint
+	3,  // 22: zqnt.edge.v3.IdentitySource.kind:type_name -> zqnt.edge.v3.IdentitySourceKind
+	1,  // 23: zqnt.edge.v3.IdentitySource.identity:type_name -> zqnt.edge.v3.Identity
+	16, // 24: zqnt.edge.v3.IdentitySource.broadcast:type_name -> zqnt.edge.v3.Broadcast
+	24, // 25: zqnt.edge.v3.StreamDetectionsResponse.asset:type_name -> zqnt.common.v3.AssetRef
+	15, // 26: zqnt.edge.v3.StreamDetectionsResponse.detections:type_name -> zqnt.edge.v3.Detection
+	29, // 27: zqnt.edge.v3.StreamDetectionsResponse.observed_at:type_name -> google.protobuf.Timestamp
+	26, // 28: zqnt.edge.v3.ReportCapabilitiesRequest.capabilities:type_name -> zqnt.capability.v3.CapabilitySet
+	32, // 29: zqnt.edge.v3.PublishCommandEventRequest.event:type_name -> zqnt.capability.v3.CommandEvent
+	4,  // 30: zqnt.edge.v3.EdgeAdapterService.GetCapabilities:input_type -> zqnt.edge.v3.GetCapabilitiesRequest
+	6,  // 31: zqnt.edge.v3.EdgeAdapterService.ExecuteCommand:input_type -> zqnt.edge.v3.ExecuteCommandRequest
+	8,  // 32: zqnt.edge.v3.EdgeAdapterService.CancelCommand:input_type -> zqnt.edge.v3.CancelCommandRequest
+	11, // 33: zqnt.edge.v3.EdgeAdapterService.StreamManualControl:input_type -> zqnt.edge.v3.StreamManualControlRequest
+	13, // 34: zqnt.edge.v3.EdgeAdapterService.StreamDetections:input_type -> zqnt.edge.v3.StreamDetectionsRequest
+	19, // 35: zqnt.edge.v3.EdgeGatewayService.ReportCapabilities:input_type -> zqnt.edge.v3.ReportCapabilitiesRequest
+	21, // 36: zqnt.edge.v3.EdgeGatewayService.PublishCommandEvent:input_type -> zqnt.edge.v3.PublishCommandEventRequest
+	5,  // 37: zqnt.edge.v3.EdgeAdapterService.GetCapabilities:output_type -> zqnt.edge.v3.GetCapabilitiesResponse
+	7,  // 38: zqnt.edge.v3.EdgeAdapterService.ExecuteCommand:output_type -> zqnt.edge.v3.ExecuteCommandResponse
+	9,  // 39: zqnt.edge.v3.EdgeAdapterService.CancelCommand:output_type -> zqnt.edge.v3.CancelCommandResponse
+	12, // 40: zqnt.edge.v3.EdgeAdapterService.StreamManualControl:output_type -> zqnt.edge.v3.StreamManualControlResponse
+	18, // 41: zqnt.edge.v3.EdgeAdapterService.StreamDetections:output_type -> zqnt.edge.v3.StreamDetectionsResponse
+	20, // 42: zqnt.edge.v3.EdgeGatewayService.ReportCapabilities:output_type -> zqnt.edge.v3.ReportCapabilitiesResponse
+	22, // 43: zqnt.edge.v3.EdgeGatewayService.PublishCommandEvent:output_type -> zqnt.edge.v3.PublishCommandEventResponse
+	37, // [37:44] is the sub-list for method output_type
+	30, // [30:37] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_zqnt_edge_v3_edge_adapter_service_proto_init() }
@@ -1582,14 +1827,14 @@ func file_zqnt_edge_v3_edge_adapter_service_proto_init() {
 	}
 	file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[6].OneofWrappers = []any{}
 	file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[11].OneofWrappers = []any{}
-	file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[12].OneofWrappers = []any{}
+	file_zqnt_edge_v3_edge_adapter_service_proto_msgTypes[13].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc), len(file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   18,
+			NumEnums:      4,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

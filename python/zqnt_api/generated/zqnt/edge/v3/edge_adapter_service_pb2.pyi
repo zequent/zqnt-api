@@ -13,6 +13,12 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class BroadcastKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    BROADCAST_KIND_UNSPECIFIED: _ClassVar[BroadcastKind]
+    BROADCAST_KIND_REMOTE_ID: _ClassVar[BroadcastKind]
+    BROADCAST_KIND_ADSB: _ClassVar[BroadcastKind]
+
 class Identity(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     IDENTITY_UNSPECIFIED: _ClassVar[Identity]
@@ -37,6 +43,13 @@ class IdentitySourceKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     IDENTITY_SOURCE_KIND_SENSOR: _ClassVar[IdentitySourceKind]
     IDENTITY_SOURCE_KIND_OPERATOR: _ClassVar[IdentitySourceKind]
     IDENTITY_SOURCE_KIND_TRACK: _ClassVar[IdentitySourceKind]
+    IDENTITY_SOURCE_KIND_ROUTE: _ClassVar[IdentitySourceKind]
+    IDENTITY_SOURCE_KIND_REMOTE_ID: _ClassVar[IdentitySourceKind]
+    IDENTITY_SOURCE_KIND_ADSB: _ClassVar[IdentitySourceKind]
+    IDENTITY_SOURCE_KIND_ALLOW_LIST: _ClassVar[IdentitySourceKind]
+BROADCAST_KIND_UNSPECIFIED: BroadcastKind
+BROADCAST_KIND_REMOTE_ID: BroadcastKind
+BROADCAST_KIND_ADSB: BroadcastKind
 IDENTITY_UNSPECIFIED: Identity
 IDENTITY_PENDING: Identity
 IDENTITY_UNKNOWN: Identity
@@ -53,6 +66,10 @@ IDENTITY_SOURCE_KIND_POSITION: IdentitySourceKind
 IDENTITY_SOURCE_KIND_SENSOR: IdentitySourceKind
 IDENTITY_SOURCE_KIND_OPERATOR: IdentitySourceKind
 IDENTITY_SOURCE_KIND_TRACK: IdentitySourceKind
+IDENTITY_SOURCE_KIND_ROUTE: IdentitySourceKind
+IDENTITY_SOURCE_KIND_REMOTE_ID: IdentitySourceKind
+IDENTITY_SOURCE_KIND_ADSB: IdentitySourceKind
+IDENTITY_SOURCE_KIND_ALLOW_LIST: IdentitySourceKind
 
 class GetCapabilitiesRequest(_message.Message):
     __slots__ = ("context", "asset", "target")
@@ -155,7 +172,7 @@ class BoundingBox(_message.Message):
     def __init__(self, x: _Optional[float] = ..., y: _Optional[float] = ..., width: _Optional[float] = ..., height: _Optional[float] = ...) -> None: ...
 
 class Detection(_message.Message):
-    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees", "identity", "identity_sources", "identity_set_by", "friendly_asset_sn", "identity_ambiguous", "track_id", "site_id")
+    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees", "identity", "identity_sources", "identity_set_by", "friendly_asset_sn", "identity_ambiguous", "track_id", "site_id", "broadcast")
     OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     OBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
     CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
@@ -173,6 +190,7 @@ class Detection(_message.Message):
     IDENTITY_AMBIGUOUS_FIELD_NUMBER: _ClassVar[int]
     TRACK_ID_FIELD_NUMBER: _ClassVar[int]
     SITE_ID_FIELD_NUMBER: _ClassVar[int]
+    BROADCAST_FIELD_NUMBER: _ClassVar[int]
     object_id: str
     object_type: str
     confidence: float
@@ -190,23 +208,50 @@ class Detection(_message.Message):
     identity_ambiguous: bool
     track_id: str
     site_id: str
-    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ..., identity: _Optional[_Union[Identity, str]] = ..., identity_sources: _Optional[_Iterable[_Union[IdentitySource, _Mapping]]] = ..., identity_set_by: _Optional[_Union[IdentitySetBy, str]] = ..., friendly_asset_sn: _Optional[str] = ..., identity_ambiguous: _Optional[bool] = ..., track_id: _Optional[str] = ..., site_id: _Optional[str] = ...) -> None: ...
+    broadcast: Broadcast
+    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ..., identity: _Optional[_Union[Identity, str]] = ..., identity_sources: _Optional[_Iterable[_Union[IdentitySource, _Mapping]]] = ..., identity_set_by: _Optional[_Union[IdentitySetBy, str]] = ..., friendly_asset_sn: _Optional[str] = ..., identity_ambiguous: _Optional[bool] = ..., track_id: _Optional[str] = ..., site_id: _Optional[str] = ..., broadcast: _Optional[_Union[Broadcast, _Mapping]] = ...) -> None: ...
+
+class Broadcast(_message.Message):
+    __slots__ = ("kind", "id", "callsign", "operator_id", "operator_position", "description", "squawk", "category")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    CALLSIGN_FIELD_NUMBER: _ClassVar[int]
+    OPERATOR_ID_FIELD_NUMBER: _ClassVar[int]
+    OPERATOR_POSITION_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    SQUAWK_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    kind: BroadcastKind
+    id: str
+    callsign: str
+    operator_id: str
+    operator_position: _common_pb2.GeoPoint
+    description: str
+    squawk: str
+    category: str
+    def __init__(self, kind: _Optional[_Union[BroadcastKind, str]] = ..., id: _Optional[str] = ..., callsign: _Optional[str] = ..., operator_id: _Optional[str] = ..., operator_position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., description: _Optional[str] = ..., squawk: _Optional[str] = ..., category: _Optional[str] = ...) -> None: ...
 
 class IdentitySource(_message.Message):
-    __slots__ = ("kind", "identity", "asset_sn", "distance_meters", "age_seconds", "confidence")
+    __slots__ = ("kind", "identity", "asset_sn", "distance_meters", "age_seconds", "confidence", "broadcast", "execution_id", "label")
     KIND_FIELD_NUMBER: _ClassVar[int]
     IDENTITY_FIELD_NUMBER: _ClassVar[int]
     ASSET_SN_FIELD_NUMBER: _ClassVar[int]
     DISTANCE_METERS_FIELD_NUMBER: _ClassVar[int]
     AGE_SECONDS_FIELD_NUMBER: _ClassVar[int]
     CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
+    BROADCAST_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_ID_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
     kind: IdentitySourceKind
     identity: Identity
     asset_sn: str
     distance_meters: float
     age_seconds: float
     confidence: float
-    def __init__(self, kind: _Optional[_Union[IdentitySourceKind, str]] = ..., identity: _Optional[_Union[Identity, str]] = ..., asset_sn: _Optional[str] = ..., distance_meters: _Optional[float] = ..., age_seconds: _Optional[float] = ..., confidence: _Optional[float] = ...) -> None: ...
+    broadcast: Broadcast
+    execution_id: str
+    label: str
+    def __init__(self, kind: _Optional[_Union[IdentitySourceKind, str]] = ..., identity: _Optional[_Union[Identity, str]] = ..., asset_sn: _Optional[str] = ..., distance_meters: _Optional[float] = ..., age_seconds: _Optional[float] = ..., confidence: _Optional[float] = ..., broadcast: _Optional[_Union[Broadcast, _Mapping]] = ..., execution_id: _Optional[str] = ..., label: _Optional[str] = ...) -> None: ...
 
 class StreamDetectionsResponse(_message.Message):
     __slots__ = ("asset", "detections", "stream_url", "observed_at")
