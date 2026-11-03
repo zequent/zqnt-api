@@ -490,8 +490,9 @@ type WatchTelemetryRequest struct {
 	Assets []*v3.AssetRef `protobuf:"bytes,2,rep,name=assets,proto3" json:"assets,omitempty"`
 	// At most one sample per asset per interval; unset = every sample.
 	MinInterval *durationpb.Duration `protobuf:"bytes,3,opt,name=min_interval,json=minInterval,proto3" json:"min_interval,omitempty"`
-	// The organization whose assets to watch. Required for an `integration` credential, which serves
-	// several organizations; a client credential always watches its own and leaves it empty.
+	// The organization whose assets to watch. Required for an `integration` credential that serves
+	// several organizations; one bound to an organization watches only that one and may leave it
+	// empty. A client credential always watches its own and leaves it empty.
 	OrganizationId string `protobuf:"bytes,4,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -658,9 +659,11 @@ type WatchDetectionsRequest struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	Context *v3.RequestContext     `protobuf:"bytes,1,opt,name=context,proto3" json:"context,omitempty"`
 	// Empty = every asset of the caller's organization.
-	Assets        []*v3.AssetRef `protobuf:"bytes,2,rep,name=assets,proto3" json:"assets,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Assets []*v3.AssetRef `protobuf:"bytes,2,rep,name=assets,proto3" json:"assets,omitempty"`
+	// The organization whose detections to watch, as in WatchTelemetryRequest.organization_id.
+	OrganizationId string `protobuf:"bytes,3,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *WatchDetectionsRequest) Reset() {
@@ -705,6 +708,13 @@ func (x *WatchDetectionsRequest) GetAssets() []*v3.AssetRef {
 		return x.Assets
 	}
 	return nil
+}
+
+func (x *WatchDetectionsRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
 }
 
 type WatchDetectionsResponse struct {
@@ -795,9 +805,11 @@ type WatchAlertsRequest struct {
 	// Empty = every asset of the caller's organization.
 	Assets []*v3.AssetRef `protobuf:"bytes,2,rep,name=assets,proto3" json:"assets,omitempty"`
 	// Unset = every severity.
-	MinSeverity   AlertSeverity `protobuf:"varint,3,opt,name=min_severity,json=minSeverity,proto3,enum=zqnt.telemetry.v3.AlertSeverity" json:"min_severity,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	MinSeverity AlertSeverity `protobuf:"varint,3,opt,name=min_severity,json=minSeverity,proto3,enum=zqnt.telemetry.v3.AlertSeverity" json:"min_severity,omitempty"`
+	// The organization whose alerts to watch, as in WatchTelemetryRequest.organization_id.
+	OrganizationId string `protobuf:"bytes,4,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *WatchAlertsRequest) Reset() {
@@ -849,6 +861,13 @@ func (x *WatchAlertsRequest) GetMinSeverity() AlertSeverity {
 		return x.MinSeverity
 	}
 	return AlertSeverity_ALERT_SEVERITY_UNSPECIFIED
+}
+
+func (x *WatchAlertsRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
 }
 
 type WatchAlertsResponse struct {
@@ -1275,18 +1294,20 @@ const file_zqnt_telemetry_v3_telemetry_proto_rawDesc = "" +
 	"\x06sample\x18\x01 \x01(\v2\".zqnt.telemetry.v3.TelemetrySampleH\x00R\x06sample\x12F\n" +
 	"\rsource_status\x18\x02 \x01(\v2\x1f.zqnt.telemetry.v3.SourceStatusH\x00R\fsourceStatus\x12:\n" +
 	"\theartbeat\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\theartbeatB\x06\n" +
-	"\x04item\"\x84\x01\n" +
+	"\x04item\"\xad\x01\n" +
 	"\x16WatchDetectionsRequest\x128\n" +
 	"\acontext\x18\x01 \x01(\v2\x1e.zqnt.common.v3.RequestContextR\acontext\x120\n" +
-	"\x06assets\x18\x02 \x03(\v2\x18.zqnt.common.v3.AssetRefR\x06assets\"\x98\x01\n" +
+	"\x06assets\x18\x02 \x03(\v2\x18.zqnt.common.v3.AssetRefR\x06assets\x12'\n" +
+	"\x0forganization_id\x18\x03 \x01(\tR\x0eorganizationId\"\x98\x01\n" +
 	"\x17WatchDetectionsResponse\x129\n" +
 	"\x05batch\x18\x01 \x01(\v2!.zqnt.telemetry.v3.DetectionBatchH\x00R\x05batch\x12:\n" +
 	"\theartbeat\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\theartbeatB\x06\n" +
-	"\x04item\"\xc5\x01\n" +
+	"\x04item\"\xee\x01\n" +
 	"\x12WatchAlertsRequest\x128\n" +
 	"\acontext\x18\x01 \x01(\v2\x1e.zqnt.common.v3.RequestContextR\acontext\x120\n" +
 	"\x06assets\x18\x02 \x03(\v2\x18.zqnt.common.v3.AssetRefR\x06assets\x12C\n" +
-	"\fmin_severity\x18\x03 \x01(\x0e2 .zqnt.telemetry.v3.AlertSeverityR\vminSeverity\"\x8b\x01\n" +
+	"\fmin_severity\x18\x03 \x01(\x0e2 .zqnt.telemetry.v3.AlertSeverityR\vminSeverity\x12'\n" +
+	"\x0forganization_id\x18\x04 \x01(\tR\x0eorganizationId\"\x8b\x01\n" +
 	"\x13WatchAlertsResponse\x120\n" +
 	"\x05alert\x18\x01 \x01(\v2\x18.zqnt.telemetry.v3.AlertH\x00R\x05alert\x12:\n" +
 	"\theartbeat\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\theartbeatB\x06\n" +
