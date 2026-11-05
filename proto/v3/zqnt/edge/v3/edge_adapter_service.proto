@@ -144,6 +144,10 @@ message Detection {
   // What the object broadcasts about itself, on a report of a Remote ID or ADS-B receiver: the
   // receiver is the sensor, the position is the broadcast one.
   Broadcast broadcast = 18;
+  // The position was computed from range, bearing and elevation and the sensor's own position, not
+  // measured. The platform sets it when it derives one on ingest; an adapter that projects a
+  // range/bearing report itself sets it too.
+  bool position_derived = 19;
 }
 
 enum BroadcastKind {

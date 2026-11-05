@@ -942,9 +942,13 @@ type Detection struct {
 	SiteId string `protobuf:"bytes,17,opt,name=site_id,json=siteId,proto3" json:"site_id,omitempty"`
 	// What the object broadcasts about itself, on a report of a Remote ID or ADS-B receiver: the
 	// receiver is the sensor, the position is the broadcast one.
-	Broadcast     *Broadcast `protobuf:"bytes,18,opt,name=broadcast,proto3" json:"broadcast,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Broadcast *Broadcast `protobuf:"bytes,18,opt,name=broadcast,proto3" json:"broadcast,omitempty"`
+	// The position was computed from range, bearing and elevation and the sensor's own position, not
+	// measured. The platform sets it when it derives one on ingest; an adapter that projects a
+	// range/bearing report itself sets it too.
+	PositionDerived bool `protobuf:"varint,19,opt,name=position_derived,json=positionDerived,proto3" json:"position_derived,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Detection) Reset() {
@@ -1101,6 +1105,13 @@ func (x *Detection) GetBroadcast() *Broadcast {
 		return x.Broadcast
 	}
 	return nil
+}
+
+func (x *Detection) GetPositionDerived() bool {
+	if x != nil {
+		return x.PositionDerived
+	}
+	return false
 }
 
 type Broadcast struct {
@@ -1611,7 +1622,7 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x01x\x18\x01 \x01(\x02R\x01x\x12\f\n" +
 	"\x01y\x18\x02 \x01(\x02R\x01y\x12\x14\n" +
 	"\x05width\x18\x03 \x01(\x02R\x05width\x12\x16\n" +
-	"\x06height\x18\x04 \x01(\x02R\x06height\"\x8f\a\n" +
+	"\x06height\x18\x04 \x01(\x02R\x06height\"\xba\a\n" +
 	"\tDetection\x12\x1b\n" +
 	"\tobject_id\x18\x01 \x01(\tR\bobjectId\x12\x1f\n" +
 	"\vobject_type\x18\x02 \x01(\tR\n" +
@@ -1634,7 +1645,8 @@ const file_zqnt_edge_v3_edge_adapter_service_proto_rawDesc = "" +
 	"\x12identity_ambiguous\x18\x0f \x01(\bR\x11identityAmbiguous\x12\x19\n" +
 	"\btrack_id\x18\x10 \x01(\tR\atrackId\x12\x17\n" +
 	"\asite_id\x18\x11 \x01(\tR\x06siteId\x125\n" +
-	"\tbroadcast\x18\x12 \x01(\v2\x17.zqnt.edge.v3.BroadcastR\tbroadcastB\x0f\n" +
+	"\tbroadcast\x18\x12 \x01(\v2\x17.zqnt.edge.v3.BroadcastR\tbroadcast\x12)\n" +
+	"\x10position_derived\x18\x13 \x01(\bR\x0fpositionDerivedB\x0f\n" +
 	"\r_range_metersB\x12\n" +
 	"\x10_bearing_degreesB\x14\n" +
 	"\x12_elevation_degreesB\b\n" +
