@@ -172,7 +172,7 @@ class BoundingBox(_message.Message):
     def __init__(self, x: _Optional[float] = ..., y: _Optional[float] = ..., width: _Optional[float] = ..., height: _Optional[float] = ...) -> None: ...
 
 class Detection(_message.Message):
-    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees", "identity", "identity_sources", "identity_set_by", "friendly_asset_sn", "identity_ambiguous", "track_id", "site_id", "broadcast")
+    __slots__ = ("object_id", "object_type", "confidence", "bounding_box", "position", "range_meters", "bearing_degrees", "elevation_degrees", "speed", "heading_degrees", "identity", "identity_sources", "identity_set_by", "friendly_asset_sn", "identity_ambiguous", "track_id", "site_id", "broadcast", "position_derived")
     OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     OBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
     CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
@@ -191,6 +191,7 @@ class Detection(_message.Message):
     TRACK_ID_FIELD_NUMBER: _ClassVar[int]
     SITE_ID_FIELD_NUMBER: _ClassVar[int]
     BROADCAST_FIELD_NUMBER: _ClassVar[int]
+    POSITION_DERIVED_FIELD_NUMBER: _ClassVar[int]
     object_id: str
     object_type: str
     confidence: float
@@ -209,7 +210,8 @@ class Detection(_message.Message):
     track_id: str
     site_id: str
     broadcast: Broadcast
-    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ..., identity: _Optional[_Union[Identity, str]] = ..., identity_sources: _Optional[_Iterable[_Union[IdentitySource, _Mapping]]] = ..., identity_set_by: _Optional[_Union[IdentitySetBy, str]] = ..., friendly_asset_sn: _Optional[str] = ..., identity_ambiguous: _Optional[bool] = ..., track_id: _Optional[str] = ..., site_id: _Optional[str] = ..., broadcast: _Optional[_Union[Broadcast, _Mapping]] = ...) -> None: ...
+    position_derived: bool
+    def __init__(self, object_id: _Optional[str] = ..., object_type: _Optional[str] = ..., confidence: _Optional[float] = ..., bounding_box: _Optional[_Union[BoundingBox, _Mapping]] = ..., position: _Optional[_Union[_common_pb2.GeoPoint, _Mapping]] = ..., range_meters: _Optional[float] = ..., bearing_degrees: _Optional[float] = ..., elevation_degrees: _Optional[float] = ..., speed: _Optional[float] = ..., heading_degrees: _Optional[float] = ..., identity: _Optional[_Union[Identity, str]] = ..., identity_sources: _Optional[_Iterable[_Union[IdentitySource, _Mapping]]] = ..., identity_set_by: _Optional[_Union[IdentitySetBy, str]] = ..., friendly_asset_sn: _Optional[str] = ..., identity_ambiguous: _Optional[bool] = ..., track_id: _Optional[str] = ..., site_id: _Optional[str] = ..., broadcast: _Optional[_Union[Broadcast, _Mapping]] = ..., position_derived: _Optional[bool] = ...) -> None: ...
 
 class Broadcast(_message.Message):
     __slots__ = ("kind", "id", "callsign", "operator_id", "operator_position", "description", "squawk", "category")
