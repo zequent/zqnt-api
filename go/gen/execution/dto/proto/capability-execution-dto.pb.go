@@ -1664,8 +1664,10 @@ type SkillProtoDTO struct {
 	AgentGuidance *string `protobuf:"bytes,13,opt,name=agent_guidance,json=agentGuidance,proto3,oneof" json:"agent_guidance,omitempty"`
 	// Offered to the assistant as a tool; unset = yes.
 	AgentAvailable *bool `protobuf:"varint,14,opt,name=agent_available,json=agentAvailable,proto3,oneof" json:"agent_available,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// What a run of this Skill must achieve (zqnt-core #553); see GoalContractProtoDTO.
+	Goal          *GoalContractProtoDTO `protobuf:"bytes,15,opt,name=goal,proto3,oneof" json:"goal,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SkillProtoDTO) Reset() {
@@ -1796,6 +1798,88 @@ func (x *SkillProtoDTO) GetAgentAvailable() bool {
 	return false
 }
 
+func (x *SkillProtoDTO) GetGoal() *GoalContractProtoDTO {
+	if x != nil {
+		return x.Goal
+	}
+	return nil
+}
+
+// What a run must achieve, checked by the platform when it ends (zqnt-core #553); field numbers and
+// types identical to zqnt.application.v3.GoalContract. The run's outcome says whether it was
+// achieved; its status still says only whether its steps ran.
+type GoalContractProtoDTO struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// In words, e.g. "The intruder left the site".
+	Description string `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
+	// Every one must hold; same syntax as a CONDITION node, over the run's facts and live observations.
+	SuccessConditions []*ExecutionConditionProto `protobuf:"bytes,2,rep,name=success_conditions,json=successConditions,proto3" json:"success_conditions,omitempty"`
+	// How long after the run ended the conditions may still come true; unset = the platform's setting.
+	EvaluationWindowSeconds *int32 `protobuf:"varint,3,opt,name=evaluation_window_seconds,json=evaluationWindowSeconds,proto3,oneof" json:"evaluation_window_seconds,omitempty"`
+	// How old a live observation may be to count; unset = the platform's setting.
+	MaxEvidenceAgeSeconds *int32 `protobuf:"varint,4,opt,name=max_evidence_age_seconds,json=maxEvidenceAgeSeconds,proto3,oneof" json:"max_evidence_age_seconds,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *GoalContractProtoDTO) Reset() {
+	*x = GoalContractProtoDTO{}
+	mi := &file_capability_execution_dto_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoalContractProtoDTO) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoalContractProtoDTO) ProtoMessage() {}
+
+func (x *GoalContractProtoDTO) ProtoReflect() protoreflect.Message {
+	mi := &file_capability_execution_dto_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoalContractProtoDTO.ProtoReflect.Descriptor instead.
+func (*GoalContractProtoDTO) Descriptor() ([]byte, []int) {
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GoalContractProtoDTO) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *GoalContractProtoDTO) GetSuccessConditions() []*ExecutionConditionProto {
+	if x != nil {
+		return x.SuccessConditions
+	}
+	return nil
+}
+
+func (x *GoalContractProtoDTO) GetEvaluationWindowSeconds() int32 {
+	if x != nil && x.EvaluationWindowSeconds != nil {
+		return *x.EvaluationWindowSeconds
+	}
+	return 0
+}
+
+func (x *GoalContractProtoDTO) GetMaxEvidenceAgeSeconds() int32 {
+	if x != nil && x.MaxEvidenceAgeSeconds != nil {
+		return *x.MaxEvidenceAgeSeconds
+	}
+	return 0
+}
+
 // One entry of a version's changelog: what changed in it, when and by whom.
 type ApplicationChangeProtoDTO struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1812,7 +1896,7 @@ type ApplicationChangeProtoDTO struct {
 
 func (x *ApplicationChangeProtoDTO) Reset() {
 	*x = ApplicationChangeProtoDTO{}
-	mi := &file_capability_execution_dto_proto_msgTypes[20]
+	mi := &file_capability_execution_dto_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1824,7 +1908,7 @@ func (x *ApplicationChangeProtoDTO) String() string {
 func (*ApplicationChangeProtoDTO) ProtoMessage() {}
 
 func (x *ApplicationChangeProtoDTO) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[20]
+	mi := &file_capability_execution_dto_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1837,7 +1921,7 @@ func (x *ApplicationChangeProtoDTO) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplicationChangeProtoDTO.ProtoReflect.Descriptor instead.
 func (*ApplicationChangeProtoDTO) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{20}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ApplicationChangeProtoDTO) GetAt() *timestamppb.Timestamp {
@@ -1891,14 +1975,16 @@ type ApplicationProtoDTO struct {
 	Changelog []*ApplicationChangeProtoDTO `protobuf:"bytes,13,rep,name=changelog,proto3" json:"changelog,omitempty"`
 	// Input only: the author's note for this save ("what changed"), appended to changelog by
 	// connector and never stored on its own. Blank = no entry.
-	ChangeNote    *string `protobuf:"bytes,14,opt,name=change_note,json=changeNote,proto3,oneof" json:"change_note,omitempty"`
+	ChangeNote *string `protobuf:"bytes,14,opt,name=change_note,json=changeNote,proto3,oneof" json:"change_note,omitempty"`
+	// What a run of this Application must achieve when its Skill names no goal of its own.
+	Goal          *GoalContractProtoDTO `protobuf:"bytes,15,opt,name=goal,proto3,oneof" json:"goal,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ApplicationProtoDTO) Reset() {
 	*x = ApplicationProtoDTO{}
-	mi := &file_capability_execution_dto_proto_msgTypes[21]
+	mi := &file_capability_execution_dto_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1910,7 +1996,7 @@ func (x *ApplicationProtoDTO) String() string {
 func (*ApplicationProtoDTO) ProtoMessage() {}
 
 func (x *ApplicationProtoDTO) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[21]
+	mi := &file_capability_execution_dto_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1923,7 +2009,7 @@ func (x *ApplicationProtoDTO) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplicationProtoDTO.ProtoReflect.Descriptor instead.
 func (*ApplicationProtoDTO) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{21}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ApplicationProtoDTO) GetId() string {
@@ -2024,6 +2110,13 @@ func (x *ApplicationProtoDTO) GetChangeNote() string {
 	return ""
 }
 
+func (x *ApplicationProtoDTO) GetGoal() *GoalContractProtoDTO {
+	if x != nil {
+		return x.Goal
+	}
+	return nil
+}
+
 // A pause switches an Application -- or one Skill of it -- off at runtime: nothing starts it any
 // more, not a trigger, a scheduler, a webhook, the Integration Hub or a manual run. Executions
 // already running finish normally. Kept apart from ApplicationProtoDTO on purpose: an Application
@@ -2046,7 +2139,7 @@ type ApplicationPauseProtoDTO struct {
 
 func (x *ApplicationPauseProtoDTO) Reset() {
 	*x = ApplicationPauseProtoDTO{}
-	mi := &file_capability_execution_dto_proto_msgTypes[22]
+	mi := &file_capability_execution_dto_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2058,7 +2151,7 @@ func (x *ApplicationPauseProtoDTO) String() string {
 func (*ApplicationPauseProtoDTO) ProtoMessage() {}
 
 func (x *ApplicationPauseProtoDTO) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[22]
+	mi := &file_capability_execution_dto_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2071,7 +2164,7 @@ func (x *ApplicationPauseProtoDTO) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplicationPauseProtoDTO.ProtoReflect.Descriptor instead.
 func (*ApplicationPauseProtoDTO) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{22}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ApplicationPauseProtoDTO) GetApplicationId() string {
@@ -2133,7 +2226,7 @@ type ApplicationEnvironmentPointerProtoDTO struct {
 
 func (x *ApplicationEnvironmentPointerProtoDTO) Reset() {
 	*x = ApplicationEnvironmentPointerProtoDTO{}
-	mi := &file_capability_execution_dto_proto_msgTypes[23]
+	mi := &file_capability_execution_dto_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2145,7 +2238,7 @@ func (x *ApplicationEnvironmentPointerProtoDTO) String() string {
 func (*ApplicationEnvironmentPointerProtoDTO) ProtoMessage() {}
 
 func (x *ApplicationEnvironmentPointerProtoDTO) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[23]
+	mi := &file_capability_execution_dto_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2158,7 +2251,7 @@ func (x *ApplicationEnvironmentPointerProtoDTO) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use ApplicationEnvironmentPointerProtoDTO.ProtoReflect.Descriptor instead.
 func (*ApplicationEnvironmentPointerProtoDTO) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{23}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ApplicationEnvironmentPointerProtoDTO) GetApplicationId() string {
@@ -2208,7 +2301,7 @@ type SimpleExecutionSpecProto struct {
 
 func (x *SimpleExecutionSpecProto) Reset() {
 	*x = SimpleExecutionSpecProto{}
-	mi := &file_capability_execution_dto_proto_msgTypes[24]
+	mi := &file_capability_execution_dto_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2220,7 +2313,7 @@ func (x *SimpleExecutionSpecProto) String() string {
 func (*SimpleExecutionSpecProto) ProtoMessage() {}
 
 func (x *SimpleExecutionSpecProto) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[24]
+	mi := &file_capability_execution_dto_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2233,7 +2326,7 @@ func (x *SimpleExecutionSpecProto) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SimpleExecutionSpecProto.ProtoReflect.Descriptor instead.
 func (*SimpleExecutionSpecProto) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{24}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *SimpleExecutionSpecProto) GetCommandId() string {
@@ -2276,7 +2369,7 @@ type ApplicationExecutionSpecProto struct {
 
 func (x *ApplicationExecutionSpecProto) Reset() {
 	*x = ApplicationExecutionSpecProto{}
-	mi := &file_capability_execution_dto_proto_msgTypes[25]
+	mi := &file_capability_execution_dto_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2288,7 +2381,7 @@ func (x *ApplicationExecutionSpecProto) String() string {
 func (*ApplicationExecutionSpecProto) ProtoMessage() {}
 
 func (x *ApplicationExecutionSpecProto) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[25]
+	mi := &file_capability_execution_dto_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2301,7 +2394,7 @@ func (x *ApplicationExecutionSpecProto) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplicationExecutionSpecProto.ProtoReflect.Descriptor instead.
 func (*ApplicationExecutionSpecProto) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{25}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ApplicationExecutionSpecProto) GetApplicationId() string {
@@ -2345,7 +2438,7 @@ type SkillExecutionSpecProto struct {
 
 func (x *SkillExecutionSpecProto) Reset() {
 	*x = SkillExecutionSpecProto{}
-	mi := &file_capability_execution_dto_proto_msgTypes[26]
+	mi := &file_capability_execution_dto_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2357,7 +2450,7 @@ func (x *SkillExecutionSpecProto) String() string {
 func (*SkillExecutionSpecProto) ProtoMessage() {}
 
 func (x *SkillExecutionSpecProto) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[26]
+	mi := &file_capability_execution_dto_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2370,7 +2463,7 @@ func (x *SkillExecutionSpecProto) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillExecutionSpecProto.ProtoReflect.Descriptor instead.
 func (*SkillExecutionSpecProto) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{26}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *SkillExecutionSpecProto) GetExecution() isSkillExecutionSpecProto_Execution {
@@ -2439,7 +2532,7 @@ type SkillExecutionOptionsProto struct {
 
 func (x *SkillExecutionOptionsProto) Reset() {
 	*x = SkillExecutionOptionsProto{}
-	mi := &file_capability_execution_dto_proto_msgTypes[27]
+	mi := &file_capability_execution_dto_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2451,7 +2544,7 @@ func (x *SkillExecutionOptionsProto) String() string {
 func (*SkillExecutionOptionsProto) ProtoMessage() {}
 
 func (x *SkillExecutionOptionsProto) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[27]
+	mi := &file_capability_execution_dto_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2464,7 +2557,7 @@ func (x *SkillExecutionOptionsProto) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillExecutionOptionsProto.ProtoReflect.Descriptor instead.
 func (*SkillExecutionOptionsProto) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{27}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *SkillExecutionOptionsProto) GetDryRun() bool {
@@ -2577,7 +2670,7 @@ type ExecutionNodeStateProtoDTO struct {
 
 func (x *ExecutionNodeStateProtoDTO) Reset() {
 	*x = ExecutionNodeStateProtoDTO{}
-	mi := &file_capability_execution_dto_proto_msgTypes[28]
+	mi := &file_capability_execution_dto_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2589,7 +2682,7 @@ func (x *ExecutionNodeStateProtoDTO) String() string {
 func (*ExecutionNodeStateProtoDTO) ProtoMessage() {}
 
 func (x *ExecutionNodeStateProtoDTO) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[28]
+	mi := &file_capability_execution_dto_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2602,7 +2695,7 @@ func (x *ExecutionNodeStateProtoDTO) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExecutionNodeStateProtoDTO.ProtoReflect.Descriptor instead.
 func (*ExecutionNodeStateProtoDTO) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{28}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ExecutionNodeStateProtoDTO) GetId() string {
@@ -2748,7 +2841,7 @@ type SkillExecutionProtoDTO struct {
 
 func (x *SkillExecutionProtoDTO) Reset() {
 	*x = SkillExecutionProtoDTO{}
-	mi := &file_capability_execution_dto_proto_msgTypes[29]
+	mi := &file_capability_execution_dto_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2760,7 +2853,7 @@ func (x *SkillExecutionProtoDTO) String() string {
 func (*SkillExecutionProtoDTO) ProtoMessage() {}
 
 func (x *SkillExecutionProtoDTO) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[29]
+	mi := &file_capability_execution_dto_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2773,7 +2866,7 @@ func (x *SkillExecutionProtoDTO) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillExecutionProtoDTO.ProtoReflect.Descriptor instead.
 func (*SkillExecutionProtoDTO) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{29}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *SkillExecutionProtoDTO) GetId() string {
@@ -2956,7 +3049,7 @@ type SkillExecutionEventProto struct {
 
 func (x *SkillExecutionEventProto) Reset() {
 	*x = SkillExecutionEventProto{}
-	mi := &file_capability_execution_dto_proto_msgTypes[30]
+	mi := &file_capability_execution_dto_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2968,7 +3061,7 @@ func (x *SkillExecutionEventProto) String() string {
 func (*SkillExecutionEventProto) ProtoMessage() {}
 
 func (x *SkillExecutionEventProto) ProtoReflect() protoreflect.Message {
-	mi := &file_capability_execution_dto_proto_msgTypes[30]
+	mi := &file_capability_execution_dto_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2981,7 +3074,7 @@ func (x *SkillExecutionEventProto) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillExecutionEventProto.ProtoReflect.Descriptor instead.
 func (*SkillExecutionEventProto) Descriptor() ([]byte, []int) {
-	return file_capability_execution_dto_proto_rawDescGZIP(), []int{30}
+	return file_capability_execution_dto_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *SkillExecutionEventProto) GetEventId() string {
@@ -3236,7 +3329,7 @@ const file_capability_execution_dto_proto_rawDesc = "" +
 	"\x05nodes\x18\x02 \x03(\v2\x1b.zqnt.ExecutionNodeProtoDTOR\x05nodes\x121\n" +
 	"\x05edges\x18\x03 \x03(\v2\x1b.zqnt.ExecutionEdgeProtoDTOR\x05edges\x12?\n" +
 	"\x06layout\x18\x04 \x01(\v2\".zqnt.ExecutionGraphLayoutProtoDTOH\x00R\x06layout\x88\x01\x01B\t\n" +
-	"\a_layout\"\x96\x06\n" +
+	"\a_layout\"\xd4\x06\n" +
 	"\rSkillProtoDTO\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
@@ -3252,20 +3345,29 @@ const file_capability_execution_dto_proto_rawDesc = "" +
 	"\x15source_application_id\x18\v \x01(\tH\x02R\x13sourceApplicationId\x88\x01\x01\x12*\n" +
 	"\x0esource_version\x18\f \x01(\tH\x03R\rsourceVersion\x88\x01\x01\x12*\n" +
 	"\x0eagent_guidance\x18\r \x01(\tH\x04R\ragentGuidance\x88\x01\x01\x12,\n" +
-	"\x0fagent_available\x18\x0e \x01(\bH\x05R\x0eagentAvailable\x88\x01\x01B\x0e\n" +
+	"\x0fagent_available\x18\x0e \x01(\bH\x05R\x0eagentAvailable\x88\x01\x01\x123\n" +
+	"\x04goal\x18\x0f \x01(\v2\x1a.zqnt.GoalContractProtoDTOH\x06R\x04goal\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\n" +
 	"\n" +
 	"\b_enabledB\x18\n" +
 	"\x16_source_application_idB\x11\n" +
 	"\x0f_source_versionB\x11\n" +
 	"\x0f_agent_guidanceB\x12\n" +
-	"\x10_agent_available\"\xa1\x01\n" +
+	"\x10_agent_availableB\a\n" +
+	"\x05_goal\"\xc0\x02\n" +
+	"\x14GoalContractProtoDTO\x12 \n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x12L\n" +
+	"\x12success_conditions\x18\x02 \x03(\v2\x1d.zqnt.ExecutionConditionProtoR\x11successConditions\x12?\n" +
+	"\x19evaluation_window_seconds\x18\x03 \x01(\x05H\x00R\x17evaluationWindowSeconds\x88\x01\x01\x12<\n" +
+	"\x18max_evidence_age_seconds\x18\x04 \x01(\x05H\x01R\x15maxEvidenceAgeSeconds\x88\x01\x01B\x1c\n" +
+	"\x1a_evaluation_window_secondsB\x1b\n" +
+	"\x19_max_evidence_age_seconds\"\xa1\x01\n" +
 	"\x19ApplicationChangeProtoDTO\x12*\n" +
 	"\x02at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12\x1b\n" +
 	"\x06author\x18\x02 \x01(\tH\x00R\x06author\x88\x01\x01\x12\x12\n" +
 	"\x04note\x18\x03 \x01(\tR\x04note\x12\x1c\n" +
 	"\tautomatic\x18\x04 \x01(\bR\tautomaticB\t\n" +
-	"\a_author\"\xe0\x05\n" +
+	"\a_author\"\x9e\x06\n" +
 	"\x13ApplicationProtoDTO\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
@@ -3284,7 +3386,8 @@ const file_capability_execution_dto_proto_rawDesc = "" +
 	"\x0forganization_id\x18\f \x01(\tH\x05R\x0eorganizationId\x88\x01\x01\x12=\n" +
 	"\tchangelog\x18\r \x03(\v2\x1f.zqnt.ApplicationChangeProtoDTOR\tchangelog\x12$\n" +
 	"\vchange_note\x18\x0e \x01(\tH\x06R\n" +
-	"changeNote\x88\x01\x01B\x0e\n" +
+	"changeNote\x88\x01\x01\x123\n" +
+	"\x04goal\x18\x0f \x01(\v2\x1a.zqnt.GoalContractProtoDTOH\aR\x04goal\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\n" +
 	"\n" +
 	"\b_enabledB\v\n" +
@@ -3292,7 +3395,8 @@ const file_capability_execution_dto_proto_rawDesc = "" +
 	"\v_created_atB\x0e\n" +
 	"\f_modified_atB\x12\n" +
 	"\x10_organization_idB\x0e\n" +
-	"\f_change_note\"\xd4\x02\n" +
+	"\f_change_noteB\a\n" +
+	"\x05_goal\"\xd4\x02\n" +
 	"\x18ApplicationPauseProtoDTO\x12%\n" +
 	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\x12\x1e\n" +
 	"\bskill_id\x18\x02 \x01(\tH\x00R\askillId\x88\x01\x01\x12 \n" +
@@ -3475,7 +3579,7 @@ func file_capability_execution_dto_proto_rawDescGZIP() []byte {
 	return file_capability_execution_dto_proto_rawDescData
 }
 
-var file_capability_execution_dto_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_capability_execution_dto_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_capability_execution_dto_proto_goTypes = []any{
 	(*ApplicationScopeProtoDTO)(nil),                // 0: zqnt.ApplicationScopeProtoDTO
 	(*ScopedExecutionConfigProtoDTO)(nil),           // 1: zqnt.ScopedExecutionConfigProtoDTO
@@ -3497,60 +3601,61 @@ var file_capability_execution_dto_proto_goTypes = []any{
 	(*ExecutionGraphLayoutProtoDTO)(nil),            // 17: zqnt.ExecutionGraphLayoutProtoDTO
 	(*ExecutionGraphProtoDTO)(nil),                  // 18: zqnt.ExecutionGraphProtoDTO
 	(*SkillProtoDTO)(nil),                           // 19: zqnt.SkillProtoDTO
-	(*ApplicationChangeProtoDTO)(nil),               // 20: zqnt.ApplicationChangeProtoDTO
-	(*ApplicationProtoDTO)(nil),                     // 21: zqnt.ApplicationProtoDTO
-	(*ApplicationPauseProtoDTO)(nil),                // 22: zqnt.ApplicationPauseProtoDTO
-	(*ApplicationEnvironmentPointerProtoDTO)(nil),   // 23: zqnt.ApplicationEnvironmentPointerProtoDTO
-	(*SimpleExecutionSpecProto)(nil),                // 24: zqnt.SimpleExecutionSpecProto
-	(*ApplicationExecutionSpecProto)(nil),           // 25: zqnt.ApplicationExecutionSpecProto
-	(*SkillExecutionSpecProto)(nil),                 // 26: zqnt.SkillExecutionSpecProto
-	(*SkillExecutionOptionsProto)(nil),              // 27: zqnt.SkillExecutionOptionsProto
-	(*ExecutionNodeStateProtoDTO)(nil),              // 28: zqnt.ExecutionNodeStateProtoDTO
-	(*SkillExecutionProtoDTO)(nil),                  // 29: zqnt.SkillExecutionProtoDTO
-	(*SkillExecutionEventProto)(nil),                // 30: zqnt.SkillExecutionEventProto
-	nil,                                             // 31: zqnt.ResolvedExecutionConfigProtoDTO.SourcesEntry
-	(proto.ApplicationScopeTypeProto)(0),            // 32: zqnt.ApplicationScopeTypeProto
-	(*structpb.Value)(nil),                          // 33: google.protobuf.Value
-	(proto.ExecutionConfigScopeTypeProto)(0),        // 34: zqnt.ExecutionConfigScopeTypeProto
-	(*structpb.Struct)(nil),                         // 35: google.protobuf.Struct
-	(*timestamppb.Timestamp)(nil),                   // 36: google.protobuf.Timestamp
-	(proto.ExecutionConditionOperatorProto)(0),      // 37: zqnt.ExecutionConditionOperatorProto
-	(proto.ExecutionConditionGroupOperatorProto)(0), // 38: zqnt.ExecutionConditionGroupOperatorProto
-	(proto.ExecutionJoinModeProto)(0),               // 39: zqnt.ExecutionJoinModeProto
-	(proto.ExecutionNodeTypeProto)(0),               // 40: zqnt.ExecutionNodeTypeProto
-	(proto.ExecutionFailureStrategyProto)(0),        // 41: zqnt.ExecutionFailureStrategyProto
-	(*proto1.RetryPolicyProtoDTO)(nil),              // 42: zqnt.RetryPolicyProtoDTO
-	(proto.ExecutionEdgeTypeProto)(0),               // 43: zqnt.ExecutionEdgeTypeProto
-	(proto.ApplicationEnvironmentProto)(0),          // 44: zqnt.ApplicationEnvironmentProto
-	(*proto2.CapabilityTarget)(nil),                 // 45: zqnt.CapabilityTarget
-	(proto.ExecutionNodeStatusProto)(0),             // 46: zqnt.ExecutionNodeStatusProto
-	(*proto3.GlobalErrorMessage)(nil),               // 47: zqnt.GlobalErrorMessage
-	(proto.SkillExecutionStatusProto)(0),            // 48: zqnt.SkillExecutionStatusProto
-	(proto.SkillExecutionEventTypeProto)(0),         // 49: zqnt.SkillExecutionEventTypeProto
+	(*GoalContractProtoDTO)(nil),                    // 20: zqnt.GoalContractProtoDTO
+	(*ApplicationChangeProtoDTO)(nil),               // 21: zqnt.ApplicationChangeProtoDTO
+	(*ApplicationProtoDTO)(nil),                     // 22: zqnt.ApplicationProtoDTO
+	(*ApplicationPauseProtoDTO)(nil),                // 23: zqnt.ApplicationPauseProtoDTO
+	(*ApplicationEnvironmentPointerProtoDTO)(nil),   // 24: zqnt.ApplicationEnvironmentPointerProtoDTO
+	(*SimpleExecutionSpecProto)(nil),                // 25: zqnt.SimpleExecutionSpecProto
+	(*ApplicationExecutionSpecProto)(nil),           // 26: zqnt.ApplicationExecutionSpecProto
+	(*SkillExecutionSpecProto)(nil),                 // 27: zqnt.SkillExecutionSpecProto
+	(*SkillExecutionOptionsProto)(nil),              // 28: zqnt.SkillExecutionOptionsProto
+	(*ExecutionNodeStateProtoDTO)(nil),              // 29: zqnt.ExecutionNodeStateProtoDTO
+	(*SkillExecutionProtoDTO)(nil),                  // 30: zqnt.SkillExecutionProtoDTO
+	(*SkillExecutionEventProto)(nil),                // 31: zqnt.SkillExecutionEventProto
+	nil,                                             // 32: zqnt.ResolvedExecutionConfigProtoDTO.SourcesEntry
+	(proto.ApplicationScopeTypeProto)(0),            // 33: zqnt.ApplicationScopeTypeProto
+	(*structpb.Value)(nil),                          // 34: google.protobuf.Value
+	(proto.ExecutionConfigScopeTypeProto)(0),        // 35: zqnt.ExecutionConfigScopeTypeProto
+	(*structpb.Struct)(nil),                         // 36: google.protobuf.Struct
+	(*timestamppb.Timestamp)(nil),                   // 37: google.protobuf.Timestamp
+	(proto.ExecutionConditionOperatorProto)(0),      // 38: zqnt.ExecutionConditionOperatorProto
+	(proto.ExecutionConditionGroupOperatorProto)(0), // 39: zqnt.ExecutionConditionGroupOperatorProto
+	(proto.ExecutionJoinModeProto)(0),               // 40: zqnt.ExecutionJoinModeProto
+	(proto.ExecutionNodeTypeProto)(0),               // 41: zqnt.ExecutionNodeTypeProto
+	(proto.ExecutionFailureStrategyProto)(0),        // 42: zqnt.ExecutionFailureStrategyProto
+	(*proto1.RetryPolicyProtoDTO)(nil),              // 43: zqnt.RetryPolicyProtoDTO
+	(proto.ExecutionEdgeTypeProto)(0),               // 44: zqnt.ExecutionEdgeTypeProto
+	(proto.ApplicationEnvironmentProto)(0),          // 45: zqnt.ApplicationEnvironmentProto
+	(*proto2.CapabilityTarget)(nil),                 // 46: zqnt.CapabilityTarget
+	(proto.ExecutionNodeStatusProto)(0),             // 47: zqnt.ExecutionNodeStatusProto
+	(*proto3.GlobalErrorMessage)(nil),               // 48: zqnt.GlobalErrorMessage
+	(proto.SkillExecutionStatusProto)(0),            // 49: zqnt.SkillExecutionStatusProto
+	(proto.SkillExecutionEventTypeProto)(0),         // 50: zqnt.SkillExecutionEventTypeProto
 }
 var file_capability_execution_dto_proto_depIdxs = []int32{
-	32, // 0: zqnt.ApplicationScopeProtoDTO.type:type_name -> zqnt.ApplicationScopeTypeProto
-	33, // 1: zqnt.ScopedExecutionConfigProtoDTO.value:type_name -> google.protobuf.Value
-	34, // 2: zqnt.ScopedExecutionConfigProtoDTO.scope:type_name -> zqnt.ExecutionConfigScopeTypeProto
-	35, // 3: zqnt.ExecutionConfigContextProto.execution_overrides:type_name -> google.protobuf.Struct
-	35, // 4: zqnt.ResolvedExecutionConfigProtoDTO.values:type_name -> google.protobuf.Struct
-	31, // 5: zqnt.ResolvedExecutionConfigProtoDTO.sources:type_name -> zqnt.ResolvedExecutionConfigProtoDTO.SourcesEntry
-	36, // 6: zqnt.ResolvedExecutionConfigProtoDTO.resolved_at:type_name -> google.protobuf.Timestamp
-	37, // 7: zqnt.ExecutionComparisonProto.operator:type_name -> zqnt.ExecutionConditionOperatorProto
-	33, // 8: zqnt.ExecutionComparisonProto.expected_value:type_name -> google.protobuf.Value
-	38, // 9: zqnt.ExecutionConditionGroupProto.operator:type_name -> zqnt.ExecutionConditionGroupOperatorProto
+	33, // 0: zqnt.ApplicationScopeProtoDTO.type:type_name -> zqnt.ApplicationScopeTypeProto
+	34, // 1: zqnt.ScopedExecutionConfigProtoDTO.value:type_name -> google.protobuf.Value
+	35, // 2: zqnt.ScopedExecutionConfigProtoDTO.scope:type_name -> zqnt.ExecutionConfigScopeTypeProto
+	36, // 3: zqnt.ExecutionConfigContextProto.execution_overrides:type_name -> google.protobuf.Struct
+	36, // 4: zqnt.ResolvedExecutionConfigProtoDTO.values:type_name -> google.protobuf.Struct
+	32, // 5: zqnt.ResolvedExecutionConfigProtoDTO.sources:type_name -> zqnt.ResolvedExecutionConfigProtoDTO.SourcesEntry
+	37, // 6: zqnt.ResolvedExecutionConfigProtoDTO.resolved_at:type_name -> google.protobuf.Timestamp
+	38, // 7: zqnt.ExecutionComparisonProto.operator:type_name -> zqnt.ExecutionConditionOperatorProto
+	34, // 8: zqnt.ExecutionComparisonProto.expected_value:type_name -> google.protobuf.Value
+	39, // 9: zqnt.ExecutionConditionGroupProto.operator:type_name -> zqnt.ExecutionConditionGroupOperatorProto
 	6,  // 10: zqnt.ExecutionConditionGroupProto.conditions:type_name -> zqnt.ExecutionConditionProto
 	4,  // 11: zqnt.ExecutionConditionProto.comparison:type_name -> zqnt.ExecutionComparisonProto
 	5,  // 12: zqnt.ExecutionConditionProto.group:type_name -> zqnt.ExecutionConditionGroupProto
-	35, // 13: zqnt.CommandNodeConfigProto.parameter_defaults:type_name -> google.protobuf.Struct
-	35, // 14: zqnt.CommandNodeConfigProto.parameter_mapping:type_name -> google.protobuf.Struct
-	35, // 15: zqnt.SkillNodeConfigProto.parameter_mapping:type_name -> google.protobuf.Struct
-	39, // 16: zqnt.GatewayNodeConfigProto.join_mode:type_name -> zqnt.ExecutionJoinModeProto
-	35, // 17: zqnt.GatewayNodeConfigProto.output_mapping:type_name -> google.protobuf.Struct
-	36, // 18: zqnt.WaitNodeConfigProto.until:type_name -> google.protobuf.Timestamp
+	36, // 13: zqnt.CommandNodeConfigProto.parameter_defaults:type_name -> google.protobuf.Struct
+	36, // 14: zqnt.CommandNodeConfigProto.parameter_mapping:type_name -> google.protobuf.Struct
+	36, // 15: zqnt.SkillNodeConfigProto.parameter_mapping:type_name -> google.protobuf.Struct
+	40, // 16: zqnt.GatewayNodeConfigProto.join_mode:type_name -> zqnt.ExecutionJoinModeProto
+	36, // 17: zqnt.GatewayNodeConfigProto.output_mapping:type_name -> google.protobuf.Struct
+	37, // 18: zqnt.WaitNodeConfigProto.until:type_name -> google.protobuf.Timestamp
 	6,  // 19: zqnt.EventWaitNodeConfigProto.filter:type_name -> zqnt.ExecutionConditionProto
-	35, // 20: zqnt.AiNodeConfigProto.output_schema:type_name -> google.protobuf.Struct
-	40, // 21: zqnt.ExecutionNodeProtoDTO.type:type_name -> zqnt.ExecutionNodeTypeProto
+	36, // 20: zqnt.AiNodeConfigProto.output_schema:type_name -> google.protobuf.Struct
+	41, // 21: zqnt.ExecutionNodeProtoDTO.type:type_name -> zqnt.ExecutionNodeTypeProto
 	7,  // 22: zqnt.ExecutionNodeProtoDTO.command:type_name -> zqnt.CommandNodeConfigProto
 	8,  // 23: zqnt.ExecutionNodeProtoDTO.skill:type_name -> zqnt.SkillNodeConfigProto
 	6,  // 24: zqnt.ExecutionNodeProtoDTO.condition:type_name -> zqnt.ExecutionConditionProto
@@ -3559,68 +3664,71 @@ var file_capability_execution_dto_proto_depIdxs = []int32{
 	11, // 27: zqnt.ExecutionNodeProtoDTO.event_wait:type_name -> zqnt.EventWaitNodeConfigProto
 	12, // 28: zqnt.ExecutionNodeProtoDTO.human_approval:type_name -> zqnt.HumanApprovalNodeConfigProto
 	13, // 29: zqnt.ExecutionNodeProtoDTO.ai:type_name -> zqnt.AiNodeConfigProto
-	41, // 30: zqnt.ExecutionNodeProtoDTO.failure_strategy:type_name -> zqnt.ExecutionFailureStrategyProto
-	42, // 31: zqnt.ExecutionNodeProtoDTO.retry_policy:type_name -> zqnt.RetryPolicyProtoDTO
-	43, // 32: zqnt.ExecutionEdgeProtoDTO.type:type_name -> zqnt.ExecutionEdgeTypeProto
+	42, // 30: zqnt.ExecutionNodeProtoDTO.failure_strategy:type_name -> zqnt.ExecutionFailureStrategyProto
+	43, // 31: zqnt.ExecutionNodeProtoDTO.retry_policy:type_name -> zqnt.RetryPolicyProtoDTO
+	44, // 32: zqnt.ExecutionEdgeProtoDTO.type:type_name -> zqnt.ExecutionEdgeTypeProto
 	6,  // 33: zqnt.ExecutionEdgeProtoDTO.condition:type_name -> zqnt.ExecutionConditionProto
-	35, // 34: zqnt.GraphNodeLayoutProtoDTO.editor_metadata:type_name -> google.protobuf.Struct
+	36, // 34: zqnt.GraphNodeLayoutProtoDTO.editor_metadata:type_name -> google.protobuf.Struct
 	16, // 35: zqnt.ExecutionGraphLayoutProtoDTO.nodes:type_name -> zqnt.GraphNodeLayoutProtoDTO
 	14, // 36: zqnt.ExecutionGraphProtoDTO.nodes:type_name -> zqnt.ExecutionNodeProtoDTO
 	15, // 37: zqnt.ExecutionGraphProtoDTO.edges:type_name -> zqnt.ExecutionEdgeProtoDTO
 	17, // 38: zqnt.ExecutionGraphProtoDTO.layout:type_name -> zqnt.ExecutionGraphLayoutProtoDTO
 	18, // 39: zqnt.SkillProtoDTO.graph:type_name -> zqnt.ExecutionGraphProtoDTO
-	35, // 40: zqnt.SkillProtoDTO.input_schema:type_name -> google.protobuf.Struct
-	35, // 41: zqnt.SkillProtoDTO.output_schema:type_name -> google.protobuf.Struct
-	35, // 42: zqnt.SkillProtoDTO.default_config:type_name -> google.protobuf.Struct
-	35, // 43: zqnt.SkillProtoDTO.output_mapping:type_name -> google.protobuf.Struct
-	36, // 44: zqnt.ApplicationChangeProtoDTO.at:type_name -> google.protobuf.Timestamp
-	19, // 45: zqnt.ApplicationProtoDTO.skills:type_name -> zqnt.SkillProtoDTO
-	0,  // 46: zqnt.ApplicationProtoDTO.scopes:type_name -> zqnt.ApplicationScopeProtoDTO
-	35, // 47: zqnt.ApplicationProtoDTO.default_config:type_name -> google.protobuf.Struct
-	36, // 48: zqnt.ApplicationProtoDTO.created_at:type_name -> google.protobuf.Timestamp
-	36, // 49: zqnt.ApplicationProtoDTO.modified_at:type_name -> google.protobuf.Timestamp
-	20, // 50: zqnt.ApplicationProtoDTO.changelog:type_name -> zqnt.ApplicationChangeProtoDTO
-	36, // 51: zqnt.ApplicationPauseProtoDTO.paused_at:type_name -> google.protobuf.Timestamp
-	44, // 52: zqnt.ApplicationEnvironmentPointerProtoDTO.environment:type_name -> zqnt.ApplicationEnvironmentProto
-	36, // 53: zqnt.ApplicationEnvironmentPointerProtoDTO.updated_at:type_name -> google.protobuf.Timestamp
-	45, // 54: zqnt.SimpleExecutionSpecProto.target:type_name -> zqnt.CapabilityTarget
-	35, // 55: zqnt.SimpleExecutionSpecProto.parameters:type_name -> google.protobuf.Struct
-	35, // 56: zqnt.ApplicationExecutionSpecProto.parameters:type_name -> google.protobuf.Struct
-	24, // 57: zqnt.SkillExecutionSpecProto.simple:type_name -> zqnt.SimpleExecutionSpecProto
-	25, // 58: zqnt.SkillExecutionSpecProto.application:type_name -> zqnt.ApplicationExecutionSpecProto
-	41, // 59: zqnt.SkillExecutionOptionsProto.failure_strategy:type_name -> zqnt.ExecutionFailureStrategyProto
-	42, // 60: zqnt.SkillExecutionOptionsProto.retry_policy:type_name -> zqnt.RetryPolicyProtoDTO
-	35, // 61: zqnt.SkillExecutionOptionsProto.config_overrides:type_name -> google.protobuf.Struct
-	45, // 62: zqnt.ExecutionNodeStateProtoDTO.target:type_name -> zqnt.CapabilityTarget
-	35, // 63: zqnt.ExecutionNodeStateProtoDTO.parameters:type_name -> google.protobuf.Struct
-	46, // 64: zqnt.ExecutionNodeStateProtoDTO.status:type_name -> zqnt.ExecutionNodeStatusProto
-	36, // 65: zqnt.ExecutionNodeStateProtoDTO.started_at:type_name -> google.protobuf.Timestamp
-	36, // 66: zqnt.ExecutionNodeStateProtoDTO.completed_at:type_name -> google.protobuf.Timestamp
-	47, // 67: zqnt.ExecutionNodeStateProtoDTO.error:type_name -> zqnt.GlobalErrorMessage
-	35, // 68: zqnt.ExecutionNodeStateProtoDTO.output:type_name -> google.protobuf.Struct
-	26, // 69: zqnt.SkillExecutionProtoDTO.spec:type_name -> zqnt.SkillExecutionSpecProto
-	27, // 70: zqnt.SkillExecutionProtoDTO.options:type_name -> zqnt.SkillExecutionOptionsProto
-	48, // 71: zqnt.SkillExecutionProtoDTO.status:type_name -> zqnt.SkillExecutionStatusProto
-	28, // 72: zqnt.SkillExecutionProtoDTO.node_states:type_name -> zqnt.ExecutionNodeStateProtoDTO
-	36, // 73: zqnt.SkillExecutionProtoDTO.created_at:type_name -> google.protobuf.Timestamp
-	36, // 74: zqnt.SkillExecutionProtoDTO.started_at:type_name -> google.protobuf.Timestamp
-	36, // 75: zqnt.SkillExecutionProtoDTO.completed_at:type_name -> google.protobuf.Timestamp
-	36, // 76: zqnt.SkillExecutionProtoDTO.modified_at:type_name -> google.protobuf.Timestamp
-	47, // 77: zqnt.SkillExecutionProtoDTO.error:type_name -> zqnt.GlobalErrorMessage
-	35, // 78: zqnt.SkillExecutionProtoDTO.output:type_name -> google.protobuf.Struct
-	35, // 79: zqnt.SkillExecutionProtoDTO.resolved_config:type_name -> google.protobuf.Struct
-	18, // 80: zqnt.SkillExecutionProtoDTO.graph_snapshot:type_name -> zqnt.ExecutionGraphProtoDTO
-	49, // 81: zqnt.SkillExecutionEventProto.type:type_name -> zqnt.SkillExecutionEventTypeProto
-	48, // 82: zqnt.SkillExecutionEventProto.execution_status:type_name -> zqnt.SkillExecutionStatusProto
-	46, // 83: zqnt.SkillExecutionEventProto.node_status:type_name -> zqnt.ExecutionNodeStatusProto
-	36, // 84: zqnt.SkillExecutionEventProto.occurred_at:type_name -> google.protobuf.Timestamp
-	47, // 85: zqnt.SkillExecutionEventProto.error:type_name -> zqnt.GlobalErrorMessage
-	35, // 86: zqnt.SkillExecutionEventProto.data:type_name -> google.protobuf.Struct
-	87, // [87:87] is the sub-list for method output_type
-	87, // [87:87] is the sub-list for method input_type
-	87, // [87:87] is the sub-list for extension type_name
-	87, // [87:87] is the sub-list for extension extendee
-	0,  // [0:87] is the sub-list for field type_name
+	36, // 40: zqnt.SkillProtoDTO.input_schema:type_name -> google.protobuf.Struct
+	36, // 41: zqnt.SkillProtoDTO.output_schema:type_name -> google.protobuf.Struct
+	36, // 42: zqnt.SkillProtoDTO.default_config:type_name -> google.protobuf.Struct
+	36, // 43: zqnt.SkillProtoDTO.output_mapping:type_name -> google.protobuf.Struct
+	20, // 44: zqnt.SkillProtoDTO.goal:type_name -> zqnt.GoalContractProtoDTO
+	6,  // 45: zqnt.GoalContractProtoDTO.success_conditions:type_name -> zqnt.ExecutionConditionProto
+	37, // 46: zqnt.ApplicationChangeProtoDTO.at:type_name -> google.protobuf.Timestamp
+	19, // 47: zqnt.ApplicationProtoDTO.skills:type_name -> zqnt.SkillProtoDTO
+	0,  // 48: zqnt.ApplicationProtoDTO.scopes:type_name -> zqnt.ApplicationScopeProtoDTO
+	36, // 49: zqnt.ApplicationProtoDTO.default_config:type_name -> google.protobuf.Struct
+	37, // 50: zqnt.ApplicationProtoDTO.created_at:type_name -> google.protobuf.Timestamp
+	37, // 51: zqnt.ApplicationProtoDTO.modified_at:type_name -> google.protobuf.Timestamp
+	21, // 52: zqnt.ApplicationProtoDTO.changelog:type_name -> zqnt.ApplicationChangeProtoDTO
+	20, // 53: zqnt.ApplicationProtoDTO.goal:type_name -> zqnt.GoalContractProtoDTO
+	37, // 54: zqnt.ApplicationPauseProtoDTO.paused_at:type_name -> google.protobuf.Timestamp
+	45, // 55: zqnt.ApplicationEnvironmentPointerProtoDTO.environment:type_name -> zqnt.ApplicationEnvironmentProto
+	37, // 56: zqnt.ApplicationEnvironmentPointerProtoDTO.updated_at:type_name -> google.protobuf.Timestamp
+	46, // 57: zqnt.SimpleExecutionSpecProto.target:type_name -> zqnt.CapabilityTarget
+	36, // 58: zqnt.SimpleExecutionSpecProto.parameters:type_name -> google.protobuf.Struct
+	36, // 59: zqnt.ApplicationExecutionSpecProto.parameters:type_name -> google.protobuf.Struct
+	25, // 60: zqnt.SkillExecutionSpecProto.simple:type_name -> zqnt.SimpleExecutionSpecProto
+	26, // 61: zqnt.SkillExecutionSpecProto.application:type_name -> zqnt.ApplicationExecutionSpecProto
+	42, // 62: zqnt.SkillExecutionOptionsProto.failure_strategy:type_name -> zqnt.ExecutionFailureStrategyProto
+	43, // 63: zqnt.SkillExecutionOptionsProto.retry_policy:type_name -> zqnt.RetryPolicyProtoDTO
+	36, // 64: zqnt.SkillExecutionOptionsProto.config_overrides:type_name -> google.protobuf.Struct
+	46, // 65: zqnt.ExecutionNodeStateProtoDTO.target:type_name -> zqnt.CapabilityTarget
+	36, // 66: zqnt.ExecutionNodeStateProtoDTO.parameters:type_name -> google.protobuf.Struct
+	47, // 67: zqnt.ExecutionNodeStateProtoDTO.status:type_name -> zqnt.ExecutionNodeStatusProto
+	37, // 68: zqnt.ExecutionNodeStateProtoDTO.started_at:type_name -> google.protobuf.Timestamp
+	37, // 69: zqnt.ExecutionNodeStateProtoDTO.completed_at:type_name -> google.protobuf.Timestamp
+	48, // 70: zqnt.ExecutionNodeStateProtoDTO.error:type_name -> zqnt.GlobalErrorMessage
+	36, // 71: zqnt.ExecutionNodeStateProtoDTO.output:type_name -> google.protobuf.Struct
+	27, // 72: zqnt.SkillExecutionProtoDTO.spec:type_name -> zqnt.SkillExecutionSpecProto
+	28, // 73: zqnt.SkillExecutionProtoDTO.options:type_name -> zqnt.SkillExecutionOptionsProto
+	49, // 74: zqnt.SkillExecutionProtoDTO.status:type_name -> zqnt.SkillExecutionStatusProto
+	29, // 75: zqnt.SkillExecutionProtoDTO.node_states:type_name -> zqnt.ExecutionNodeStateProtoDTO
+	37, // 76: zqnt.SkillExecutionProtoDTO.created_at:type_name -> google.protobuf.Timestamp
+	37, // 77: zqnt.SkillExecutionProtoDTO.started_at:type_name -> google.protobuf.Timestamp
+	37, // 78: zqnt.SkillExecutionProtoDTO.completed_at:type_name -> google.protobuf.Timestamp
+	37, // 79: zqnt.SkillExecutionProtoDTO.modified_at:type_name -> google.protobuf.Timestamp
+	48, // 80: zqnt.SkillExecutionProtoDTO.error:type_name -> zqnt.GlobalErrorMessage
+	36, // 81: zqnt.SkillExecutionProtoDTO.output:type_name -> google.protobuf.Struct
+	36, // 82: zqnt.SkillExecutionProtoDTO.resolved_config:type_name -> google.protobuf.Struct
+	18, // 83: zqnt.SkillExecutionProtoDTO.graph_snapshot:type_name -> zqnt.ExecutionGraphProtoDTO
+	50, // 84: zqnt.SkillExecutionEventProto.type:type_name -> zqnt.SkillExecutionEventTypeProto
+	49, // 85: zqnt.SkillExecutionEventProto.execution_status:type_name -> zqnt.SkillExecutionStatusProto
+	47, // 86: zqnt.SkillExecutionEventProto.node_status:type_name -> zqnt.ExecutionNodeStatusProto
+	37, // 87: zqnt.SkillExecutionEventProto.occurred_at:type_name -> google.protobuf.Timestamp
+	48, // 88: zqnt.SkillExecutionEventProto.error:type_name -> zqnt.GlobalErrorMessage
+	36, // 89: zqnt.SkillExecutionEventProto.data:type_name -> google.protobuf.Struct
+	90, // [90:90] is the sub-list for method output_type
+	90, // [90:90] is the sub-list for method input_type
+	90, // [90:90] is the sub-list for extension type_name
+	90, // [90:90] is the sub-list for extension extendee
+	0,  // [0:90] is the sub-list for field type_name
 }
 
 func init() { file_capability_execution_dto_proto_init() }
@@ -3666,21 +3774,22 @@ func file_capability_execution_dto_proto_init() {
 	file_capability_execution_dto_proto_msgTypes[23].OneofWrappers = []any{}
 	file_capability_execution_dto_proto_msgTypes[24].OneofWrappers = []any{}
 	file_capability_execution_dto_proto_msgTypes[25].OneofWrappers = []any{}
-	file_capability_execution_dto_proto_msgTypes[26].OneofWrappers = []any{
+	file_capability_execution_dto_proto_msgTypes[26].OneofWrappers = []any{}
+	file_capability_execution_dto_proto_msgTypes[27].OneofWrappers = []any{
 		(*SkillExecutionSpecProto_Simple)(nil),
 		(*SkillExecutionSpecProto_Application)(nil),
 	}
-	file_capability_execution_dto_proto_msgTypes[27].OneofWrappers = []any{}
 	file_capability_execution_dto_proto_msgTypes[28].OneofWrappers = []any{}
 	file_capability_execution_dto_proto_msgTypes[29].OneofWrappers = []any{}
 	file_capability_execution_dto_proto_msgTypes[30].OneofWrappers = []any{}
+	file_capability_execution_dto_proto_msgTypes[31].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_capability_execution_dto_proto_rawDesc), len(file_capability_execution_dto_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   32,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

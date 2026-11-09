@@ -232,6 +232,22 @@ message SkillProtoDTO {
   optional string agent_guidance = 13;
   // Offered to the assistant as a tool; unset = yes.
   optional bool agent_available = 14;
+  // What a run of this Skill must achieve (zqnt-core #553); see GoalContractProtoDTO.
+  optional GoalContractProtoDTO goal = 15;
+}
+
+// What a run must achieve, checked by the platform when it ends (zqnt-core #553); field numbers and
+// types identical to zqnt.application.v3.GoalContract. The run's outcome says whether it was
+// achieved; its status still says only whether its steps ran.
+message GoalContractProtoDTO {
+  // In words, e.g. "The intruder left the site".
+  string description = 1;
+  // Every one must hold; same syntax as a CONDITION node, over the run's facts and live observations.
+  repeated ExecutionConditionProto success_conditions = 2;
+  // How long after the run ended the conditions may still come true; unset = the platform's setting.
+  optional int32 evaluation_window_seconds = 3;
+  // How old a live observation may be to count; unset = the platform's setting.
+  optional int32 max_evidence_age_seconds = 4;
 }
 
 // One entry of a version's changelog: what changed in it, when and by whom.
@@ -268,6 +284,8 @@ message ApplicationProtoDTO {
   // Input only: the author's note for this save ("what changed"), appended to changelog by
   // connector and never stored on its own. Blank = no entry.
   optional string change_note = 14;
+  // What a run of this Application must achieve when its Skill names no goal of its own.
+  optional GoalContractProtoDTO goal = 15;
 }
 
 // A pause switches an Application -- or one Skill of it -- off at runtime: nothing starts it any
