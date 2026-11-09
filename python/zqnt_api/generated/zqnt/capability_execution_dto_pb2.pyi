@@ -284,7 +284,7 @@ class ExecutionGraphProtoDTO(_message.Message):
     def __init__(self, start_node_id: _Optional[str] = ..., nodes: _Optional[_Iterable[_Union[ExecutionNodeProtoDTO, _Mapping]]] = ..., edges: _Optional[_Iterable[_Union[ExecutionEdgeProtoDTO, _Mapping]]] = ..., layout: _Optional[_Union[ExecutionGraphLayoutProtoDTO, _Mapping]] = ...) -> None: ...
 
 class SkillProtoDTO(_message.Message):
-    __slots__ = ("id", "name", "description", "graph", "input_schema", "output_schema", "default_config", "enabled", "required_asset_capabilities", "output_mapping", "source_application_id", "source_version", "agent_guidance", "agent_available")
+    __slots__ = ("id", "name", "description", "graph", "input_schema", "output_schema", "default_config", "enabled", "required_asset_capabilities", "output_mapping", "source_application_id", "source_version", "agent_guidance", "agent_available", "goal")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
@@ -299,6 +299,7 @@ class SkillProtoDTO(_message.Message):
     SOURCE_VERSION_FIELD_NUMBER: _ClassVar[int]
     AGENT_GUIDANCE_FIELD_NUMBER: _ClassVar[int]
     AGENT_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
+    GOAL_FIELD_NUMBER: _ClassVar[int]
     id: str
     name: str
     description: str
@@ -313,7 +314,20 @@ class SkillProtoDTO(_message.Message):
     source_version: str
     agent_guidance: str
     agent_available: bool
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., graph: _Optional[_Union[ExecutionGraphProtoDTO, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: _Optional[bool] = ..., required_asset_capabilities: _Optional[_Iterable[str]] = ..., output_mapping: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., source_application_id: _Optional[str] = ..., source_version: _Optional[str] = ..., agent_guidance: _Optional[str] = ..., agent_available: _Optional[bool] = ...) -> None: ...
+    goal: GoalContractProtoDTO
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., graph: _Optional[_Union[ExecutionGraphProtoDTO, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: _Optional[bool] = ..., required_asset_capabilities: _Optional[_Iterable[str]] = ..., output_mapping: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., source_application_id: _Optional[str] = ..., source_version: _Optional[str] = ..., agent_guidance: _Optional[str] = ..., agent_available: _Optional[bool] = ..., goal: _Optional[_Union[GoalContractProtoDTO, _Mapping]] = ...) -> None: ...
+
+class GoalContractProtoDTO(_message.Message):
+    __slots__ = ("description", "success_conditions", "evaluation_window_seconds", "max_evidence_age_seconds")
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    SUCCESS_CONDITIONS_FIELD_NUMBER: _ClassVar[int]
+    EVALUATION_WINDOW_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    MAX_EVIDENCE_AGE_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    description: str
+    success_conditions: _containers.RepeatedCompositeFieldContainer[ExecutionConditionProto]
+    evaluation_window_seconds: int
+    max_evidence_age_seconds: int
+    def __init__(self, description: _Optional[str] = ..., success_conditions: _Optional[_Iterable[_Union[ExecutionConditionProto, _Mapping]]] = ..., evaluation_window_seconds: _Optional[int] = ..., max_evidence_age_seconds: _Optional[int] = ...) -> None: ...
 
 class ApplicationChangeProtoDTO(_message.Message):
     __slots__ = ("at", "author", "note", "automatic")
@@ -328,7 +342,7 @@ class ApplicationChangeProtoDTO(_message.Message):
     def __init__(self, at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., author: _Optional[str] = ..., note: _Optional[str] = ..., automatic: _Optional[bool] = ...) -> None: ...
 
 class ApplicationProtoDTO(_message.Message):
-    __slots__ = ("id", "version", "name", "description", "skills", "scopes", "default_config", "enabled", "revision", "created_at", "modified_at", "organization_id", "changelog", "change_note")
+    __slots__ = ("id", "version", "name", "description", "skills", "scopes", "default_config", "enabled", "revision", "created_at", "modified_at", "organization_id", "changelog", "change_note", "goal")
     ID_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -343,6 +357,7 @@ class ApplicationProtoDTO(_message.Message):
     ORGANIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     CHANGELOG_FIELD_NUMBER: _ClassVar[int]
     CHANGE_NOTE_FIELD_NUMBER: _ClassVar[int]
+    GOAL_FIELD_NUMBER: _ClassVar[int]
     id: str
     version: str
     name: str
@@ -357,7 +372,8 @@ class ApplicationProtoDTO(_message.Message):
     organization_id: str
     changelog: _containers.RepeatedCompositeFieldContainer[ApplicationChangeProtoDTO]
     change_note: str
-    def __init__(self, id: _Optional[str] = ..., version: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., skills: _Optional[_Iterable[_Union[SkillProtoDTO, _Mapping]]] = ..., scopes: _Optional[_Iterable[_Union[ApplicationScopeProtoDTO, _Mapping]]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: _Optional[bool] = ..., revision: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., organization_id: _Optional[str] = ..., changelog: _Optional[_Iterable[_Union[ApplicationChangeProtoDTO, _Mapping]]] = ..., change_note: _Optional[str] = ...) -> None: ...
+    goal: GoalContractProtoDTO
+    def __init__(self, id: _Optional[str] = ..., version: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., skills: _Optional[_Iterable[_Union[SkillProtoDTO, _Mapping]]] = ..., scopes: _Optional[_Iterable[_Union[ApplicationScopeProtoDTO, _Mapping]]] = ..., default_config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., enabled: _Optional[bool] = ..., revision: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., modified_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., organization_id: _Optional[str] = ..., changelog: _Optional[_Iterable[_Union[ApplicationChangeProtoDTO, _Mapping]]] = ..., change_note: _Optional[str] = ..., goal: _Optional[_Union[GoalContractProtoDTO, _Mapping]] = ...) -> None: ...
 
 class ApplicationPauseProtoDTO(_message.Message):
     __slots__ = ("application_id", "skill_id", "paused_by", "paused_at", "reason", "organization_id")
