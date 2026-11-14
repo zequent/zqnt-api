@@ -148,6 +148,22 @@ message Detection {
   // measured. The platform sets it when it derives one on ingest; an adapter that projects a
   // range/bearing report itself sets it too.
   bool position_derived = 19;
+  // What a model read or recognised about the object beyond its class, e.g. the plate text of a
+  // vehicle or the type of a UAV.
+  repeated DetectionAttribute attributes = 20;
+  // The model that produced the detection, as name@version from the adapter's model catalog.
+  string model = 21;
+}
+
+message DetectionAttribute {
+  // Lower snake case, e.g. plate, plate_country, uav_type, colour.
+  string key = 1;
+  string value = 2;
+  // 0..1, of this value alone.
+  float confidence = 3;
+  // The model that produced the value, as name@version, when it is not the detection's own model
+  // (e.g. the text recogniser that read a detected plate).
+  string model = 4;
 }
 
 enum BroadcastKind {
