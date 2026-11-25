@@ -79,6 +79,7 @@ Risk levels: **Observe** reads only · **Adjust** changes settings, nothing move
 | `flight.takeoff` | `flight.return_to_home` | Takes off and climbs to the given height above the takeoff point (default 40 m). |
 | `navigation.go_to` | `flight.return_to_home` | Flies to a position; altitude is relative to the takeoff point (default 40 m). |
 | `navigation.update_target` | — | Changes the target of a running go-to. |
+| `navigation.follow_track` | `flight.return_to_home` | Follows a detection track: the platform flies the aircraft after the target with `navigation.go_to` / `navigation.update_target` until the track is lost, the alarm is resolved, an operator takes over or the maximum duration is reached. Run by the platform; adapters only implement the go-to. |
 | `flight.return_to_home` | — | Returns to the dock/home point. |
 | `flight.manual.input` | — | One manual-control input (stream form: StreamManualControl). |
 | `flight.emergency_stop` | — | Stops and hovers immediately. |

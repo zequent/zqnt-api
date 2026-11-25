@@ -45,6 +45,8 @@ const (
 	CommandState_COMMAND_STATE_REJECTED  CommandState = 5
 	CommandState_COMMAND_STATE_CANCELLED CommandState = 6
 	CommandState_COMMAND_STATE_TIMED_OUT CommandState = 7
+	// Held by the platform until a path to the Edge Node can carry it or `expires_at` passes.
+	CommandState_COMMAND_STATE_QUEUED CommandState = 8
 )
 
 // Enum value maps for CommandState.
@@ -58,6 +60,7 @@ var (
 		5: "COMMAND_STATE_REJECTED",
 		6: "COMMAND_STATE_CANCELLED",
 		7: "COMMAND_STATE_TIMED_OUT",
+		8: "COMMAND_STATE_QUEUED",
 	}
 	CommandState_value = map[string]int32{
 		"COMMAND_STATE_UNSPECIFIED": 0,
@@ -68,6 +71,7 @@ var (
 		"COMMAND_STATE_REJECTED":    5,
 		"COMMAND_STATE_CANCELLED":   6,
 		"COMMAND_STATE_TIMED_OUT":   7,
+		"COMMAND_STATE_QUEUED":      8,
 	}
 )
 
@@ -159,8 +163,13 @@ type Command struct {
 	Params    *structpb.Struct       `protobuf:"bytes,3,opt,name=params,proto3" json:"params,omitempty"`
 	Target    *Target                `protobuf:"bytes,4,opt,name=target,proto3" json:"target,omitempty"`
 	// Unset = the capability's own default timeout.
-	Timeout       *durationpb.Duration `protobuf:"bytes,5,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	Execution     *ExecutionRef        `protobuf:"bytes,6,opt,name=execution,proto3" json:"execution,omitempty"`
+	Timeout   *durationpb.Duration `protobuf:"bytes,5,opt,name=timeout,proto3" json:"timeout,omitempty"`
+	Execution *ExecutionRef        `protobuf:"bytes,6,opt,name=execution,proto3" json:"execution,omitempty"`
+	// The command must not start after this. Until then the platform holds it while no path to the
+	// Edge Node can carry it (QUEUED); after it the command fails as TIMED_OUT
+	// (`edge.undeliverable`), and a node that receives it late refuses it (`command.expired`).
+	// Unset = the default for the capability's risk class. `timeout` counts from ACCEPTED.
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -233,6 +242,13 @@ func (x *Command) GetTimeout() *durationpb.Duration {
 func (x *Command) GetExecution() *ExecutionRef {
 	if x != nil {
 		return x.Execution
+	}
+	return nil
+}
+
+func (x *Command) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
 	}
 	return nil
 }
@@ -450,7 +466,7 @@ const file_zqnt_capability_v3_command_proto_rawDesc = "" +
 	" zqnt/capability/v3/command.proto\x12\x12zqnt.capability.v3\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a#zqnt/capability/v3/capability.proto\x1a\x1bzqnt/common/v3/common.proto\"J\n" +
 	"\fExecutionRef\x12!\n" +
 	"\fexecution_id\x18\x01 \x01(\tR\vexecutionId\x12\x17\n" +
-	"\anode_id\x18\x02 \x01(\tR\x06nodeId\"\xb2\x02\n" +
+	"\anode_id\x18\x02 \x01(\tR\x06nodeId\"\xed\x02\n" +
 	"\aCommand\x12.\n" +
 	"\x05asset\x18\x01 \x01(\v2\x18.zqnt.common.v3.AssetRefR\x05asset\x12\x1d\n" +
 	"\n" +
@@ -458,7 +474,9 @@ const file_zqnt_capability_v3_command_proto_rawDesc = "" +
 	"\x06params\x18\x03 \x01(\v2\x17.google.protobuf.StructR\x06params\x122\n" +
 	"\x06target\x18\x04 \x01(\v2\x1a.zqnt.capability.v3.TargetR\x06target\x123\n" +
 	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12>\n" +
-	"\texecution\x18\x06 \x01(\v2 .zqnt.capability.v3.ExecutionRefR\texecution\"\xf6\x01\n" +
+	"\texecution\x18\x06 \x01(\v2 .zqnt.capability.v3.ExecutionRefR\texecution\x129\n" +
+	"\n" +
+	"expires_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xf6\x01\n" +
 	"\rCommandResult\x120\n" +
 	"\x14command_execution_id\x18\x01 \x01(\tR\x12commandExecutionId\x12\x1d\n" +
 	"\n" +
@@ -483,7 +501,7 @@ const file_zqnt_capability_v3_command_proto_rawDesc = "" +
 	"\texecution\x18\v \x01(\v2 .zqnt.capability.v3.ExecutionRefR\texecutionB\v\n" +
 	"\t_progressB\f\n" +
 	"\n" +
-	"_remaining*\xf1\x01\n" +
+	"_remaining*\x8b\x02\n" +
 	"\fCommandState\x12\x1d\n" +
 	"\x19COMMAND_STATE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16COMMAND_STATE_ACCEPTED\x10\x01\x12\x19\n" +
@@ -492,7 +510,8 @@ const file_zqnt_capability_v3_command_proto_rawDesc = "" +
 	"\x14COMMAND_STATE_FAILED\x10\x04\x12\x1a\n" +
 	"\x16COMMAND_STATE_REJECTED\x10\x05\x12\x1b\n" +
 	"\x17COMMAND_STATE_CANCELLED\x10\x06\x12\x1b\n" +
-	"\x17COMMAND_STATE_TIMED_OUT\x10\aBh\n" +
+	"\x17COMMAND_STATE_TIMED_OUT\x10\a\x12\x18\n" +
+	"\x14COMMAND_STATE_QUEUED\x10\bBh\n" +
 	"\x1dcom.zqnt.protos.capability.v3P\x01ZEgithub.com/zequent/zqnt-api/go/v3/gen/zqnt/capability/v3;capabilityv3b\x06proto3"
 
 var (
@@ -519,8 +538,8 @@ var file_zqnt_capability_v3_command_proto_goTypes = []any{
 	(*structpb.Struct)(nil),       // 6: google.protobuf.Struct
 	(*Target)(nil),                // 7: zqnt.capability.v3.Target
 	(*durationpb.Duration)(nil),   // 8: google.protobuf.Duration
-	(*v3.Error)(nil),              // 9: zqnt.common.v3.Error
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(*v3.Error)(nil),              // 10: zqnt.common.v3.Error
 }
 var file_zqnt_capability_v3_command_proto_depIdxs = []int32{
 	5,  // 0: zqnt.capability.v3.Command.asset:type_name -> zqnt.common.v3.AssetRef
@@ -528,21 +547,22 @@ var file_zqnt_capability_v3_command_proto_depIdxs = []int32{
 	7,  // 2: zqnt.capability.v3.Command.target:type_name -> zqnt.capability.v3.Target
 	8,  // 3: zqnt.capability.v3.Command.timeout:type_name -> google.protobuf.Duration
 	1,  // 4: zqnt.capability.v3.Command.execution:type_name -> zqnt.capability.v3.ExecutionRef
-	0,  // 5: zqnt.capability.v3.CommandResult.state:type_name -> zqnt.capability.v3.CommandState
-	6,  // 6: zqnt.capability.v3.CommandResult.result:type_name -> google.protobuf.Struct
-	9,  // 7: zqnt.capability.v3.CommandResult.error:type_name -> zqnt.common.v3.Error
-	5,  // 8: zqnt.capability.v3.CommandEvent.asset:type_name -> zqnt.common.v3.AssetRef
-	0,  // 9: zqnt.capability.v3.CommandEvent.state:type_name -> zqnt.capability.v3.CommandState
-	8,  // 10: zqnt.capability.v3.CommandEvent.remaining:type_name -> google.protobuf.Duration
-	6,  // 11: zqnt.capability.v3.CommandEvent.result:type_name -> google.protobuf.Struct
-	9,  // 12: zqnt.capability.v3.CommandEvent.error:type_name -> zqnt.common.v3.Error
-	10, // 13: zqnt.capability.v3.CommandEvent.occurred_at:type_name -> google.protobuf.Timestamp
-	1,  // 14: zqnt.capability.v3.CommandEvent.execution:type_name -> zqnt.capability.v3.ExecutionRef
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	9,  // 5: zqnt.capability.v3.Command.expires_at:type_name -> google.protobuf.Timestamp
+	0,  // 6: zqnt.capability.v3.CommandResult.state:type_name -> zqnt.capability.v3.CommandState
+	6,  // 7: zqnt.capability.v3.CommandResult.result:type_name -> google.protobuf.Struct
+	10, // 8: zqnt.capability.v3.CommandResult.error:type_name -> zqnt.common.v3.Error
+	5,  // 9: zqnt.capability.v3.CommandEvent.asset:type_name -> zqnt.common.v3.AssetRef
+	0,  // 10: zqnt.capability.v3.CommandEvent.state:type_name -> zqnt.capability.v3.CommandState
+	8,  // 11: zqnt.capability.v3.CommandEvent.remaining:type_name -> google.protobuf.Duration
+	6,  // 12: zqnt.capability.v3.CommandEvent.result:type_name -> google.protobuf.Struct
+	10, // 13: zqnt.capability.v3.CommandEvent.error:type_name -> zqnt.common.v3.Error
+	9,  // 14: zqnt.capability.v3.CommandEvent.occurred_at:type_name -> google.protobuf.Timestamp
+	1,  // 15: zqnt.capability.v3.CommandEvent.execution:type_name -> zqnt.capability.v3.ExecutionRef
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_zqnt_capability_v3_command_proto_init() }
