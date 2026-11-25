@@ -153,7 +153,7 @@ class CapabilityRequirements(_message.Message):
     def __init__(self, asset_types: _Optional[_Iterable[str]] = ..., payloads: _Optional[_Iterable[str]] = ..., runtime_features: _Optional[_Iterable[str]] = ..., properties: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
 
 class Capability(_message.Message):
-    __slots__ = ("command_id", "display_name", "description", "state", "unavailable_reason", "target", "input_schema", "output_schema", "schema_version", "safety", "errors", "events", "requirements", "skill_id", "source", "provider", "constraints", "metadata", "deprecated_by", "completion", "completion_event")
+    __slots__ = ("command_id", "display_name", "description", "state", "unavailable_reason", "target", "input_schema", "output_schema", "schema_version", "safety", "errors", "events", "requirements", "skill_id", "source", "provider", "constraints", "metadata", "deprecated_by", "completion", "completion_event", "tiny_schema_id")
     class MetadataEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -182,6 +182,7 @@ class Capability(_message.Message):
     DEPRECATED_BY_FIELD_NUMBER: _ClassVar[int]
     COMPLETION_FIELD_NUMBER: _ClassVar[int]
     COMPLETION_EVENT_FIELD_NUMBER: _ClassVar[int]
+    TINY_SCHEMA_ID_FIELD_NUMBER: _ClassVar[int]
     command_id: str
     display_name: str
     description: str
@@ -203,7 +204,8 @@ class Capability(_message.Message):
     deprecated_by: str
     completion: CompletionMode
     completion_event: str
-    def __init__(self, command_id: _Optional[str] = ..., display_name: _Optional[str] = ..., description: _Optional[str] = ..., state: _Optional[_Union[CapabilityState, str]] = ..., unavailable_reason: _Optional[str] = ..., target: _Optional[_Union[Target, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., schema_version: _Optional[str] = ..., safety: _Optional[_Union[CommandSafety, _Mapping]] = ..., errors: _Optional[_Iterable[_Union[CapabilityErrorSpec, _Mapping]]] = ..., events: _Optional[_Iterable[_Union[CapabilityEventSpec, _Mapping]]] = ..., requirements: _Optional[_Union[CapabilityRequirements, _Mapping]] = ..., skill_id: _Optional[str] = ..., source: _Optional[_Union[CapabilitySource, str]] = ..., provider: _Optional[str] = ..., constraints: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., metadata: _Optional[_Mapping[str, str]] = ..., deprecated_by: _Optional[str] = ..., completion: _Optional[_Union[CompletionMode, str]] = ..., completion_event: _Optional[str] = ...) -> None: ...
+    tiny_schema_id: int
+    def __init__(self, command_id: _Optional[str] = ..., display_name: _Optional[str] = ..., description: _Optional[str] = ..., state: _Optional[_Union[CapabilityState, str]] = ..., unavailable_reason: _Optional[str] = ..., target: _Optional[_Union[Target, _Mapping]] = ..., input_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., output_schema: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., schema_version: _Optional[str] = ..., safety: _Optional[_Union[CommandSafety, _Mapping]] = ..., errors: _Optional[_Iterable[_Union[CapabilityErrorSpec, _Mapping]]] = ..., events: _Optional[_Iterable[_Union[CapabilityEventSpec, _Mapping]]] = ..., requirements: _Optional[_Union[CapabilityRequirements, _Mapping]] = ..., skill_id: _Optional[str] = ..., source: _Optional[_Union[CapabilitySource, str]] = ..., provider: _Optional[str] = ..., constraints: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., metadata: _Optional[_Mapping[str, str]] = ..., deprecated_by: _Optional[str] = ..., completion: _Optional[_Union[CompletionMode, str]] = ..., completion_event: _Optional[str] = ..., tiny_schema_id: _Optional[int] = ...) -> None: ...
 
 class CapabilitySet(_message.Message):
     __slots__ = ("asset_sn", "asset_type", "capabilities", "observed_at", "valid_until", "revision", "snapshot_state", "telemetry_fields", "payloads")

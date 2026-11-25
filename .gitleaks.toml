@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Published test vectors of the edge link handshake spec: keys derived from fixed public seeds, not secrets"
+paths = [
+  '''^spec/edge-link-handshake-v1\.vectors\.json$''',
+  '''^go/edgelink/handshake/testdata/edge-link-handshake-v1\.vectors\.json$''',
+]
